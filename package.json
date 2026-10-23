@@ -18,7 +18,8 @@
     "test:stellar": "node --experimental-strip-types scripts/verify-stellar-data.mjs",
     "test:aurora": "node --experimental-strip-types scripts/verify-aurora.mjs",
     "test:wheel": "node --experimental-strip-types scripts/verify-smooth-wheel.mjs",
-    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel",
+    "test:solar": "node --experimental-strip-types scripts/verify-solar.mjs",
+    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel && npm run test:solar",
     "typecheck": "tsc --noEmit --incremental false",
     "audit:public": "node scripts/audit-public-release.mjs"
   },
