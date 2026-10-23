@@ -10,6 +10,7 @@ import { createDeepSky } from './deepSky';
 import { getBodyOrientation, J2000_OBLIQUITY_DEG } from './bodyOrientation';
 import { createEarthMaterial, createCloudMaterial, createAtmosphereMaterial, createSolarMaterial, createCoronaMaterial, createRingMaterial, updateCelestialMaterial } from './celestialMaterials';
 import { createAuroraCurtainGeometry, createAuroraCurtainMaterial } from './auroraCurtains';
+import { createHomeSurface, createHomeLoops } from './solarObservatory';
 import { shouldRebaseRenderOrigin } from './cosmicCoordinates';
 import { destinationSystems, getDestinationSystemByAnchor, type DestinationBodyRecord } from './destinationSystems';
 import { getExoplanet, type ExoplanetRecord } from './exoplanets';
@@ -29,6 +30,7 @@ type SceneProps = {
   graphicsQuality: GraphicsQuality | 'AUTO';
   eventPreview: number;
   auroraPreview: boolean;
+  solarUltraviolet?: boolean;
   selectedId: string | null;
   selectedStellarId: string | null;
   selectedExoplanetId: string | null;
@@ -259,7 +261,7 @@ function smoothstep(minimum: number, maximum: number, value: number) {
   return normalized * normalized * (3 - 2 * normalized);
 }
 
-export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
+export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, solarUltraviolet = false, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
   const selectedRef = useRef(selectedId);
@@ -284,6 +286,8 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
   const [webglError, setWebglError] = useState(false);
   const qualityRef = useRef(graphicsQuality);
   const auroraPreviewRef = useRef(auroraPreview);
+  const solarUvRef = useRef(solarUltraviolet);
+  useEffect(() => { solarUvRef.current = solarUltraviolet; }, [solarUltraviolet]);
   useEffect(() => { auroraPreviewRef.current = auroraPreview; runtimeRef.current?.frameAurora(auroraPreview); }, [auroraPreview]);
   const hoveredStellarRef = useRef<string | null>(null);
   useEffect(() => { qualityRef.current = graphicsQuality; runtimeRef.current?.applyQuality(graphicsQuality); }, [graphicsQuality]);
@@ -869,7 +873,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       const bodyTexture = entity.id === 'earth' ? earthTexture : entity.id === 'sun' ? null : ['jupiter','saturn','uranus','neptune'].includes(entity.id) ? createGiantTexture(entity.id,world.color,world.accent) : makeProceduralTexture(entity, world);
       if (bodyTexture && bodyTexture !== earthTexture) disposables.push(bodyTexture);
       const material = entity.id === 'earth' ? createEarthMaterial(earthTexture, earthNightTexture)
-        : entity.id === 'sun' ? createSolarMaterial(true)
+        : entity.id === 'sun' ? createHomeSurface()
         : new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: index < 5 ? .88 : .7, metalness: 0, emissive: new THREE.Color(world.accent), emissiveIntensity: .008, map: bodyTexture });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.userData.lod = { ULTRA:geometry, HIGH:new THREE.SphereGeometry(entity.renderRadius,72,36), BALANCED:new THREE.SphereGeometry(entity.renderRadius,40,20) };
@@ -909,6 +913,11 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         disposables.push(aurora.userData.lod.HIGH,aurora.userData.lod.BALANCED);
       }
       if (classification === 'star') {
+        const plasma = createHomeLoops(entity.renderRadius);
+        axisFrame.add(plasma.group);
+        group.userData.plasmaLoops = plasma.group;
+        shaderMaterials.push(...plasma.materials);
+        disposables.push(...plasma.materials, ...plasma.geometries);
         const coronaGeometry = new THREE.SphereGeometry(entity.renderRadius * 1.24, 96, 48);
         const coronaMaterial = createCoronaMaterial();
         const corona = new THREE.Mesh(coronaGeometry, coronaMaterial);
@@ -1360,6 +1369,10 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       shaderMaterials.forEach(material => {
         const activity = material.userData.catalogHost ? 0 : material.name.includes('auroral') ? auroralEvent.intensity : solarEvent.intensity;
         updateCelestialMaterial(material, elapsed, sunPosition, activity, profile.atmosphereDetail);
+        if (material.uniforms.uUvView) {
+          material.uniforms.uUvView.value = solarUvRef.current && runtimeRef.current?.focusedId === 'sun' ? 1 : 0;
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) material.uniforms.uTime.value = 0;
+        }
         if (material.uniforms.uEventDirection) {
           if (now < eventPreviewUntil) material.uniforms.uEventDirection.value.copy(previewDirection);
           else material.uniforms.uEventDirection.value.set(Math.sin(solarEvent.cycle * 2.4), .2 + .3 * Math.sin(solarEvent.cycle), Math.cos(solarEvent.cycle * 2.4)).normalize();
@@ -1367,6 +1380,10 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       });
       bodyGroups.forEach(group => {
         const rings = group.userData.rings as THREE.Group | undefined;
+        if (group.userData.plasmaLoops) {
+          group.userData.plasmaLoops.visible = solarUvRef.current && runtimeRef.current?.focusedId === 'sun';
+          group.userData.plasmaLoops.rotation.y = group.userData.bodyMesh.rotation.y;
+        }
         if (!rings) return;
         const center = new THREE.Vector3(); group.getWorldPosition(center);
         const scale = new THREE.Vector3(); group.getWorldScale(scale);
