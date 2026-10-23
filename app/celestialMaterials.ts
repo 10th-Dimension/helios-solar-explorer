@@ -184,7 +184,8 @@ export function createAtmosphereMaterial(id: string) {
 }
 
 /** Opaque photosphere replaces the underlying emissive orange material. */
-export function createSolarMaterial() {
+export function createSolarMaterial(resolvedPhotosphere = false) {
+  if (resolvedPhotosphere) return createResolvedSolarMaterial();
   return makeMaterial('Helios granular photosphere', noiseShader + /* glsl */ `
     uniform vec3 uEventDirection;
     void main() {
@@ -205,6 +206,73 @@ export function createSolarMaterial() {
       float spot = smoothstep(0.997, 0.9997, dot(localNormal, normalize(uEventDirection)));
       color *= 1.0 - spot * sat(uActivity) * 0.78;
       color += vec3(1.1, 0.65, 0.25) * region * (1.0 - spot) * sat(uActivity) * 0.70;
+      gl_FragColor = vec4(color, uOpacity);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }
+  `, { uEventDirection: { value: new THREE.Vector3(0.28, 0.51, 0.81).normalize() } });
+}
+
+/** Home only: filtered visible-light interpretation, not a UV image or live map.
+ * Cellular lanes are exaggerated for navigation; they are not scale measurements.
+ * Derivative filtering removes unresolved granulation rather than aliasing it.
+ */
+function createResolvedSolarMaterial() {
+  return makeMaterial('Helios Home cellular photosphere', noiseShader + /* glsl */ `
+    uniform vec3 uEventDirection;
+    vec3 seed3(vec3 p) {
+      return vec3(hash31(p), hash31(p + 19.1), hash31(p + 47.7));
+    }
+    float granulation(vec3 p) {
+      vec3 base = floor(p);
+      vec3 f = fract(p);
+      float first = 10.0;
+      float second = 10.0;
+      for (int z = -1; z <= 1; z++) {
+        for (int y = -1; y <= 1; y++) {
+          for (int x = -1; x <= 1; x++) {
+            vec3 offset = vec3(float(x), float(y), float(z));
+            vec3 seed = seed3(base + offset);
+            // Cells expand and contract gently, without sliding noise patches.
+            vec3 center = 0.5 + 0.30 * sin(seed * 6.283185 + uTime * 0.12);
+            vec3 delta = offset + center - f;
+            float d = dot(delta, delta);
+            second = min(second, max(first, d));
+            first = min(first, d);
+          }
+        }
+      }
+      float lane = smoothstep(0.015, 0.14, second - first);
+      return lane;
+    }
+    float spotGroup(vec3 n, vec3 center, float size) {
+      float distanceToCenter = length(n - normalize(center));
+      float irregularity = 1.0 + 0.12 * noise3(n * 160.0);
+      float r = distanceToCenter * irregularity / size;
+      float penumbra = 1.0 - smoothstep(0.65, 1.0, r);
+      float umbra = 1.0 - smoothstep(0.30, 0.52, r);
+      return penumbra * 0.25 + umbra * 0.53;
+    }
+    void main() {
+      vec3 n = normalize(vLocalPosition);
+      float mu = max(dot(normalize(vWorldNormal), normalize(cameraPosition - vWorldPosition)), 0.0);
+      // Narrow cellular lanes replace the old broad mottled noise.
+      vec3 p = n * 95.0;
+      float footprint = max(length(dFdx(p)), length(dFdy(p)));
+      float resolved = 1.0 - smoothstep(0.55, 1.6, footprint);
+      float cells = 0.70;
+      if (resolved > 0.01) cells = mix(cells, granulation(p), resolved);
+      float brightness = 0.62 + cells * 0.55;
+      // Sparse low-latitude spot pairs with umbra and softer penumbra.
+      float spots = spotGroup(n, vec3(0.32, 0.16, 0.93), 0.021);
+      spots += spotGroup(n, vec3(0.36, 0.17, 0.92), 0.012);
+      spots += spotGroup(n, vec3(-0.62, -0.22, -0.75), 0.016);
+      float eventSpot = spotGroup(n, uEventDirection, 0.018) * sat(uActivity);
+      brightness *= 1.0 - min(0.85, spots + eventSpot);
+      float limb = 0.34 + 0.66 * pow(mu, 0.58);
+      // Near-white photosphere with a warm limb; exposure is illustrative.
+      vec3 color = mix(vec3(0.84, 0.55, 0.28), vec3(1.05, 0.93, 0.73), pow(mu, 0.35));
+      color *= brightness * limb;
       gl_FragColor = vec4(color, uOpacity);
       #include <tonemapping_fragment>
       #include <colorspace_fragment>

@@ -29,4 +29,10 @@ The application and its tests use the included snapshots; running Helios does no
 - Interior regions are pedagogical, not literal measured concentric shells. Giants have no asserted solid landing surface; the Sun is plasma, not a rocky globe.
 - Atmospheres, ring shadows, storm placement, aurora folds/emission and solar events are approximations. No live event feed is included. Earth intentionally has no external blue halo or artificial selection outline in the current presentation.
 
+### Home photosphere rendering
+
+Home uses a procedural visible-light interpretation: small evolving convection cells, narrow darker lanes, sparse paired sunspots and limb darkening. Cell size, exposure and evolution are adjusted for readability and are not measured solar observations. Unresolved cells fade with pixel footprint to reduce distant shimmer. Other catalog stars retain their existing materials. No current solar image or live activity is implied.
+
+NASA distinguishes the visible photosphere and sunspots from the hotter structures seen in [false-color ultraviolet images](https://stereo-ssc.nascom.nasa.gov/classroom/EUVsun.shtml); its [Sun overview](https://science.nasa.gov/sun/facts/) describes prominences, spicules and the much fainter corona. The atlas's existing event/corona illustration remains an approximation, not a spectral simulation.
+
 See [source credits and usage terms](../THIRD_PARTY_NOTICES.md) and [architecture](ARCHITECTURE.md). Preserve raw values and uncertainty instead of reconciling disagreements from memory.
