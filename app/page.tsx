@@ -201,7 +201,6 @@ export default function Home() {
   const [graphicsQuality, setGraphicsQuality] = useState<GraphicsQuality | 'AUTO'>('AUTO');
   const [eventPreview, setEventPreview] = useState(0);
   const [auroraPreview, setAuroraPreview] = useState(false);
-  const [solarUltraviolet, setSolarUltraviolet] = useState(false);
   const [experienceMode, setExperienceMode] = useState<ExperienceMode>('EXPLORE');
   const [selectedCatalogId, setSelectedCatalogId] = useState('proxima-centauri');
   const [selectedId, setSelectedId] = useState('earth');
@@ -478,7 +477,7 @@ export default function Home() {
       {minimalUi && <><button className="restore-ui" onClick={toggleMinimalUi}>HELIOS · RESTORE HUD</button><div className="minimal-context"><span>{arrivedStellarObject ? `DESTINATION · ${arrivedStellarObject.name.toUpperCase()}` : 'EXPLORE MODE'}</span><strong>{selectedSystemObject?.name.toUpperCase() ?? selectedExoplanet?.name.toUpperCase() ?? selectedStellarObject?.name.toUpperCase() ?? (focusedId ? world.name.toUpperCase() : spatialScale.replace('_', ' '))}</strong></div></>}
 
       <section className={`space-stage ${detailOpen ? 'detail-active' : ''}`}>
-        <SolarSystemScene solarUltraviolet={solarUltraviolet && !interiorMode} graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
+        <SolarSystemScene graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
 
         <div className={`system-intro ${focusedId || travelTo || spatialScale === 'LOCAL_STELLAR' || spatialScale === 'STELLAR_SYSTEM' || arrivedStellarId ? 'hidden' : ''}`}>
           <p>YOU ARE HERE · HOME [OUR SUN]</p>
@@ -534,9 +533,8 @@ export default function Home() {
             <button onClick={() => setDataOpen(true)}>SCIENCE</button>
             {world.id === 'earth' && <button aria-label="Strong aurora preview" aria-pressed={auroraPreview} className={auroraPreview ? 'active' : ''} onClick={() => { setInteriorMode(false); setDetailOpen(false); setFollowing(true); setAuroraPreview(value=>!value); }}>{auroraPreview ? 'AURORA ON' : 'AURORA'}</button>}
             <button onClick={returnToSystem}>SYSTEM</button>
-            {world.id === 'sun' && <button aria-label="Ultraviolet solar view" aria-pressed={solarUltraviolet} className={solarUltraviolet ? 'active' : ''} onClick={() => { setInteriorMode(false); setSolarUltraviolet(value => !value); }}>{solarUltraviolet ? 'ULTRAVIOLET ON' : 'ULTRAVIOLET'}</button>}
           </div>
-          <p>{world.id === 'sun' ? (solarUltraviolet ? 'ULTRAVIOLET · FALSE COLOR · SDO-INSPIRED PLASMA & LOOPS · ILLUSTRATIVE, NOT LIVE' : 'VISIBLE LIGHT · FILTERED EXPOSURE · EVOLVING GRANULATION & SUNSPOTS · ILLUSTRATIVE') : world.id === 'earth' && auroraPreview ? 'STRONG AURORA PREVIEW · ILLUSTRATIVE · STAYS ON UNTIL SWITCHED OFF · DRAG TO ORBIT' : following ? 'FOLLOW MODE · drag to circle · scroll to approach · release for WASD / Q E drift' : 'FREE DRIFT · WASD to move · Q E vertical · Shift accelerates · re-focus anytime'}</p>
+          <p>{world.id === 'sun' ? 'ULTRAVIOLET · FALSE COLOR · ACCELERATED PLASMA & ERUPTIVE LOOPS · ILLUSTRATIVE, NOT LIVE' : world.id === 'earth' && auroraPreview ? 'STRONG AURORA PREVIEW · ILLUSTRATIVE · STAYS ON UNTIL SWITCHED OFF · DRAG TO ORBIT' : following ? 'FOLLOW MODE · drag to circle · scroll to approach · release for WASD / Q E drift' : 'FREE DRIFT · WASD to move · Q E vertical · Shift accelerates · re-focus anytime'}</p>
         </section>}
 
         {focusedId && !following && !travelTo && <div className="drift-status"><i /><span>FREE DRIFT</span><strong>{world.name} released</strong><em>WASD · Q/E vertical · Shift accelerate</em></div>}
