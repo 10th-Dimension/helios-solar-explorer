@@ -31,6 +31,8 @@ The application and its tests use the included snapshots; running Helios does no
 
 ### Home photosphere rendering
 
+The two former persistent bright patches have been removed. Every surface location now uses the same evolving plasma emission model; local brightness still varies with that network. This presentation choice does not imply that real ultraviolet active regions must be dark.
+
 Home uses one ultraviolet false-color presentation throughout the scene; the former visible-light mode and toggle have been removed following visual feedback. Animated three-dimensional domain warping makes the orange plasma network visibly churn. Flow along strands is accelerated, and a deterministic pseudorandom schedule selects one small, three-strand eruption group every seven seconds, with quiet gaps and a rise, release and fade. This is accelerated educational activity, not observed event timing. Other catalog stars retain their materials. Interior viewing hides the external loops.
 
 References inspected for the visual treatment: NASA SVS [Hinode granulation stills and movie](https://svs.gsfc.nasa.gov/3412/) and [SDO 304 Å eruption and loop stills/movie, 18 June 2015](https://svs.gsfc.nasa.gov/4323/). References guide morphology and motion; no imagery is wrapped onto a globe and no NASA media is redistributed. Geometry, cell scale, exposure, color mapping and time are illustrative, not measured solar observations or live space weather. Granulation is derivative-filtered at distance; reduced-motion freezes the new material animations. A warm display filter is not a claim about the Sun's naked-eye color. The loop geometry is an illustration, not a magnetic-field solution or exact AIA passband synthesis.

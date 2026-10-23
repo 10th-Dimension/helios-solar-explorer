@@ -81,7 +81,8 @@ void main() {
   float detail=1.-smoothstep(.7,1.9,footprint);
   float granules=.68;
   if(detail>.01) granules=mix(.68,cells(p),detail);
-  // Multi-scale emissive network, stretched filaments and localized hot regions.
+  // Multi-scale emissive network and stretched filaments. No fixed hot patches:
+  // the entire surface follows the same evolving plasma brightness model.
   vec3 warp=vec3(fbm(n*8.+vec3(uTime*.16,0,0)),
     fbm(n*8.+21.+vec3(0,-uTime*.13,0)),
     fbm(n*8.-17.+vec3(0,0,uTime*.18)));
@@ -89,12 +90,9 @@ void main() {
   float turbulence=fbm(q);
   float network=pow(1.-abs(2.*turbulence-1.),5.);
   float filament=smoothstep(.45,.65,fbm(n*16.+warp*4.));
-  float hot=pow(max(0.,1.-length(n-normalize(vec3(.45,.28,.85)))*3.5),2.);
-  hot+=pow(max(0.,1.-length(n-normalize(vec3(-.82,-.22,.52)))*4.),2.);
-  float emission=.035+.48*network*network+.10*granules+.9*hot;
+  float emission=.035+.48*network*network+.10*granules;
   emission*=.72+.28*noise3(n*130.+uTime*.24);
   vec3 uv=mix(vec3(.08,.001,.0002),vec3(1.7,.22,.006),clamp(emission,0.,1.));
-  uv+=vec3(.65,.31,.04)*hot*network;
   uv*=.62+.38*mu;
   uv*=1.-filament*.45;
   gl_FragColor=vec4(uv,uOpacity);
