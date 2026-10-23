@@ -30,7 +30,6 @@ type SceneProps = {
   graphicsQuality: GraphicsQuality | 'AUTO';
   eventPreview: number;
   auroraPreview: boolean;
-  solarUltraviolet?: boolean;
   selectedId: string | null;
   selectedStellarId: string | null;
   selectedExoplanetId: string | null;
@@ -130,7 +129,7 @@ function makeLabel(world: World) {
   context.fillText(world.name.toUpperCase(), 256, 56);
   context.font = '400 17px monospace';
   context.fillStyle = 'rgba(255,255,255,.48)';
-  context.fillText(world.distance, 256, 89);
+  context.fillText(world.id === 'sun' ? 'UV · FALSE COLOR' : world.distance, 256, 89);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: true }));
@@ -261,7 +260,7 @@ function smoothstep(minimum: number, maximum: number, value: number) {
   return normalized * normalized * (3 - 2 * normalized);
 }
 
-export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, solarUltraviolet = false, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
+export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
   const selectedRef = useRef(selectedId);
@@ -286,8 +285,6 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
   const [webglError, setWebglError] = useState(false);
   const qualityRef = useRef(graphicsQuality);
   const auroraPreviewRef = useRef(auroraPreview);
-  const solarUvRef = useRef(solarUltraviolet);
-  useEffect(() => { solarUvRef.current = solarUltraviolet; }, [solarUltraviolet]);
   useEffect(() => { auroraPreviewRef.current = auroraPreview; runtimeRef.current?.frameAurora(auroraPreview); }, [auroraPreview]);
   const hoveredStellarRef = useRef<string | null>(null);
   useEffect(() => { qualityRef.current = graphicsQuality; runtimeRef.current?.applyQuality(graphicsQuality); }, [graphicsQuality]);
@@ -1370,7 +1367,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         const activity = material.userData.catalogHost ? 0 : material.name.includes('auroral') ? auroralEvent.intensity : solarEvent.intensity;
         updateCelestialMaterial(material, elapsed, sunPosition, activity, profile.atmosphereDetail);
         if (material.uniforms.uUvView) {
-          material.uniforms.uUvView.value = solarUvRef.current && runtimeRef.current?.focusedId === 'sun' ? 1 : 0;
+          material.uniforms.uUvView.value = 1;
           if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) material.uniforms.uTime.value = 0;
         }
         if (material.uniforms.uEventDirection) {
@@ -1381,7 +1378,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       bodyGroups.forEach(group => {
         const rings = group.userData.rings as THREE.Group | undefined;
         if (group.userData.plasmaLoops) {
-          group.userData.plasmaLoops.visible = solarUvRef.current && runtimeRef.current?.focusedId === 'sun';
+          group.userData.plasmaLoops.visible = group.userData.bodyMesh.visible && !group.userData.interiorGroup?.visible;
           group.userData.plasmaLoops.rotation.y = group.userData.bodyMesh.rotation.y;
         }
         if (!rings) return;

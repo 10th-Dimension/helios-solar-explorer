@@ -33,7 +33,7 @@ These counts describe the included scientific snapshot. The 107 Catalog entries 
 - See NASA historical Earth day, night-light and cloud composites with illumination-aware city lights.
 - Toggle folded auroral curtains and Earth's polar-night view. Aurora activity is procedural—not live space weather.
 - Inspect Saturn/Uranus rings, body-specific spin axes, retrograde rotation, giant-planet materials and solar activity illustrations.
-- Explore Home in filtered visible light or toggle a labeled, false-color ULTRAVIOLET view with orange plasma and flowing magnetic arcades, informed by NASA Hinode/SDO references.
+- Home uses a labeled ultraviolet false-color presentation with visibly churning orange plasma and occasional eruptive loops, informed by NASA SDO references. There is one solar view, with accelerated illustrative activity.
 - Choose AUTO, ULTRA, HIGH or BALANCED quality; narrow viewports use a lower automatic tier.
 - Keep exploration quiet with on-demand information, Catalog/Explore overlays and HUD hiding.
 - Use eased wheel zoom with bounded input slices and reduced-motion handling.

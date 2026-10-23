@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import { createHomeSurface, createHomeLoops } from '../app/solarObservatory.ts';
 const surface = createHomeSurface();
 assert.equal(surface.transparent, false);
-assert.equal(surface.uniforms.uUvView.value, 0);
+assert.equal(surface.uniforms.uUvView.value, 1);
 assert.ok(surface.fragmentShader.includes('dFdx'));
 surface.dispose();
 for (const radius of [1, 5.5]) {
   const { group, materials, geometries } = createHomeLoops(radius);
-  assert.equal(group.children.length, 72);
+  assert.equal(group.children.length, 36);
   assert.equal(materials.length, geometries.length);
   for (const geometry of geometries) {
     const positions = geometry.getAttribute('position');
@@ -22,9 +22,11 @@ for (const radius of [1, 5.5]) {
   }
   for (const material of materials) {
     assert.equal(material.depthWrite, false);
-    assert.equal(material.uniforms.uUvView.value, 0);
+    assert.equal(material.uniforms.uUvView.value, 1);
+    assert.equal(material.uniforms.uLoop.value, 1);
+    assert.ok(material.uniforms.uPhase.value >= 0);
     material.dispose();
   }
 }
-console.log('Verified two solar radii, 36 anchored arc strands, finite bounds, view defaults and transparent depth behavior. GPU appearance checked separately in browser.');
+console.log('Verified two solar radii, 18 candidate strands with glow, finite bounds, UV-only defaults and transparent depth behavior. Only one three-strand event group is visible at a time; GPU appearance checked separately in browser.');
 
