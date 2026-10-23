@@ -869,7 +869,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       const bodyTexture = entity.id === 'earth' ? earthTexture : entity.id === 'sun' ? null : ['jupiter','saturn','uranus','neptune'].includes(entity.id) ? createGiantTexture(entity.id,world.color,world.accent) : makeProceduralTexture(entity, world);
       if (bodyTexture && bodyTexture !== earthTexture) disposables.push(bodyTexture);
       const material = entity.id === 'earth' ? createEarthMaterial(earthTexture, earthNightTexture)
-        : entity.id === 'sun' ? createSolarMaterial()
+        : entity.id === 'sun' ? createSolarMaterial(true)
         : new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: index < 5 ? .88 : .7, metalness: 0, emissive: new THREE.Color(world.accent), emissiveIntensity: .008, map: bodyTexture });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.userData.lod = { ULTRA:geometry, HIGH:new THREE.SphereGeometry(entity.renderRadius,72,36), BALANCED:new THREE.SphereGeometry(entity.renderRadius,40,20) };
