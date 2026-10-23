@@ -4,7 +4,7 @@ Open an issue before a large architectural change, new object class or catalog r
 
 ## Before a pull request
 
-Use Node 22.13+ (CI uses Node 24), install with `npm ci`, then run:
+Use Node 24 to match CI (the declared minimum is 22.13), install with `npm ci`, then run:
 
 ```bash
 npm test
@@ -27,6 +27,14 @@ Rendering changes also need actual desktop/narrow-browser checks: one canvas, se
 - Distinguish mass/minimum mass, inferred/measured radii and unresolved/resolved sources.
 - Do not invent observed exoplanet geography, atmospheres, life or interiors.
 - Keep information deliberate and Catalog secondary to spatial exploration.
-- Never commit credentials, `.env` files, private hosting configuration, local paths, runtime state or private handoffs.
+- Never commit credentials, `.env` files, personal deployment settings, local machine paths, runtime state or internal development notes containing private information. Provider-neutral setup instructions belong in public documentation.
+
+## Dependency updates
+
+Dependabot proposes npm and GitHub Actions updates. It does not merge them automatically. Inspect the default branch's check result separately from an open pull request's result; a failed proposal does not mean that change is already in the application.
+
+Update React, React DOM and `react-server-dom-webpack` as a compatible set, and check Vinext/plugin peer requirements. Do not upgrade one member independently or use `--force`/`--legacy-peer-deps` to conceal a conflict. Update the lockfile, run a clean `npm ci`, execute the full verification workflow and inspect the browser before merging framework changes. Type definitions must remain compatible too.
+
+Passing CI establishes only the configured checks. The Verify workflow runs secret scans and functional/build checks, not an enforcing dependency-vulnerability audit or browser-based visual test. Review `npm audit` separately, explain unresolved findings and provide browser evidence when rendering or framework behavior can change. Do not merge solely because a proposal has a green badge.
 
 Explain what changed, why, what you tested and what remains untested. Include captures for visuals and measured before/after evidence for performance claims. Keep unrelated upgrades out of feature work. Contributions must be yours to contribute under MIT; identify third-party material and its terms separately.

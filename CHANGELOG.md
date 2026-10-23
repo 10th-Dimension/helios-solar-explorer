@@ -1,11 +1,20 @@
 # Changelog
 
-This summarizes completed development milestones. The public repository starts with a sanitized source snapshot rather than importing private operational Git history.
+This records features added to Helios and changes to the public project. Earlier development milestones are summarized here because the public repository begins with the complete application snapshot rather than its original development history.
 
-## 1.0.0 — public source release preparation (2026-10-23)
+## Documentation clarification — 2026-10-23
+
+- Explain that the complete application runs independently of ChatGPT Sites; no missing hosting files or private notes are needed.
+- Clarify Catalog versus Solar System counts, destination types, prerelease status and the package version.
+- Document safe loopback-only production preview, development-dependency requirements, keyboard focus and the absence of an automatic hosting pipeline.
+- Explain proposed dependency updates versus the default branch, coordinated React updates and the limits of a green verification badge.
+- Review local links, commands, feature counts, attribution boundaries and completed-versus-planned features. No application logic, scientific values or dependencies change in this documentation update.
+
+## v1.0.0-source.1 — first public source release (2026-10-23)
 
 - MIT license for original code/documentation, standalone build configuration, contributor/security guidance, source credits, roadmap and public-file/secret audit tooling.
-- Preserves the application behavior of the completed Home/zoom release. Original private hosting configuration and operational handoffs are not published.
+- Includes the complete application: Solar System exploration, planetary interiors, nearby stars, confirmed exoplanets, auroras, persistent names and smooth wheel zoom. Only the author's deployment-specific settings and internal development notes are excluded; neither is needed to run or modify Helios.
+- The release is marked as a prerelease, with known dependency findings documented in the audit report. The package version is `1.0.0`; the published source tag is `v1.0.0-source.1`.
 
 ## Home and smoother zoom — 2026-10-23
 

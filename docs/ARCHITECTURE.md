@@ -20,9 +20,11 @@ Solar bodies use J2000 ecliptic pole frames. The Solar parent rotates by the J20
 
 Materials share scene lighting and bounded activity envelopes. Earth day/night UVs stay registered. Auroral curtains use existing-loop animation and bounded geometry LODs. Quality changes reuse renderer ownership. Persistent stellar names retain every visible candidate; deterministic offsets reduce crowding without changing astronomical anchors. Wheel deltas ease through the existing loop into the original controls path; reduced-motion bypasses easing.
 
-## Public build boundary
+## Standalone development and hosting
 
-The public configuration removes the original Sites plugin, host identity, Cloudflare bindings and private operational README. It retains the application rather than exporting compiled deployment output. A standalone Vinext build is intentionally separate from the owner's unchanged hosted project. No CI deployment is configured.
+The repository includes the complete application and a standalone `vite.config.ts` using Vinext and Tailwind/PostCSS. `npm run dev` runs it locally; `npm run build` and `npm start -- --hostname 127.0.0.1` provide a local production-build preview. Keep development dependencies installed because they include Vinext.
+
+No ChatGPT account, Sites project, original deployment manifest, database binding or environment file is required. The author's private hosted copy uses separate deployment settings, which are not part of this portable configuration. Nothing needed to run the application is withheld. This repository has no automatic deployment pipeline or hosting-layer authentication; self-hosting requires a separate provider-specific configuration and security review.
 
 ## Verification boundaries
 

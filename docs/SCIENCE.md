@@ -2,13 +2,13 @@
 
 ## Preserved source contracts
 
-`worlds.ts` holds Solar System stories, measurements, interior regions, environments, Earth-relative comparisons, confidence and sources. `stellar.ts` and `nearbyCatalog.ts` hold stellar/substellar identity and astrometry. `exoplanets.ts` and `exoplanetExpansion.ts` distinguish confirmed planets, parameter confidence and mass provenance. These modules were retained from the completed application rather than rewritten for publication.
+`app/worlds.ts` holds Solar System stories, measurements, interior regions, environments, Earth-relative comparisons, confidence and sources. `app/stellar.ts` and `app/nearbyCatalog.ts` hold stellar/substellar identity and astrometry. `app/exoplanets.ts` and `app/exoplanetExpansion.ts` distinguish confirmed planets, parameter confidence and mass provenance. These application modules are included in full and do not depend on the author's hosting setup.
 
 The five confidence states are measured, inferred, uncertain, unknown and illustrative. They are not interchangeable; a compelling rendering is not evidence for a measured atmosphere or surface.
 
 ## Catalog scope
 
-The curated source contains 83 stellar/substellar records, 65 local render anchors and 64 external destination records. Multiple source rows can share a system; unresolved sources remain one anchor instead of invented separately measured components. There are five white-dwarf records and eleven brown-dwarf source entries. The distant procedural field has no catalog identities.
+The curated source contains 83 stellar/substellar entries including our Sun, 65 local navigation anchors and 64 external destination records. The destination records comprise nine planetary systems, one binary-system layout, 16 other multiple-system layouts and 38 single-object frames. A destination is not necessarily a detailed planetary system. Multiple source rows can share a system; unresolved sources remain one anchor instead of invented separately measured components. There are five white-dwarf records and eleven brown-dwarf source entries. The distant procedural field has no catalog identities.
 
 The 24 confirmed-planet records comprise Proxima b/d and 22 added rows across Barnard's Star, Epsilon Eridani, GJ 887, Ross 128, Teegarden's Star, GJ 876, GJ 273 and YZ Ceti. Tau Ceti f/g/h were returned with `pl_controv_flag=1` and are excluded from the confirmed population; Proxima c is excluded too. This reflects the included source snapshot, not a guarantee of today's status.
 
@@ -16,7 +16,7 @@ The 24 confirmed-planet records comprise Proxima b/d and 22 added rows across Ba
 
 `data/simbad-snapshot.json` and `data/archive-snapshot.json` preserve the original response data, query metadata, timestamps and parameter references. The expanded query date is 2026-10-23 UTC; the earlier original records retain their dates. The runtime does not refresh these automatically. Run `npm run test:stellar` to compare integrated scientific values against the snapshots and assert counts, confidence, references, coordinate behavior and destination integrity.
 
-Do not silently regenerate source data during install/build. A future refresh must record the new query and timestamp, retain literature attribution, validate additions/removals, review controversies and explain changed values. The private research generation scripts are not part of this public snapshot; do not claim a one-command re-query pipeline is included.
+The application and its tests use the included snapshots; running Helios does not require querying a provider. An automatic catalog-refresh command is not currently provided. For a future refresh, use the query metadata stored in the snapshots, record the new response and retrieval timestamp, retain literature attribution, validate additions/removals, review controversies and explain changed values. Do not make data refreshes a silent side effect of installation or build.
 
 ## Important distinctions
 
