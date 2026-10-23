@@ -1,0 +1,14 @@
+name: Feature or scientific correction
+description: Suggest a focused improvement with evidence.
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Problem and proposed improvement
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources and acceptance criteria
+      description: Use primary sources for scientific changes and explain how the result can be verified.
