@@ -23,7 +23,7 @@ export function EducationResizeHandle({onResize}:{onResize:(width:number)=>void}
   };
   const bounds=educationWidthBounds(viewport);
   return <div className="education-resize-handle" role="separator" tabIndex={0} aria-label="Resize lesson panel" aria-orientation="vertical" aria-controls="education-reading" aria-valuemin={bounds.min} aria-valuemax={bounds.max} aria-valuenow={width} aria-valuetext={`${width} pixels for the lesson`} data-resizing={dragging} title="Drag to resize. Arrow keys adjust width; double-click or Enter resets."
-    onPointerDown={event=>{if(event.button!==0)return;event.preventDefault();drag.current={x:event.clientX,width};event.currentTarget.setPointerCapture(event.pointerId);setDragging(true);}}
+    onPointerDown={event=>{if(event.button!==0)return;event.preventDefault();event.currentTarget.focus({preventScroll:true});drag.current={x:event.clientX,width};event.currentTarget.setPointerCapture(event.pointerId);setDragging(true);}}
     onPointerMove={event=>{if(drag.current)commit(drag.current.width+drag.current.x-event.clientX);}}
     onPointerUp={event=>{drag.current=null;setDragging(false);if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);}}
     onPointerCancel={()=>{if(drag.current)commit(drag.current.width);drag.current=null;setDragging(false);}}
