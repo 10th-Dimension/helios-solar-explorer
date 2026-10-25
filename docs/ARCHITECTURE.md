@@ -24,7 +24,15 @@ Materials share scene lighting and bounded activity envelopes. Earth day/night U
 
 The repository includes the complete application and a standalone `vite.config.ts` using Vinext and Tailwind/PostCSS. `npm run dev` runs it locally; `npm run build` and `npm start -- --hostname 127.0.0.1` provide a local production-build preview. Keep development dependencies installed because they include Vinext.
 
-No ChatGPT account, Sites project, original deployment manifest, database binding or environment file is required. The author's private hosted copy uses separate deployment settings, which are not part of this portable configuration. Nothing needed to run the application is withheld. This repository has no automatic deployment pipeline or hosting-layer authentication; self-hosting requires a separate provider-specific configuration and security review.
+No ChatGPT account, Sites project, original deployment manifest, database binding or environment file is required. The author's separately hosted copy uses deployment settings outside this portable configuration. Nothing needed to run the application is withheld. This repository has no automatic deployment pipeline or hosting-layer authentication; self-hosting requires a separate provider-specific configuration and security review.
+
+## Education and evidence
+
+`science.ts` derives a claim graph from preserved records and central references. Confidence, verification status and source dates are separate. `SourceInspector` uses native disclosures without fetching scientific data during browsing.
+
+`education.ts` holds four lesson definitions and a pure reducer with versioned, validated persistence. `EducationPanel` owns the accessible UI, local-only storage and observed-target gates. Its navigation adapter in page.tsx reuses ordinary travel/interior/comparison requests, applies layers after actual arrival and never creates a renderer. Explicit written alternatives support learning without the canvas.
+
+`AccessibleDialog` uses native focus containment, inert background and focus restoration. Hidden drawers are inert; form/panel keys do not trigger scene shortcuts. An animation clock honors system reduced motion and PAUSE MOTION while retaining manual navigation. Low-frequency DOM diagnostics report render resources and bounded frame samples; they are not remote analytics or a GPU benchmark.
 
 ## Verification boundaries
 

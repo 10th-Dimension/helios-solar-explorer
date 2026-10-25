@@ -25,19 +25,19 @@ Workstreams: science owns science registry/SourceInspector/verification/audit; l
 ## Checklist
 
 - [x] Read request, establish persistent goal and baseline, create feature branch.
-- [ ] Phase 1: structured claims, confidence/date semantics, source UI, source audit and adversarial scientific checks.
-- [ ] Phase 2: four complete lessons, real scene actions, questions/retry, completion, local pause/resume and text alternative.
-- [ ] Phase 3: keyboard/mobile/focus/reduced motion; bounded performance/resource investigation; dependency/security review; educator resources.
-- [ ] Phase 4: README/architecture, contributor templates, launch kit, release notes, validation summary, standalone demo instructions.
+- [x] Phase 1 implementation: structured claims, confidence/date semantics, source UI, source audit and 11 adversarial graph checks. Exact legacy scalar reconciliation remains explicitly partial; see SCIENCE_AUDIT.md.
+- [x] Phase 2 implementation: four lessons, 21 stages, 16 questions, observed scene gates, text alternative and validated local persistence. All four browser journeys completed: Sun/Planets/Beyond through scene controls, Solar System through nine written alternatives at 390×844.
+- [x] Phase 3 implementation and bounded review: keyboard/mobile/focus checks, manual motion pause, measured DOM optimization, CPU/resource samples, dependency/security review and educator resources. OS preference visual acceptance, physical mobile, screen-reader matrix and sustained GPU/leak qualification remain NOT VERIFIED.
+- [x] Phase 4 source materials: README/architecture, contributor templates, launch kit, release notes, validation summary and standalone staging instructions. Actual public staging is BLOCKED by absence of a separately configured authorized target.
 - [ ] Full final verification, browser journeys, reviewable commits and PR.
 
 ## Constraints and pending verification
 
-- User requires usage checks every 30 seconds during work and a saved checkpoint/pause at 2% remaining. Latest checked remaining: 23%. Do not claim this figure is continuously current.
+- User requires usage checks every 30 seconds during work and a saved checkpoint/pause at 2% remaining. Latest checked remaining: 16%. Do not claim this figure is continuously current.
 - No separate authorized non-production deployment target is known. Existing production Site must remain untouched; a deployable local production build and exact instructions will be prepared if no target is available.
 - No classroom certification, full WCAG conformance, exhaustive scientific verification, sustained GPU or leak-free claim is established.
-- Browser/accessibility/performance results remain pending and must be recorded by exact exercised path.
+- Exact browser/accessibility/performance results and remaining limits are recorded in [candidate validation](EDUCATION_VALIDATION.md).
 
 ## Resume point
 
-Baseline is complete. Three independent workstreams are implementing science, lessons and readiness documents on this shared feature branch. Integrate their stable APIs into page.tsx and CSS; resolve inherited dependencies; verify all four phases rather than stopping after the science registry.
+Science/lesson/readiness workstreams and actual browser acceptance are integrated. Candidate full audit is zero after image-size 2.0.3 override and Zod 4.6.7 update, retaining Vinext. Patched metadata parser read all four bundled image assets. Prior full tests, typecheck, lint and production build passed. All four actual browser lesson paths passed; host-return correction rechecked; mobile alternative completed; native modal focus/return checks passed. Closed evidence bodies are now lazy-mounted after measuring 866 unnecessary descendants. Three Earth/overview repeats held 150 geometries / 23 textures at HIGH, with one canvas; no sustained leak claim. Remaining work: final staged-file guard, full repository checks/secret scan, docs link audit, commit/push, reviewable PR and CI result. Do not merge or deploy production. Check usage and checkpoint/pause at 2%.

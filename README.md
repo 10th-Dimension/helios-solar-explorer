@@ -1,6 +1,6 @@
 # Helios — Solar System Explorer
 
-**Explore our home system. Keep going.**
+**Explore our home system. Learn how we know. Keep going.**
 
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
@@ -38,6 +38,16 @@ These counts describe the included scientific snapshot. The 107 Catalog entries 
 - Keep exploration quiet with on-demand information, Catalog/Explore overlays and HUD hiding.
 - Use eased wheel zoom with bounded input slices and reduced-motion handling.
 
+## Education 1.0 release candidate
+
+Choose **EDUCATION** for four complete journeys in the same scene: Our Solar System, Inside the Sun, Inside the Planets, and Beyond Our Solar System. The 21 stages include 16 knowledge checks, source disclosures and written alternatives. Travel to real objects, select their interior layers and compare evidence. Pause, exit or resume with progress stored only in your browser; ordinary exploration remains available.
+
+Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide and answer key](docs/education/TEACHER_GUIDE.md), or [printable learning sheet](docs/education/learning-sheet.html). The [science audit](docs/SCIENCE_AUDIT.md) distinguishes reviewed concepts from unresolved legacy values. This candidate has not been classroom-certified.
+
+![Actual Education Mode completion in the existing Sun interior scene](docs/images/education-sun-complete.jpg)
+
+The [candidate validation record](docs/EDUCATION_VALIDATION.md) reports the actual desktop/mobile lesson checks, dependency audit, performance samples and remaining release limits. A feature-branch candidate does not update the author's hosted application.
+
 ## Run locally
 
 Use **Node.js 24** (the version tested in CI), npm and a modern WebGL-capable browser. The package declares a minimum of Node.js 22.13.
@@ -56,7 +66,7 @@ Open the local address printed by the server (normally `http://localhost:3000`).
 ### Check or preview a production build locally
 
 ```bash
-npm test               # Stellar/data, aurora geometry and wheel checks
+npm test               # Catalog/data, geometry, input, science graph and education contracts
 npm run typecheck
 npm run lint
 npm run audit:public   # Tracked-file secret/privacy/packaging guard
@@ -66,7 +76,7 @@ npm start -- --hostname 127.0.0.1  # Preview the build on this computer only
 
 Run these commands from the cloned repository. Keep development dependencies installed: Vinext is declared as a development dependency but is needed for both build and start commands. The source files are not a static HTML export, so opening them directly or serving them with a generic file server will not run Helios.
 
-The explicit preview hostname matters: bare `npm start` listens on all network interfaces by default. Internet hosting is a separate, provider-specific task; no deployment pipeline or access control is configured here. Review the [known dependency findings](docs/PUBLIC_RELEASE_AUDIT.md#dependency-findings-at-the-initial-release) before exposing a server to untrusted traffic. The original hosted copy remains private, but it is not required to use this code. `private: true` in `package.json` only prevents accidental npm publication; it does not restrict GitHub access or the MIT license.
+The explicit preview hostname matters: bare `npm start` listens on all network interfaces by default. Internet hosting is a separate, provider-specific task; no deployment pipeline or access control is configured here. Review the [candidate security findings](docs/EDUCATION_SECURITY.md) and [staging instructions](docs/education/DEPLOYMENT.md) before exposing a server to untrusted traffic. The author's separate hosted deployment is not required to run this code. `private: true` in `package.json` only prevents accidental npm publication; it does not restrict GitHub access or the MIT license.
 
 ## Controls
 
@@ -80,6 +90,8 @@ The explicit preview hostname matters: bare `npm start` listens on all network i
 | Interior | Interior control or X |
 | Earth aurora preview | Approach Earth, then use AURORA; toggle again to restore the previous view |
 | Hide/restore HUD | HUD control or M |
+| Guided learning | EDUCATION; scene actions or a written alternative |
+| Pause animated activity | PAUSE MOTION; system reduced-motion preference is also honored |
 | Back out of the current interaction | Escape |
 | Adjacent Solar System world | Left/right arrows |
 
@@ -130,6 +142,10 @@ docs/                    Architecture, science, roadmap and audit
 
 [Architecture](docs/ARCHITECTURE.md) explains how the application fits together. [Changelog](CHANGELOG.md) describes the features added over time. The [documentation review](docs/DOCUMENTATION_REVIEW.md) records the consistency checks behind this guide.
 
+## Education resources
+
+The [education index](docs/education/README.md) links teacher, student and contributor guides, scientific limitations, a printable worksheet, release notes, deployment guidance and a launch kit. One current lesson attempt and completed markers stay in local browser storage with no student identity or analytics; delete progress from the library. Evidence disclosures give each fact's confidence, verification status and source dates. Source-reviewed concepts, historical snapshot matches and unresolved legacy values are distinct.
+
 ## What's next
 
 Helios is intended to grow. The next direction is **system detail and spatial fidelity**, not an indiscriminate star dump:
@@ -147,7 +163,7 @@ These are plans, not implemented features or promised dates. See the [roadmap](d
 
 Helios is educational software, not a navigation instrument, precision ephemeris engine or complete survey. Interiors are simplified, atmosphere/ring lighting is approximate, and unresolved companions may use schematic layouts. The scene is preloaded rather than streamed. Dense names can overlap, the Three.js client chunk is large, and ULTRA can be expensive. Short browser checks do not establish sustained GPU performance or leak freedom. Accessibility coverage is incomplete.
 
-The initial public release is tagged `v1.0.0-source.1` and marked as a prerelease because security and long-session verification work remains. The `1.0.0` package version is not a production-readiness certification. See [the public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) for dated dependency findings and verification scope. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
+The initial public release is tagged `v1.0.0-source.1`. The current Education candidate package is `1.1.0-rc.1`; neither version number certifies production readiness. See [candidate validation](docs/EDUCATION_VALIDATION.md) and the [Education security review](docs/EDUCATION_SECURITY.md) for current checks. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings as historical evidence. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
 
 ## Contributing and credits
 

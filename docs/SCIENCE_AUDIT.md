@@ -74,7 +74,7 @@ These gaps prevent a blanket “scientifically verified” or “classroom certi
 
 ## Automated verification
 
-Run `npm run test:science` once wired into the root package scripts, or directly:
+Run `npm run test:science` (also included in `npm test`), or directly:
 
 ```bash
 node --experimental-strip-types scripts/verify-science.mjs

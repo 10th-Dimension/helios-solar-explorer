@@ -1,5 +1,15 @@
 # Changelog
 
+## Education 1.0 release candidate — 1.1.0-rc.1
+
+- Four optional guided journeys in the existing scene, with 21 stages, 16 knowledge checks, real target/layer/comparison gates and equivalent written alternatives.
+- Versioned local progress, pause/resume, safe replacement/restart, completion feedback and deletion controls without accounts or student tracking.
+- Central scientific claims/sources, separate confidence and verification states, transparent dates and compact evidence disclosures for facts, interiors, catalog data and lessons.
+- Source audit retains known scalar/date/definition discrepancies and original raw snapshots rather than silently changing scientific data.
+- Native modal focus behavior, hidden-panel inertness, form-key isolation, readable education styles and pause-motion/reduced-motion support.
+- Patched the inherited image parser using a scoped override and updated compatible Zod; full audit currently reports zero findings. This is not a server security certification.
+- Teacher/student/contributor guides, printable worksheet, source audit, staging guidance, launch drafts and release materials. Production hosting is untouched and no public Education demo has been published.
+
 This records features added to Helios and changes to the public project. Earlier development milestones are summarized here because the public repository begins with the complete application snapshot rather than its original development history.
 
 ## Documentation clarification — 2026-10-23

@@ -457,12 +457,16 @@ export default function Home() {
         setEducationTarget(null);
       } else travelToWorld(target.id);
     }
-    else if (target.kind === 'stellar') { travelToStellarObject(target.id); setEducationTarget(null); }
+    else if (target.kind === 'stellar') {
+      if (arrivedStellarId === target.id) returnToDestinationSystem();
+      else travelToStellarObject(target.id);
+      setEducationTarget(null);
+    }
     else {
       const planet = getExoplanet(target.id);
       if (planet) travelToStellarObject(planet.hostStarId, {kind:'EXOPLANET',id:planet.id});
     }
-  }, [returnToSystem, travelToWorld, travelToStellarObject, focusedId]);
+  }, [returnToSystem, returnToDestinationSystem, travelToWorld, travelToStellarObject, focusedId, arrivedStellarId]);
   useEffect(() => {
     if (!educationTarget) return;
     let cancelled = false;

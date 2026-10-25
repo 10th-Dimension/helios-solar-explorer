@@ -1,16 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { claimsForContext, claimsById, confidenceExplanations, scientificSources, verificationExplanations, type EvidenceContext } from './science';
 
 export type SourceInspectorProps = { context?: EvidenceContext; claimIds?: readonly string[]; label?: string };
 
 export function SourceInspector({ context, claimIds, label = 'Sources & confidence' }: SourceInspectorProps) {
+  const [open,setOpen] = useState(false);
   const claims = claimIds
     ? claimIds.map(id => claimsById[id]).filter(Boolean)
     : context ? claimsForContext(context) : [];
-  return <details className="source-inspector">
+  return <details className="source-inspector" onToggle={event => { if (event.target === event.currentTarget) setOpen(event.currentTarget.open); }}>
     <summary>{label} <span aria-label={claims.length + ' scientific claims'}>({claims.length})</span></summary>
-    <div className="source-inspector-body">
+    {open && <div className="source-inspector-body">
       <p className="source-inspector-intro">A source link is evidence to inspect, not a guarantee that every value is current. Confidence and verification describe different things.</p>
       {!claims.length && <p role="status">No claim mapping is available for this selection. Treat its scientific provenance as not yet reviewed.</p>}
       {claims.map(claim => <article className="scientific-claim" key={claim.id}>
@@ -38,7 +40,7 @@ export function SourceInspector({ context, claimIds, label = 'Sources & confiden
         </details>
         <small className="claim-id">Claim {claim.id}</small>
       </article>)}
-    </div>
+    </div>}
   </details>;
 }
 
