@@ -300,3 +300,82 @@ button { cursor: pointer; }
 .catalog-source { display:inline-block;margin:2px 0 12px;color:#a7cde6;font:8px/1.4 monospace;letter-spacing:.08em; }
 .catalog-detail .catalog-object-science { font-size:9px;line-height:1.6; }
 .object-actions { flex-wrap:wrap; }
+
+/* Education uses the existing scene. Panels disclose evidence without replacing it. */
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+:where(button,a,input,select,summary,[tabindex]):focus-visible { outline:2px solid #a7d8ff; outline-offset:4px; }
+button:disabled { cursor:not-allowed; opacity:.55; }
+[inert] { pointer-events:none; }
+dialog.modal { width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; border:0; color:var(--ink); }
+dialog::backdrop { background:#010308b8; }
+.education-panel { position:fixed; z-index:42; right:24px; top:90px; bottom:22px; width:min(430px,calc(100vw - 48px)); overflow:auto; overscroll-behavior:contain; padding:24px; border:1px solid #9dcaf94d; background:linear-gradient(145deg,#08121df5,#03080ef5); box-shadow:0 20px 70px #0009; color:#d7e3ee; font-size:13px; line-height:1.6; scrollbar-gutter:stable; }
+.education-panel h2,.education-panel h3 { color:#f4f3ed; font-weight:450; line-height:1.15; }
+.education-panel h2 { font-size:27px; letter-spacing:-.035em; margin:6px 0 16px; }
+.education-panel h3 { font-size:21px; margin:12px 0; }
+.education-header { display:flex; align-items:start; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); margin-bottom:18px; }
+.education-header span,.education-lesson-card > div > span { color:#a6c8e9; font:10px/1.5 var(--font-geist-mono); letter-spacing:.12em; }
+.education-panel button { border:1px solid #94b6d855; background:#132639; color:#e0ecf6; padding:9px 12px; min-height:36px; font-size:12px; line-height:1.4; }
+.education-panel button:hover:not(:disabled) { border-color:#b0d9ff; background:#1a344c; }
+.education-header button { font-size:10px; white-space:nowrap; }
+.education-panel summary { cursor:pointer; color:#b6d8f4; padding:7px 0; font-size:12px; }
+.education-panel small,.education-storage-note { color:#acbdd0; font-size:11px; }
+.education-lesson-card { border-top:1px solid #8fabc635; padding:17px 0; }
+.education-lesson-card p { margin:8px 0; }
+.education-lesson-card > button { margin-top:12px; width:100%; text-align:left; }
+.education-progress { display:grid; gap:7px; color:#b7ccde; font-size:11px; }
+.education-progress progress { width:100%; height:5px; accent-color:#a7d8ff; }
+.education-instruction { border-left:2px solid #99c9f0; padding-left:12px; color:#e3edf6; }
+.education-travel { width:100%; margin:6px 0 12px; }
+.education-alternative { margin:14px 0; padding:8px 12px; background:#102031; border:1px solid #94b6d838; }
+.education-question { border:1px solid #94b6d84d; padding:14px; margin:18px 0; min-width:0; }
+.education-question legend { color:#e3eaf2; font-weight:550; padding:0 6px; }
+.education-question label { display:flex; align-items:flex-start; gap:10px; padding:9px 4px; cursor:pointer; }
+.education-question input { flex:none; width:17px; height:17px; margin:3px 0; accent-color:#b0d9ff; }
+.education-feedback { margin-top:12px; padding:12px; border-left:2px solid #a6d7a8; background:#122823; }
+.education-feedback.retry { border-color:#efd18f; background:#2b2417; }
+.education-feedback p { margin:5px 0 0; }
+.education-actions,.education-paused,.education-complete,.education-clear-confirm { display:flex; gap:9px; flex-wrap:wrap; }
+.education-paused > h3,.education-paused > p,.education-complete > h3,.education-complete > p,.education-complete > ul { width:100%; }
+.education-library-link,.education-clear { margin-top:16px; }
+.education-interaction { font-size:12px; color:#c3d6e8; }
+.education-active .system-intro { max-width:calc(100vw - 520px); }
+.education-active .object-dock,.education-active .stellar-object-dock { left:22px; transform:none; width:min(450px,calc(100vw - 520px)); }
+.education-active .interior-inspector { width:min(340px,calc(100vw - 520px)); }
+.education-active .travel-telemetry { right:480px; }
+.source-inspector { grid-column:1/-1; margin:10px 0; border-top:1px solid #8ca7c83d; padding-top:5px; min-width:0; font-size:12px; line-height:1.55; color:#c1cedb; }
+.source-inspector > summary { cursor:pointer; color:#b4d8f4; font-size:11px; line-height:1.5; padding:7px 0; min-height:28px; }
+.source-inspector-body { max-height:320px; overflow:auto; padding:10px 12px; background:#07101cf5; border:1px solid #9fc4e333; }
+.source-inspector-body h4 { color:#edf1f6; font-size:13px; margin:8px 0; }
+.source-inspector-body p,.source-inspector-body li { color:#c0cedb; font-size:12px; line-height:1.6; }
+.source-inspector-body a { color:#b5dfff; overflow-wrap:anywhere; }
+.source-inspector-body ul { padding-left:19px; }
+.scientific-claim + .scientific-claim { margin-top:16px; padding-top:12px; border-top:1px solid #8ca7c83d; }
+.source-dates { display:grid; gap:6px; font-size:11px; }
+.source-dates > div { display:grid; grid-template-columns:90px 1fr; gap:8px; }
+.source-dates dt { color:#9bb1c8; }.source-dates dd { margin:0; overflow-wrap:anywhere; }
+.claim-id { display:block; color:#91a8bf; overflow-wrap:anywhere; margin-top:10px; }
+.verification { font-size:10px; border:1px solid #9fc4e34d; padding:3px 5px; color:#d1deec; }
+.verification-review-needed { border-color:#cfab67; color:#f4d491; }
+.verification-snapshot-checked { color:#abd7e7; }
+.knowledge-drawer p,.interior-inspector p,.science-lead,.confidence-guide p,.sources p { color:#bbc9d7; font-size:12px; line-height:1.6; }
+.interior-layer-buttons button { min-height:36px; font-size:11px; color:#becbd8; }
+.confidence { font-size:10px; color:#cbd6e2; }
+.object-dock > p,.stellar-object-dock > p { color:#bac9d7; line-height:1.5; font-size:9px; }
+.exoplanet-metrics dt,.system-member-metrics dt { color:#acbdcf; font-size:9px; }
+.explore-hud nav button { min-height:30px; }
+.view-tabs button,.object-actions button,.stellar-object-actions button { min-height:30px; }
+@media (max-width:900px) {
+  .explore-hud { grid-template-columns:auto 1fr; }
+  .explore-location { display:none; }
+  .explore-hud nav { flex-wrap:wrap; justify-content:flex-end; }
+  .education-panel { right:12px; top:auto; bottom:12px; width:calc(100vw - 24px); max-height:48dvh; padding:17px; }
+  .education-panel h2 { font-size:23px; }
+  .education-active .object-dock,.education-active .stellar-object-dock { display:none; }
+  .education-active .interior-inspector { top:90px; left:12px; width:calc(100vw - 24px); max-height:30dvh; }
+  .education-active .system-intro { display:none; }
+  .education-active .travel-telemetry { right:12px; top:78px; }
+  .explore-hud nav button { font-size:9px; min-height:32px; padding:7px; }
+  .explore-hud .brand { font-size:11px; }
+  .knowledge-drawer { padding-top:100px; }
+  .source-inspector-body { max-height:250px; }
+}

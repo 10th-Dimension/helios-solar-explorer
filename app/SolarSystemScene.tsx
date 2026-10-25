@@ -30,6 +30,7 @@ type SceneProps = {
   graphicsQuality: GraphicsQuality | 'AUTO';
   eventPreview: number;
   auroraPreview: boolean;
+  pauseAnimations?: boolean;
   selectedId: string | null;
   selectedStellarId: string | null;
   selectedExoplanetId: string | null;
@@ -260,7 +261,7 @@ function smoothstep(minimum: number, maximum: number, value: number) {
   return normalized * normalized * (3 - 2 * normalized);
 }
 
-export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
+export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, pauseAnimations = false, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
   const selectedRef = useRef(selectedId);
@@ -285,6 +286,8 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
   const [webglError, setWebglError] = useState(false);
   const qualityRef = useRef(graphicsQuality);
   const auroraPreviewRef = useRef(auroraPreview);
+  const pauseAnimationsRef = useRef(pauseAnimations);
+  useEffect(() => { pauseAnimationsRef.current = pauseAnimations; }, [pauseAnimations]);
   useEffect(() => { auroraPreviewRef.current = auroraPreview; runtimeRef.current?.frameAurora(auroraPreview); }, [auroraPreview]);
   const hoveredStellarRef = useRef<string | null>(null);
   useEffect(() => { qualityRef.current = graphicsQuality; runtimeRef.current?.applyQuality(graphicsQuality); }, [graphicsQuality]);
@@ -416,7 +419,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       const standOff = Math.max(8.5, entity.renderRadius * (entity.id === 'sun' ? 4.1 : 4.3));
       toPosition = toTarget.clone().add(direction.multiplyScalar(standOff)).add(new THREE.Vector3(0, entity.renderRadius * .55, 0));
     }
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = (pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     runtime.controls.enabled = false;
     const targetRadius = focusRequest.targetId ? solarSystem.entities.find((entity) => entity.id === focusRequest.targetId)?.renderRadius ?? null : null;
     runtime.transition = { startAt: now, duration: reduced ? 80 : focusRequest.targetId ? 2100 : 1650, fromPosition, toPosition, fromTarget, toTarget, targetId: focusRequest.targetId, targetDomain: 'solar', targetRadius, fromFov: runtime.camera.fov, toFov: focusRequest.targetId ? 34 : 42 };
@@ -442,7 +445,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     const pathDirection = toPosition.clone().sub(fromPosition).normalize();
     const arcDirection = new THREE.Vector3().crossVectors(pathDirection, runtime.camera.up).normalize();
     if (arcDirection.lengthSq() < .001) arcDirection.set(1, 0, 0);
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = (pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const catalogDistance = stellarTravelRequest.distanceLightYears || distanceLightYears(object);
     runtime.transition = null;
     runtime.focusedId = null;
@@ -481,7 +484,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     const targetRadius = planet?.renderRadius ?? null;
     const standOff = planet ? Math.max(6.5, planet.renderRadius * 7.4) : 68;
     const toPosition = toTarget.clone().add(direction.multiplyScalar(standOff)).add(new THREE.Vector3(0, planet ? planet.renderRadius * .45 : 8, 0));
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = (pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     runtime.stellarTravel = null;
     runtime.focusedId = null;
     runtime.focusedSystemObjectId = null;
@@ -517,7 +520,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     const body = group.userData.destinationBody as DestinationBodyRecord | undefined;
     const radius = body?.render.radius ?? 1;
     const toPosition = toTarget.clone().add(direction.multiplyScalar(Math.max(9, radius * (body?.kind === 'WHITE_DWARF' ? 14 : 5.5)))).add(new THREE.Vector3(0, radius * .4, 0));
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = (pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     runtime.stellarTravel = null;
     runtime.focusedId = null;
     runtime.focusedExoplanetId = null;
@@ -569,7 +572,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     let wheelX = 0, wheelY = 0, wheelInputPeak = 0, wheelAppliedPeak = 0, wheelSteps = 0;
     const clearWheel = () => { pendingWheel = 0; };
     const onSmoothWheel = (event: WheelEvent) => {
-      if (forwardingWheel || !controls.enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (forwardingWheel || !controls.enabled || (pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
       event.preventDefault(); event.stopImmediatePropagation();
       const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 100 : 1);
       if (!Number.isFinite(pixels)) return;
@@ -655,7 +658,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       }
       auroraReturnView = { position:camera.position.clone(),target:controls.target.clone(),fov:camera.fov };
       controls.enabled = false;
-      runtime.transition = { startAt:performance.now(),duration:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 80 : 1600,fromPosition:camera.position.clone(),toPosition:center.clone().addScaledVector(direction,radius*1.35),fromTarget:controls.target.clone(),toTarget:center.clone().addScaledVector(targetDirection,radius*1.026),targetId:'earth',targetDomain:'solar',targetRadius:radius,fromFov:camera.fov,toFov:43 };
+      runtime.transition = { startAt:performance.now(),duration:(pauseAnimationsRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 80 : 1600,fromPosition:camera.position.clone(),toPosition:center.clone().addScaledVector(direction,radius*1.35),fromTarget:controls.target.clone(),toTarget:center.clone().addScaledVector(targetDirection,radius*1.026),targetId:'earth',targetDomain:'solar',targetRadius:radius,fromFov:camera.fov,toFov:43 };
     };
     runtimeRef.current = { applyQuality, frameAurora, previewEvents: () => { eventPreviewUntil = performance.now() + 16000; }, camera, controls, bodyGroups, stellarGroups, exoplanetGroups, systemObjectGroups, cosmicRoot, backgroundStars, renderOriginOffset: new THREE.Vector3(), solarGroup, orbitMaterials, transition: null, stellarTravel: null, focusedId: null, focusedExoplanetId: null, focusedSystemObjectId: null, inspectionBlend: 0, stellarBlend: 0, cosmicScale: 'SYSTEM' };
 
@@ -1090,12 +1093,19 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     let frame = 0;
     let lastScale: CosmicScale = 'SYSTEM';
     let lastFrameAt = performance.now();
+    let visualSeconds = 0, sampleFrames = 0, sampleCpu = 0, sampleWorst = 0;
+    let sampleStartedAt = lastFrameAt;
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     let lastLabelAt = 0;
     let lastLabelSignature = '';
     const render = (now: number) => {
-      const elapsed = now / 1000;
-      const delta = Math.min(.05, Math.max(0, (now - lastFrameAt) / 1000));
+      const frameStartedAt = performance.now();
+      const frameInterval = Math.max(0,now - lastFrameAt);
+      const delta = Math.min(.05, frameInterval / 1000);
       lastFrameAt = now;
+      const motionPaused = pauseAnimationsRef.current || motionPreference.matches;
+      if (!motionPaused && !document.hidden) visualSeconds += delta;
+      const elapsed = visualSeconds;
       const runtime = runtimeRef.current;
       if (runtime?.transition || runtime?.stellarTravel || !controls.enabled || document.hidden) pendingWheel = 0;
       if (pendingWheel) {
@@ -1368,7 +1378,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         updateCelestialMaterial(material, elapsed, sunPosition, activity, profile.atmosphereDetail);
         if (material.uniforms.uUvView) {
           material.uniforms.uUvView.value = 1;
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) material.uniforms.uTime.value = 0;
+
         }
         if (material.uniforms.uEventDirection) {
           if (now < eventPreviewUntil) material.uniforms.uEventDirection.value.copy(previewDirection);
@@ -1406,6 +1416,18 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         host.dataset.starCount = String(profile.starCount);
       }
       if (!document.hidden) renderer.render(scene, camera);
+      if (!document.hidden) {
+        sampleFrames++; sampleCpu += performance.now() - frameStartedAt;
+        sampleWorst = Math.max(sampleWorst,frameInterval);
+      }
+      if (now - sampleStartedAt >= 1000) {
+        host.dataset.frameMeanCpuMs = (sampleCpu / Math.max(1,sampleFrames)).toFixed(2);
+        host.dataset.frameWorstIntervalMs = sampleWorst.toFixed(2);
+        host.dataset.sampleFrames = String(sampleFrames);
+        host.dataset.motion = motionPaused ? 'PAUSED' : 'ANIMATED';
+        host.dataset.visualSeconds = visualSeconds.toFixed(3);
+        sampleFrames = 0; sampleCpu = 0; sampleWorst = 0; sampleStartedAt = now;
+      }
       frame = requestAnimationFrame(render);
     };
     frame = requestAnimationFrame(render);
