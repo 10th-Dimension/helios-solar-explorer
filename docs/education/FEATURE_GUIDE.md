@@ -23,7 +23,7 @@ Use **Previous** to revisit an earlier stage. On the final stage, **Complete les
 - **HOME** or **SYSTEM** recovers the normal spatial frame; lesson progress does not depend on keeping the camera in one place.
 - **Delete saved lesson progress** asks for confirmation before resetting the browser-local record.
 
-The saved record contains lesson/stage IDs, selected answers, interaction/alternative completion and completed lesson IDs. It contains no student name, roster, date-based activity log or remote account. Stored content is versioned and validated when read. Blocked or unavailable storage is reported in the panel, and the current in-memory lesson remains usable.
+The saved record keeps **one current lesson**: lesson/stage IDs, selected answers and interaction/alternative completion, plus completed lesson IDs. Starting or restarting a lesson replaces the current lesson attempt; it does not retain a separate unfinished attempt for every lesson. Previously completed lesson markers remain until progress is cleared. The record contains no student name, roster, date-based activity log or remote account. Stored content is versioned and validated when read. Blocked or unavailable storage is reported in the panel, and the current in-memory lesson remains usable.
 
 ## Evidence and confidence
 
