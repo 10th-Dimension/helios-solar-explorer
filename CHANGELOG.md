@@ -1,5 +1,11 @@
 # Changelog
 
+## Current main — coordinated framework maintenance
+
+- Update Vinext to 1.3.0 together with @vitejs/plugin-rsc 0.5.38; Vinext's App Router requires plugin-rsc 0.5.37 or newer.
+- Override only Vinext's Satori dependency path to patched fflate 0.7.5, resolving GHSA-px8p-9vwx-vf98 without downgrading the framework. Remove the obsolete image-size override because Vinext 1.3.0 no longer depends on it.
+- Group future Vinext and plugin-rsc Dependabot updates so the framework pair is tested together. Application features, scientific snapshots and the v1.1.0 release tag are unchanged.
+
 ## Current main — resizable lessons, retries and evidence layout repair
 
 - Add a draggable, keyboard-accessible lesson divider with a local width preference and bounded scene/reader sizes.
