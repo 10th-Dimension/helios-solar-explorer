@@ -120,6 +120,7 @@ export type EducationSession = {
   lessonId: string | null;
   stageIndex: number;
   status: 'library' | 'active' | 'paused' | 'completed';
+  attemptCompleted: boolean;
   observedStageIds: string[];
   alternativeStageIds: string[];
   answers: Record<string, string>;
@@ -127,11 +128,15 @@ export type EducationSession = {
 };
 
 export function initialEducationSession(): EducationSession {
-  return { version: EDUCATION_CONTENT_VERSION, lessonId: null, stageIndex: 0, status: 'library', observedStageIds: [], alternativeStageIds: [], answers: {}, completedLessonIds: [] };
+  return { version: EDUCATION_CONTENT_VERSION, lessonId: null, stageIndex: 0, status: 'library', attemptCompleted: false, observedStageIds: [], alternativeStageIds: [], answers: {}, completedLessonIds: [] };
 }
 
 export function getEducationLesson(id: string | null) { return lessons.find(lesson => lesson.id === id); }
 export function currentEducationStage(session: EducationSession) { return getEducationLesson(session.lessonId)?.stages[session.stageIndex]; }
+export function educationResumeLabel(session: EducationSession) {
+  const lesson = getEducationLesson(session.lessonId);
+  return lesson ? session.attemptCompleted ? `Review completion: ${lesson.title}` : `Resume ${lesson.title} · stage ${session.stageIndex + 1}` : null;
+}
 export function targetObserved(target: EducationTarget, observed?: EducationObserved) {
   if (!observed) return false;
   if (target.kind === 'home') return !observed.worldId && !observed.stellarId && !observed.exoplanetId && !observed.interiorMode;
@@ -161,7 +166,7 @@ export function educationReducer(session: EducationSession, action: EducationAct
     return { ...initialEducationSession(), lessonId: action.lessonId, status: 'active', completedLessonIds: session.completedLessonIds };
   }
   if (action.type === 'pause') return session.lessonId && session.status === 'active' ? { ...session, status: 'paused' } : session;
-  if (action.type === 'resume') return session.lessonId && session.status !== 'completed' ? { ...session, status: 'active' } : session;
+  if (action.type === 'resume') return session.lessonId ? { ...session, status: session.attemptCompleted ? 'completed' : 'active' } : session;
   if (action.type === 'library') return { ...session, status: 'library' };
   if (session.status !== 'active') return session;
   const lesson = getEducationLesson(session.lessonId);
@@ -173,7 +178,7 @@ export function educationReducer(session: EducationSession, action: EducationAct
   if (action.type === 'back' && session.stageIndex > 0) return { ...session, stageIndex: session.stageIndex - 1 };
   if (action.type === 'next' && stageCanAdvance(session)) {
     if (session.stageIndex < lesson.stages.length - 1) return { ...session, stageIndex: session.stageIndex + 1 };
-    return { ...session, status: 'completed', completedLessonIds: [...new Set([...session.completedLessonIds, lesson.id])] };
+    return { ...session, status: 'completed', attemptCompleted: true, completedLessonIds: [...new Set([...session.completedLessonIds, lesson.id])] };
   }
   return session;
 }
@@ -195,9 +200,13 @@ export function parseEducationSession(raw: string | null): EducationSession {
       const answer: unknown = value.answers[stage.id];
       if (typeof answer === 'string' && stage.question?.options.some(option => option.id === answer)) answers[stage.id] = answer;
     }
-    const session: EducationSession = { version: EDUCATION_CONTENT_VERSION, lessonId: lesson.id, stageIndex: value.stageIndex, status: ['library', 'active', 'paused', 'completed'].includes(value.status) ? value.status : 'paused', observedStageIds: list(value.observedStageIds), alternativeStageIds: list(value.alternativeStageIds), answers, completedLessonIds };
+    const session: EducationSession = { version: EDUCATION_CONTENT_VERSION, lessonId: lesson.id, stageIndex: value.stageIndex, status: ['library', 'active', 'paused', 'completed'].includes(value.status) ? value.status : 'paused', attemptCompleted: false, observedStageIds: list(value.observedStageIds), alternativeStageIds: list(value.alternativeStageIds), answers, completedLessonIds };
     // A corrupt/stale completed flag cannot manufacture completion without all evidence.
     const allDone = lesson.stages.every(stage => (session.observedStageIds.includes(stage.id) || session.alternativeStageIds.includes(stage.id)) && (!stage.question || answers[stage.id] === stage.question.correctOptionId));
+    // Current-attempt completion is distinct from a historical lesson marker.
+    // Migrate an older library snapshot only when every stage still has evidence.
+    session.attemptCompleted = allDone && session.stageIndex === lesson.stages.length - 1
+      && (value.attemptCompleted === true || value.status === 'completed' || (value.attemptCompleted === undefined && value.status === 'library'));
     if (session.status === 'completed' && !allDone) session.status = 'paused';
     return session;
   } catch { return initialEducationSession(); }

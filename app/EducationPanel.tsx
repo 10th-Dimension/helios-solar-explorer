@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SourceInspector } from './SourceInspector';
 import {
-  EDUCATION_STORAGE_KEY, currentEducationStage, educationReducer, educationTargetLabel,
+  EDUCATION_STORAGE_KEY, currentEducationStage, educationReducer, educationResumeLabel, educationTargetLabel,
   getEducationLesson, initialEducationSession, lessons, parseEducationSession, stageCanAdvance,
   type EducationAction, type EducationObserved, type EducationSession, type EducationTarget,
 } from './education';
@@ -81,7 +81,7 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
   const showLibrary = session.status === 'library' || !lesson;
   const requestStart = (lessonId: string) => {
     const hasProgress = session.observedStageIds.length > 0 || session.alternativeStageIds.length > 0 || Object.keys(session.answers).length > 0;
-    if (lesson && hasProgress && !session.completedLessonIds.includes(lesson.id)) setPendingLessonId(lessonId);
+    if (lesson && hasProgress && !session.attemptCompleted) setPendingLessonId(lessonId);
     else dispatch({ type: 'start', lessonId });
   };
 
@@ -99,7 +99,7 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
         <div className="education-library">
           <p>Four guided journeys through this same universe. Travel, inspect evidence and test your understanding. Free exploration is always available.</p>
           <p className="education-storage-note">{storageAvailable ? 'Progress stays only in this browser. No account, name or student tracking is required.' : 'Browser storage is unavailable. You can finish a lesson now, but closing this panel may lose progress.'}</p>
-          {lesson && <button type="button" className="education-resume" onClick={() => dispatch({ type: 'resume' })}>Resume {lesson.title} · stage {session.stageIndex + 1}</button>}
+          {lesson && <button type="button" className="education-resume" onClick={() => { setPendingLessonId(null); dispatch({ type: 'resume' }); }}>{educationResumeLabel(session)}</button>}
           {pendingLessonId && <section className="education-clear-confirm" aria-label="Confirm changing lesson"><p>Start {getEducationLesson(pendingLessonId)?.title}? This restarts the current unfinished lesson progress. Previously completed lessons stay marked complete.</p><button type="button" ref={startButtonRef} onClick={() => { dispatch({ type: 'start', lessonId: pendingLessonId }); setPendingLessonId(null); }}>Start and replace current progress</button><button type="button" onClick={() => { setPendingLessonId(null); headingRef.current?.focus(); }}>Keep current lesson</button></section>}
           <div className="education-lesson-list">
             {lessons.map(item => <article className="education-lesson-card" key={item.id}>

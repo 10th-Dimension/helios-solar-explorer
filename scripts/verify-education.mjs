@@ -4,7 +4,7 @@ import { stellarObjects } from '../app/stellar.ts';
 import { exoplanets } from '../app/exoplanets.ts';
 import { claimById } from '../app/science.ts';
 import {
-  EDUCATION_CONTENT_VERSION, currentEducationStage, educationReducer,
+  EDUCATION_CONTENT_VERSION, currentEducationStage, educationReducer, educationResumeLabel,
   getEducationLesson, initialEducationSession, lessons, parseEducationSession,
   stageCanAdvance, targetObserved,
 } from '../app/education.ts';
@@ -88,10 +88,24 @@ for (const mode of ['scene', 'alternative']) {
       state = educationReducer(state, { type: 'next' });
     }
     assert.equal(state.status, 'completed', `${mode}/${lesson.id} incomplete`);
+    assert.equal(state.attemptCompleted, true);
     assert.ok(state.completedLessonIds.includes(lesson.id));
     assert.equal(parseEducationSession(JSON.stringify(state)).status, 'completed');
+    const library = educationReducer(state, { type: 'library' });
+    assert.equal(educationResumeLabel(library), `Review completion: ${lesson.title}`, 'Finished attempts must not be described as resumable');
+    const libraryReloaded = parseEducationSession(JSON.stringify(library));
+    assert.equal(educationReducer(libraryReloaded, { type: 'resume' }).status, 'completed', 'Library review preserves the completed attempt');
+    const legacyLibrary = { ...library }; delete legacyLibrary.attemptCompleted;
+    assert.equal(parseEducationSession(JSON.stringify(legacyLibrary)).attemptCompleted, true, 'Older fully evidenced library snapshots migrate to completion review');
     const restarted = educationReducer(state, { type: 'start', lessonId: lesson.id });
     assert.equal(restarted.stageIndex, 0); assert.deepEqual(restarted.answers, {}); assert.deepEqual(restarted.observedStageIds, []);
+    assert.equal(restarted.attemptCompleted, false, 'Restart creates a new unfinished attempt');
+    const retryInProgress = educationReducer(restarted, { type: 'alternative' });
+    const retryLibrary = educationReducer(retryInProgress, { type: 'library' });
+    const retryReloaded = parseEducationSession(JSON.stringify(retryLibrary));
+    assert.ok(retryReloaded.completedLessonIds.includes(lesson.id), 'Historical lesson completion is preserved');
+    assert.equal(educationResumeLabel(retryReloaded), `Resume ${lesson.title} · stage 1`, 'Historical completion cannot hide a restarted unfinished attempt');
+    assert.equal(educationReducer(retryReloaded, { type: 'resume' }).status, 'active');
     assert.deepEqual(educationReducer(state, { type: 'clear' }), initialEducationSession());
   }
 }
@@ -99,6 +113,7 @@ for (const mode of ['scene', 'alternative']) {
 for (const raw of [null, '', '{broken', 'null', '[]', 'x'.repeat(50001), JSON.stringify({ version: 'stale', lessonId: lessons[0].id }), JSON.stringify({ version: EDUCATION_CONTENT_VERSION, lessonId: lessons[0].id, stageIndex: 900 })]) assert.deepEqual(parseEducationSession(raw), initialEducationSession());
 const hostile = parseEducationSession(JSON.stringify({ version: EDUCATION_CONTENT_VERSION, lessonId: lessons[0].id, stageIndex: 0, status: 'completed', observedStageIds: ['bogus'], alternativeStageIds: [42], answers: { [first.id]: 'bogus' }, completedLessonIds: ['bogus'] }));
 assert.equal(hostile.status, 'paused', 'Forged completed state is not accepted without stage evidence');
+assert.equal(hostile.attemptCompleted, false);
 assert.deepEqual(hostile.answers, {}); assert.deepEqual(hostile.observedStageIds, []); assert.deepEqual(hostile.completedLessonIds, []);
 
 console.log(`Verified ${lessons.length} complete lesson definitions, ${ids.size - lessons.length} stages, ${questionIds.size} sourced questions, actual target/layer references, observed interaction gates, all scene/text completion paths, wrong-answer retry, pause/resume/restart and bounded malformed/stale storage handling.`);
