@@ -19,6 +19,8 @@ You do not need an account or an API key. Your teacher may provide a hosted addr
 
 **Escape** closes the current overlay or backs out of an interaction. Focus indicators show which control will respond to the keyboard. If motion is uncomfortable, enable your operating system's reduced-motion setting and use the text alternative.
 
+**PAUSE MOTION** freezes the scene's automatic visual animation while leaving manual travel available; **RESUME MOTION** restores it. This is useful when you want to read without a moving background. In the lesson library, **Resume** returns to an unfinished current attempt, while **Review completion** opens a completed attempt's summary. Starting a new attempt is a separate action.
+
 ## Reading the science
 
 The confidence label describes a particular claim, not whether an object looks convincing:

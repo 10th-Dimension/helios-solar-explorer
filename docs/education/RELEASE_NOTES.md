@@ -19,7 +19,7 @@ The continuous Three.js scene, free exploration, Solar System bodies, cutaways, 
 
 ## Review before release
 
-Read the final verification evidence, [scientific audit](../SCIENCE_AUDIT.md), [security review](../EDUCATION_SECURITY.md) and [known limitations](KNOWN_LIMITATIONS.md). A build, automated test suite or zero-advisory dependency audit does not establish complete scientific verification, WCAG certification, sustained GPU performance or classroom effectiveness.
+Read the [candidate validation evidence](../EDUCATION_VALIDATION.md), [scientific audit](../SCIENCE_AUDIT.md), [security review](../EDUCATION_SECURITY.md) and [known limitations](KNOWN_LIMITATIONS.md). A build, automated test suite or zero-advisory dependency audit does not establish complete scientific verification, WCAG certification, sustained GPU performance or classroom effectiveness.
 
 A separately deployed public non-production demo is not claimed. Deployment instructions are available, but the existing hosted application remains outside this candidate's authorization boundary. The owner must approve the intended source merge/release and production target.
 

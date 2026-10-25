@@ -21,7 +21,7 @@ npm start -- --hostname 127.0.0.1 --port 3001
 
 Open the address printed by the server. Test an Education lesson, its text alternative, quiz feedback, source inspection, an interior, stellar travel, returning Home and free exploration. Recheck using the classroom's keyboard, viewport and motion settings. Record failures instead of treating a successful build as a browser pass.
 
-Review dependency findings separately. The historical public-release audit describes an older snapshot; use [the Education security review](../EDUCATION_SECURITY.md) and the current audit output for this candidate.
+Review dependency findings separately. The historical public-release audit describes an older snapshot; use [the Education security review](../EDUCATION_SECURITY.md), [candidate validation evidence](../EDUCATION_VALIDATION.md) and the current audit output for this candidate.
 
 ## Independent public staging host
 

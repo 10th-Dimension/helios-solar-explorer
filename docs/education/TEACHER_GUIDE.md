@@ -98,6 +98,8 @@ The interactive questions include immediate explanations, and wrong answers can 
 
 The printable sheet asks students to justify their answer, name evidence and identify a limitation. A scientifically sound response may explicitly state that a property is unknown.
 
+The library distinguishes **Resume** for an unfinished current attempt from **Review completion** for a completed current attempt. **PAUSE MOTION** can keep the visual clock still during discussion without preventing manual travel. Browser checks have completed the Sun and Beyond lessons through real scene interactions; consult the [candidate validation report](../EDUCATION_VALIDATION.md) for the exact paths and remaining coverage rather than assuming every classroom setup was tested.
+
 ## Accessibility and safeguarding
 
 - Offer the text alternative and keyboard path equally, without requiring disclosure of a disability.

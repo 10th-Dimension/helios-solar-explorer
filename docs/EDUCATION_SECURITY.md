@@ -23,6 +23,8 @@ Integration applied the Vinext-scoped image-size override and a compatible Zod u
 
 The patched named `imageSize(buffer)` API was exercised on the actual bundled assets: the share card parsed as PNG 1200×630, cloud JPEG as 2048×1024, day JPEG as 5400×2700 and night JPEG as 3600×1800. All four returned dimensions successfully. This confirms compatibility for those trusted asset formats; it is not adversarial parser testing or proof of exploit reachability.
 
+The candidate production build was also served locally: root page returned 200, share-card PNG returned 200 with PNG content, the NASA day image returned 200 with JPEG content, and a missing route returned 404. An actual browser journey completed the four-stage Sun lesson through interior controls. A four-stage Beyond journey exercised Proxima, its planet and Home; the subsequent host-return camera adapter correction requires the recheck identified in [candidate validation](EDUCATION_VALIDATION.md). These are bounded runtime compatibility checks, not a penetration test. That report records final exact coverage, build identity and remaining limits. No remote demo or production deployment is implied.
+
 ## Application/privacy boundaries
 
 - Education requires no account, API credential, database, student identity, advertising or analytics service.

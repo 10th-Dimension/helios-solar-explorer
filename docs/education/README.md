@@ -15,6 +15,7 @@ This documentation accompanies the Education 1.0 release candidate. It is not a 
 - [Standalone demo deployment](DEPLOYMENT.md)
 - [Launch kit](LAUNCH_KIT.md)
 - [Release-candidate notes](RELEASE_NOTES.md)
+- [Candidate validation evidence](../EDUCATION_VALIDATION.md)
 - [Security review](../EDUCATION_SECURITY.md)
 - [Scientific provenance](../SCIENCE.md)
 
@@ -29,7 +30,7 @@ This documentation accompanies the Education 1.0 release candidate. It is not a 
 
 Lessons use the existing travel, interior and comparison controls. Questions give explanations, and the text alternative carries the scientific explanation when a learner cannot use the spatial interaction. Neither an account nor a student profile is required.
 
-The source of truth for lesson wording, destinations and questions is `app/education.ts`. The [teacher guide](TEACHER_GUIDE.md) explains how to use the activities without treating the renderer's compressed scales as physical measurements.
+The source of truth for lesson wording, destinations and questions is `app/education.ts`. The candidate has 21 stages and 16 questions. Its scientific registry currently contains 514 claims and 130 sources; those are coverage counts, not independently verified fact counts. The [teacher guide](TEACHER_GUIDE.md) explains how to use the activities without treating the renderer's compressed scales as physical measurements.
 
 ## Before a classroom session
 

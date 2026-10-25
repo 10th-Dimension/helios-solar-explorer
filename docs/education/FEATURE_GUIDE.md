@@ -17,7 +17,7 @@ Use **Previous** to revisit an earlier stage. On the final stage, **Complete les
 ## Pause, resume and recover
 
 - **Pause** keeps the lesson at its current stage while allowing exploration.
-- **Resume lesson** continues the saved lesson.
+- **Resume lesson** continues an unfinished saved attempt. The library's **Resume** control has the same purpose; **Review completion** opens the summary when the current attempt is already complete.
 - **Lesson library** returns to the lesson list without deleting the current progress.
 - **EXIT** or Escape pauses and closes Education. Normal world, interior, catalog, aurora and quality controls remain available.
 - **HOME** or **SYSTEM** recovers the normal spatial frame; lesson progress does not depend on keeping the camera in one place.
@@ -33,6 +33,6 @@ The raw astronomical snapshots remain preserved. Catalog retrieval, reference co
 
 ## Accessible use
 
-The questions use labeled radio controls, and answers have textual feedback. Lesson headings receive focus on meaningful stage changes. The written alternative carries the learning content without requiring visual interpretation or pointer targeting inside the canvas. Reduced-motion settings freeze the new solar material animation and shorten or bypass supported navigation motion.
+The questions use labeled radio controls, and answers have textual feedback. Lesson headings receive focus on meaningful stage changes. The written alternative carries the learning content without requiring visual interpretation or pointer targeting inside the canvas. **PAUSE MOTION** freezes automatic visual animation while leaving manual travel available. The scene animation clock also implements the operating system's reduced-motion preference; system-preference visual acceptance is distinct from testing the manual pause control.
 
-These are implementation features, not a blanket accessibility certification. See [known limitations](KNOWN_LIMITATIONS.md) and the final validation report for exact keyboard, assistive-technology, viewport and motion checks.
+These are implementation features, not a blanket accessibility certification. See [known limitations](KNOWN_LIMITATIONS.md) and the [candidate validation report](../EDUCATION_VALIDATION.md) for exact keyboard, assistive-technology, viewport and motion checks.
