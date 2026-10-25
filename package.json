@@ -1,11 +1,16 @@
 {
   "name": "helios-solar-explorer",
-  "version": "1.0.0",
+  "version": "1.1.0-rc.1",
   "description": "A spatial-first 3D Solar System and nearby-star explorer with scientific provenance.",
   "license": "MIT",
   "author": "Chase Wilcox",
-  "repository": { "type": "git", "url": "https://github.com/10th-Dimension/helios-solar-explorer.git" },
-  "bugs": { "url": "https://github.com/10th-Dimension/helios-solar-explorer/issues" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/10th-Dimension/helios-solar-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/10th-Dimension/helios-solar-explorer/issues"
+  },
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -19,9 +24,11 @@
     "test:aurora": "node --experimental-strip-types scripts/verify-aurora.mjs",
     "test:wheel": "node --experimental-strip-types scripts/verify-smooth-wheel.mjs",
     "test:solar": "node --experimental-strip-types scripts/verify-solar.mjs",
-    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel && npm run test:solar",
+    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel && npm run test:solar && npm run test:science && npm run test:education",
     "typecheck": "tsc --noEmit --incremental false",
-    "audit:public": "node scripts/audit-public-release.mjs"
+    "audit:public": "node scripts/audit-public-release.mjs",
+    "test:science": "node --experimental-strip-types scripts/verify-science.mjs",
+    "test:education": "node --experimental-strip-types scripts/verify-education.mjs"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -45,5 +52,10 @@
     "vinext": "1.0.0-beta.3",
     "vite": "8.3.5"
   },
-  "type": "module"
+  "type": "module",
+  "overrides": {
+    "vinext": {
+      "image-size": "2.0.3"
+    }
+  }
 }
