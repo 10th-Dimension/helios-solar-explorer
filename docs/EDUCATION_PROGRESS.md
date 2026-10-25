@@ -1,6 +1,6 @@
 # HELIOS Education 1.0 progress
 
-Status: IN PROGRESS. Feature branch `feat/helios-education-1-0`; starting main `c208dcab8a5d04b806186c54ce7137a776fd0ddb`. Existing production hosting is out of scope. No merge, production release or hosting mutation is authorized by this assignment.
+Status: IMPLEMENTED AND LOCALLY VERIFIED; REVIEW PR OPEN. Feature branch `feat/helios-education-1-0`; starting main `c208dcab8a5d04b806186c54ce7137a776fd0ddb`. Existing production hosting is out of scope. No merge, production release or hosting mutation is authorized by this assignment.
 
 ## Execution plan and ownership
 
@@ -29,7 +29,7 @@ Workstreams: science owns science registry/SourceInspector/verification/audit; l
 - [x] Phase 2 implementation: four lessons, 21 stages, 16 questions, observed scene gates, text alternative and validated local persistence. All four browser journeys completed: Sun/Planets/Beyond through scene controls, Solar System through nine written alternatives at 390×844.
 - [x] Phase 3 implementation and bounded review: keyboard/mobile/focus checks, manual motion pause, measured DOM optimization, CPU/resource samples, dependency/security review and educator resources. OS preference visual acceptance, physical mobile, screen-reader matrix and sustained GPU/leak qualification remain NOT VERIFIED.
 - [x] Phase 4 source materials: README/architecture, contributor templates, launch kit, release notes, validation summary and standalone staging instructions. Actual public staging is BLOCKED by absence of a separately configured authorized target.
-- [ ] Full final verification, browser journeys, reviewable commits and PR.
+- [x] Full final local verification, browser journeys, reviewable commits and [PR #15](https://github.com/10th-Dimension/helios-solar-explorer/pull/15). CI runs on every PR update; inspect its latest head/checks before approval.
 
 ## Constraints and pending verification
 
@@ -40,6 +40,6 @@ Workstreams: science owns science registry/SourceInspector/verification/audit; l
 
 ## Resume point
 
-Final local checks at application commit `7591825f9013f4c815d1f99de660e9668c2ff213`: all six test suites, typecheck, lint, 87-file public guard, production build and full zero-vulnerability npm audit passed. Gitleaks scanned 33 commits / about 1.20 MB with no leaks. All 75 local documentation links/anchors across 24 Markdown files resolved. Local test tab/server were closed. Remaining delivery work is commit/push evidence, open and attach the PR, and verify CI; do not merge or deploy. The longer implementation recap below preserves the preceding checkpoint.
+Final local checks at application commit `7591825f9013f4c815d1f99de660e9668c2ff213`: all six test suites, typecheck, lint, 87-file public guard, production build and full zero-vulnerability npm audit passed. Gitleaks scanned 33 commits / about 1.20 MB with no leaks at that application commit. All 75 local documentation links/anchors across 24 Markdown files resolved. Local test tab/server were closed. Review [PR #15](https://github.com/10th-Dimension/helios-solar-explorer/pull/15), which is open, attached to this chat and unmerged. [GitHub verification runs](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml) carry final remote evidence; the first candidate run was in progress when this evidence note was saved. Do not infer its latest result from that historical state. No production or staging deployment was performed. Remaining owner decisions are the PR review/approval and any explicit merge, release and hosting authorization described in validation. The longer implementation recap below preserves the preceding checkpoint.
 
 Science/lesson/readiness workstreams and actual browser acceptance are integrated. Candidate full audit is zero after image-size 2.0.3 override and Zod 4.6.7 update, retaining Vinext. Patched metadata parser read all four bundled image assets. Prior full tests, typecheck, lint and production build passed. All four actual browser lesson paths passed; host-return correction rechecked; mobile alternative completed; native modal focus/return checks passed. Closed evidence bodies are now lazy-mounted after measuring 866 unnecessary descendants. Three Earth/overview repeats held 150 geometries / 23 textures at HIGH, with one canvas; no sustained leak claim. Remaining work: final staged-file guard, full repository checks/secret scan, docs link audit, commit/push, reviewable PR and CI result. Do not merge or deploy production. Check usage and checkpoint/pause at 2%.
