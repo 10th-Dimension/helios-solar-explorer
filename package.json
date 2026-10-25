@@ -1,6 +1,6 @@
 {
   "name": "helios-solar-explorer",
-  "version": "1.1.0-rc.1",
+  "version": "1.1.0",
   "description": "A spatial-first 3D Solar System and nearby-star explorer with scientific provenance.",
   "license": "MIT",
   "author": "Chase Wilcox",

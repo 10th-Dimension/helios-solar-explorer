@@ -1,6 +1,12 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
+import assert from 'node:assert/strict';
+
+// Owner explicitly approved publishing this existing public Site link.
+// This exception never permits another Site host, credentials or deployment IDs.
+const approvedPublicOrigin = /https:\/\/helios-solar-explorer\.chasewilcox93\.chatgpt\.site(?=[/\s)#?]|$)/g;
+const withoutApprovedOrigin = line => line.replace(approvedPublicOrigin, '');
 
 // A deterministic public-file guard; use a dedicated scanner as well.
 const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
@@ -20,6 +26,12 @@ const rules = [
   ['machine-path', /[A-Z]:[\\/](?:Users|Documents and Settings)[\\/]|\/Users\/[^/\s]+\//i],
   ['personal-email', /[A-Z0-9._%+-]+@(?:gmail|outlook|hotmail|yahoo|beltc\.ctc)\.(?:com|edu)/i],
 ];
+const hostingIdentityRule = rules.find(([name]) => name === 'private-host-identity')[1];
+const approvedExample = 'https://' + 'helios-solar-explorer.chasewilcox93.chatgpt.site/';
+assert.ok(!hostingIdentityRule.test(withoutApprovedOrigin(approvedExample)));
+assert.ok(hostingIdentityRule.test(withoutApprovedOrigin('https://' + 'another-private.chatgpt.site/')));
+assert.ok(hostingIdentityRule.test(withoutApprovedOrigin(approvedExample + ' appgprj_' + 'a'.repeat(32))));
+assert.ok(hostingIdentityRule.test(withoutApprovedOrigin('https://' + 'helios-solar-explorer.chasewilcox93.chatgpt.site.evil.chatgpt.site/')));
 for (const file of files) {
   if (forbidden.test(file) && file !== '.env.example') findings.push({file, rule:'forbidden-path'});
   const bytes = readFileSync(file);
@@ -27,7 +39,7 @@ for (const file of files) {
   if (bytes.includes(0)) { findings.push({file,rule:'unreviewed-binary'}); continue; }
   const lines = bytes.toString('utf8').split(/\r?\n/);
   for (const [index,line] of lines.entries()) {
-    for (const [rule,pattern] of rules) if (pattern.test(line)) findings.push({file,line:index+1,rule});
+    for (const [rule,pattern] of rules) if (pattern.test(rule === 'private-host-identity' ? withoutApprovedOrigin(line) : line)) findings.push({file,line:index+1,rule});
   }
 }
 const lock = JSON.parse(readFileSync('package-lock.json','utf8'));

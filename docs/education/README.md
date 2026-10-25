@@ -2,7 +2,7 @@
 
 Helios keeps the 3D universe as the main interface. Education adds guided questions, explanations and source inspection to the existing scene. Free exploration remains available.
 
-This documentation accompanies the Education 1.0 release candidate. It is not a statement of curriculum accreditation, WCAG conformance certification or independently validated classroom outcomes.
+This documentation accompanies Helios Education 1.0, package/release `1.1.0`. [Open the live public Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/). It is not a statement of curriculum accreditation, WCAG conformance certification or independently validated classroom outcomes.
 
 ## Start here
 
@@ -14,7 +14,7 @@ This documentation accompanies the Education 1.0 release candidate. It is not a 
 - [Known limitations](KNOWN_LIMITATIONS.md)
 - [Standalone demo deployment](DEPLOYMENT.md)
 - [Launch kit](LAUNCH_KIT.md)
-- [Release-candidate notes](RELEASE_NOTES.md)
+- [Release notes](RELEASE_NOTES.md)
 - [Candidate validation evidence](../EDUCATION_VALIDATION.md)
 - [Security review](../EDUCATION_SECURITY.md)
 - [Scientific provenance](../SCIENCE.md)

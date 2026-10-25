@@ -13,7 +13,7 @@ The 3D experience and the text alternative teach the same concepts. Students can
 3. Select a quality level that keeps interaction comfortable. ULTRA is optional; it is not required to understand a lesson.
 4. Test keyboard navigation, display size and reduced-motion needs. Avoid requiring a learner to manipulate the canvas to demonstrate understanding.
 5. Explain the visualization's scale and time transformations before students infer distances from the screen.
-6. On shared devices, restart the lesson. Browser-local saved progress belongs to that browser session, not an identified student.
+6. Open **Teacher tools & retries** on shared devices. **Start fresh for next learner** asks for confirmation before clearing browser-local progress. **Retake lesson questions** clears the current lesson’s answers while retaining its explored targets; **Restart lesson from beginning** starts its route again. Browser-local progress is not an identified student record or gradebook. Incorrect attempts allow continued learning and optional unlimited retries; journey completion is participation, not a perfect-score claim.
 
 There is no claimed universal lesson duration. Allow time for reading, exploration and discussion; pace according to the class and device. The activities below can be used independently.
 

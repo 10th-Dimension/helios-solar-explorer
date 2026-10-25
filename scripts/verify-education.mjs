@@ -8,6 +8,7 @@ import {
   getEducationLesson, initialEducationSession, lessons, parseEducationSession,
   stageCanAdvance, targetObserved,
 } from '../app/education.ts';
+import {clampEducationWidth,educationWidthBounds,parseEducationWidth} from '../app/educationLayout.ts';
 
 const ids = new Set();
 const questionIds = new Set();
@@ -59,7 +60,11 @@ assert.deepEqual(session.observedStageIds, [], 'Wrong destination cannot satisfy
 const first = currentEducationStage(session);
 session = educationReducer(session, { type: 'answer', optionId: first.question.options.find(o => o.id !== first.question.correctOptionId).id });
 session = educationReducer(session, { type: 'alternative' });
-assert.equal(stageCanAdvance(session), false, 'Written alternative does not waive a wrong answer');
+assert.equal(stageCanAdvance(session), true, 'A valid attempt permits continued learning, even if incorrect');
+session = educationReducer(session, {type:'retry-question'});
+assert.equal(session.answers[first.id], undefined, 'Retry clears only the current answer');
+assert.ok(session.alternativeStageIds.includes(first.id), 'Retry preserves exploration evidence');
+assert.equal(stageCanAdvance(session), false, 'An unanswered retry requires another attempt');
 session = educationReducer(session, { type: 'answer', optionId: first.question.correctOptionId });
 assert.equal(stageCanAdvance(session), true);
 session = educationReducer(session, { type: 'pause' });
@@ -91,6 +96,11 @@ for (const mode of ['scene', 'alternative']) {
     assert.equal(state.attemptCompleted, true);
     assert.ok(state.completedLessonIds.includes(lesson.id));
     assert.equal(parseEducationSession(JSON.stringify(state)).status, 'completed');
+    const retake = educationReducer(state, {type:'retake-questions'});
+    assert.equal(retake.status, 'active'); assert.equal(retake.stageIndex, 0);
+    assert.deepEqual(retake.answers, {}); assert.equal(retake.attemptCompleted, false);
+    assert.deepEqual(retake.observedStageIds, state.observedStageIds);
+    assert.deepEqual(retake.completedLessonIds, state.completedLessonIds);
     const library = educationReducer(state, { type: 'library' });
     assert.equal(educationResumeLabel(library), `Review completion: ${lesson.title}`, 'Finished attempts must not be described as resumable');
     const libraryReloaded = parseEducationSession(JSON.stringify(library));
@@ -117,3 +127,21 @@ assert.equal(hostile.attemptCompleted, false);
 assert.deepEqual(hostile.answers, {}); assert.deepEqual(hostile.observedStageIds, []); assert.deepEqual(hostile.completedLessonIds, []);
 
 console.log(`Verified ${lessons.length} complete lesson definitions, ${ids.size - lessons.length} stages, ${questionIds.size} sourced questions, actual target/layer references, observed interaction gates, all scene/text completion paths, wrong-answer retry, pause/resume/restart and bounded malformed/stale storage handling.`);
+for (const viewport of [901,1024,1280,1920,NaN]) {
+  const bounds=educationWidthBounds(viewport);
+  assert.equal(clampEducationWidth(-100,viewport),bounds.min);
+  assert.equal(clampEducationWidth(10000,viewport),bounds.max);
+  assert.ok(clampEducationWidth(NaN,viewport)>=bounds.min);
+}
+assert.equal(parseEducationWidth('800'),800);
+for (const raw of [null,'','garbage','Infinity','0','1000000000000000']) assert.equal(parseEducationWidth(raw),620);
+
+let imperfect=educationReducer(initialEducationSession(),{type:'start',lessonId:lessons[1].id});
+for (const stage of lessons[1].stages) {
+  imperfect=educationReducer(imperfect,{type:'alternative'});
+  imperfect=educationReducer(imperfect,{type:'answer',optionId:stage.question.options.find(o=>o.id!==stage.question.correctOptionId).id});
+  imperfect=educationReducer(imperfect,{type:'next'});
+}
+assert.equal(imperfect.status,'completed','Completion records participation, not a perfect score');
+assert.equal(parseEducationSession(JSON.stringify(imperfect)).status,'completed');
+console.log('Verified bounded resize preferences, optional unlimited retries, non-blocking wrong-answer progression and imperfect completion persistence.');
