@@ -33,11 +33,13 @@ Workstreams: science owns science registry/SourceInspector/verification/audit; l
 
 ## Constraints and pending verification
 
-- User requires usage checks every 30 seconds during work and a saved checkpoint/pause at 2% remaining. Latest checked remaining: 16%. Do not claim this figure is continuously current.
+- User requires usage checks every 30 seconds during work and a saved checkpoint/pause at 2% remaining. Latest checked remaining: 15%. Do not claim this figure is continuously current.
 - No separate authorized non-production deployment target is known. Existing production Site must remain untouched; a deployable local production build and exact instructions will be prepared if no target is available.
 - No classroom certification, full WCAG conformance, exhaustive scientific verification, sustained GPU or leak-free claim is established.
 - Exact browser/accessibility/performance results and remaining limits are recorded in [candidate validation](EDUCATION_VALIDATION.md).
 
 ## Resume point
+
+Final local checks at application commit `7591825f9013f4c815d1f99de660e9668c2ff213`: all six test suites, typecheck, lint, 87-file public guard, production build and full zero-vulnerability npm audit passed. Gitleaks scanned 33 commits / about 1.20 MB with no leaks. All 75 local documentation links/anchors across 24 Markdown files resolved. Local test tab/server were closed. Remaining delivery work is commit/push evidence, open and attach the PR, and verify CI; do not merge or deploy. The longer implementation recap below preserves the preceding checkpoint.
 
 Science/lesson/readiness workstreams and actual browser acceptance are integrated. Candidate full audit is zero after image-size 2.0.3 override and Zod 4.6.7 update, retaining Vinext. Patched metadata parser read all four bundled image assets. Prior full tests, typecheck, lint and production build passed. All four actual browser lesson paths passed; host-return correction rechecked; mobile alternative completed; native modal focus/return checks passed. Closed evidence bodies are now lazy-mounted after measuring 866 unnecessary descendants. Three Earth/overview repeats held 150 geometries / 23 textures at HIGH, with one canvas; no sustained leak claim. Remaining work: final staged-file guard, full repository checks/secret scan, docs link audit, commit/push, reviewable PR and CI result. Do not merge or deploy production. Check usage and checkpoint/pause at 2%.

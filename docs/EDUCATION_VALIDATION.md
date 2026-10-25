@@ -51,7 +51,21 @@ Measured UI overhead justified one narrow optimization: closed evidence initiall
 
 The candidate test command includes original stellar/snapshot, aurora, wheel and solar suites plus science-graph and education-state suites. Science tests cover invalid/dangling citations, dates, confidence, unknown values, unit/record contracts and immutable snapshot hashes. Education tests exercise all 21 stage paths, invalid observations, wrong answers, persistence bounds, replacement protection and completion/restart migration. See the final PR checks for the exact reviewed commit.
 
-Final local verification is recorded in [progress](EDUCATION_PROGRESS.md). Required commands are `npm test`, `npm run typecheck`, `npm run lint`, `npm run audit:public`, `npm run build`, `npm audit` and a redacted history secret scan. CI enforces those repository checks plus its secret scan. The large client chunk and Vinext route-classification notices are inherited build notices, not silently suppressed failures.
+Final local checks passed on application commit `7591825f9013f4c815d1f99de660e9668c2ff213` with Node `24.19.0` / npm `11.17.0`. Subsequent evidence-only commits do not change application code. See [progress](EDUCATION_PROGRESS.md) and the PR for delivery/CI identity.
+
+| Final local check | Result |
+| --- | --- |
+| `npm test` | PASS: all six suites, including 514 claims / 130 sources, 11 adversarial graph cases and all lesson state paths |
+| `npm run typecheck` | PASS |
+| `npm run lint` | PASS |
+| `npm run audit:public` | PASS: 87 tracked files, no findings |
+| `npm run build` | PASS |
+| `npm audit --json` | PASS: zero vulnerabilities across reported severities |
+| Gitleaks 8.30.1, reachable history `--all`, redacted | PASS: 33 commits / approximately 1.20 MB scanned, no leaks at the application commit |
+| Local documentation links/anchors | PASS: 24 Markdown files, 75 local links/anchors, zero failures |
+| `git diff --check` | PASS |
+
+CI enforces the repository checks and its history secret scan; actual CI status must be read from the PR rather than inferred from local results. Build retained large-client-chunk, bundler debug-name and Vinext route-classification notices; they were not suppressed. No generated build files are published in source.
 
 The baseline full npm audit reported three high affected packages. The candidate uses `image-size@2.0.3` scoped under Vinext and transitive `zod@4.6.7`; a subsequent full audit reported zero vulnerabilities. React/Vinext were retained. The image parser read all four bundled images with their expected dimensions. Local HTTP checks returned 200 for root/PNG/NASA JPEG and 404 for a missing route. See [security review](EDUCATION_SECURITY.md) for advisories and host-level limits. A clean audit/secret scan is dated evidence, not a penetration test or guarantee.
 
