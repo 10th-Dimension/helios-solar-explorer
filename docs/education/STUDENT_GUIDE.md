@@ -7,7 +7,7 @@ You do not need an account or an API key. Your teacher may provide a hosted addr
 3. Use its travel or inspection control to visit the relevant object in the existing 3D scene. When a task asks for an interior region, select that region through the interior controls.
 4. If the visual interaction is unavailable or unsuitable, open **Read a nonvisual alternative**, read it, and select **Use this alternative for this stage**. It teaches the same concept without requiring you to interpret the canvas.
 5. Answer the question. Read the explanation, including after a wrong answer, and retry if needed.
-6. Use **Next stage** until the completion screen. You can **Pause**, **Resume lesson**, **EXIT** to free exploration, choose **Lesson library**, or restart a lesson to revisit it.
+6. Use **Next stage** until the completion screen. You can **Pause lesson**, **Resume lesson**, **Exit** to free exploration, choose **Lesson library**, or restart a lesson to revisit it.
 
 ## Moving around
 

@@ -16,7 +16,7 @@ Use **Previous** to revisit an earlier stage. On the final stage, **Complete les
 
 ## Pause, resume and recover
 
-- **Pause** keeps the lesson at its current stage while allowing exploration.
+- **Pause lesson** keeps the lesson at its current stage while allowing exploration.
 - **Resume lesson** continues an unfinished saved attempt. The library's **Resume** control has the same purpose; **Review completion** opens the summary when the current attempt is already complete.
 - **Lesson library** returns to the lesson list without deleting the current progress.
 - **EXIT** or Escape pauses and closes Education. Normal world, interior, catalog, aurora and quality controls remain available.

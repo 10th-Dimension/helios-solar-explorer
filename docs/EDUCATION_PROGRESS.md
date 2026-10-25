@@ -1,5 +1,7 @@
 # HELIOS Education 1.0 progress
 
+> Historical candidate checkpoint. PR #15 subsequently merged and Education was deployed to the existing public Site with owner approval. See [the learning workspace review](education/WORKSPACE_REVIEW.md) for the subsequent release and UI redesign; the dated checkpoint below is retained as evidence.
+
 Status: IMPLEMENTED AND LOCALLY VERIFIED; REVIEW PR OPEN. Feature branch `feat/helios-education-1-0`; starting main `c208dcab8a5d04b806186c54ce7137a776fd0ddb`. Existing production hosting is out of scope. No merge, production release or hosting mutation is authorized by this assignment.
 
 ## Execution plan and ownership

@@ -2,6 +2,8 @@
 
 **Explore our home system. Learn how we know. Keep going.**
 
+**[Launch the live Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/)** · **[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
 
@@ -38,15 +40,28 @@ These counts describe the included scientific snapshot. The 107 Catalog entries 
 - Keep exploration quiet with on-demand information, Catalog/Explore overlays and HUD hiding.
 - Use eased wheel zoom with bounded input slices and reduced-motion handling.
 
-## Education 1.0 release candidate
+## Education 1.0
 
 Choose **EDUCATION** for four complete journeys in the same scene: Our Solar System, Inside the Sun, Inside the Planets, and Beyond Our Solar System. The 21 stages include 16 knowledge checks, source disclosures and written alternatives. Travel to real objects, select their interior layers and compare evidence. Pause, exit or resume with progress stored only in your browser; ordinary exploration remains available.
 
-Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide and answer key](docs/education/TEACHER_GUIDE.md), or [printable learning sheet](docs/education/learning-sheet.html). The [science audit](docs/SCIENCE_AUDIT.md) distinguishes reviewed concepts from unresolved legacy values. This candidate has not been classroom-certified.
+The learning workspace includes a spacious lesson library, a wider reading pane beside the live scene, large answer choices, persistent Previous/Next controls, and **View scene / Read lesson** switching. On small screens, traveling to a scene target folds the reading pane so the object and interior controls can be inspected; Read lesson brings the explanation and quiz back. Opening Catalog or Worlds closes the Education overlay while retaining browser-local progress.
 
-![Actual Education Mode completion in the existing Sun interior scene](docs/images/education-sun-complete.jpg)
+| Journey | What learners do | Stages / questions |
+| --- | --- | --- |
+| Our Solar System | Visit the Sun and eight planets; distinguish planetary groups, gravity and scientific distances from screen spacing | 9 / 4 |
+| Inside the Sun | Explore core, radiative, convective and outer regions; follow energy transport and examine interior evidence | 4 / 4 |
+| Inside the Planets | Inspect Earth, Jupiter and Neptune interiors, then compare Neptune with Earth | 4 / 4 |
+| Beyond Our Solar System | Visit Proxima and its confirmed planet, interpret detection/inferred properties, and return Home | 4 / 4 |
 
-The [candidate validation record](docs/EDUCATION_VALIDATION.md) reports the actual desktop/mobile lesson checks, dependency audit, performance samples and remaining release limits. A feature-branch candidate does not update the author's hosted application.
+Every stage includes explanatory text, claim-specific source disclosures and an explicit written alternative. Questions give retry feedback and require the appropriate scene interaction or recorded alternative before progression. Progress supports pause, exit, resume, completion review and protected restart/replacement; it stays in local browser storage without student accounts or analytics. Manual Pause Motion remains available.
+
+The scientific registry maps **514 claims to 130 sources**, with separate confidence and verification status, missing values retained as unknown, and distinct publication/observation/retrieval/review dates. These are coverage counts, not a claim that all 514 facts were independently verified. Original scientific snapshots and numerical world data are preserved.
+
+Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide and answer key](docs/education/TEACHER_GUIDE.md), or [printable learning sheet](docs/education/learning-sheet.html). The [science audit](docs/SCIENCE_AUDIT.md) distinguishes reviewed concepts from unresolved legacy values. Education 1.0 has not been independently classroom- or WCAG-certified.
+
+![Actual Education workspace with a wider reader and persistent navigation beside the existing scene](docs/images/education-workspace.jpg)
+
+The [workspace review](docs/education/WORKSPACE_REVIEW.md) records this release's UI fixes and verification scope. The [earlier candidate validation](docs/EDUCATION_VALIDATION.md) preserves the original Education review evidence. The hosted application and standalone source share the educational features; you can run or modify the complete application without a ChatGPT Sites account.
 
 ## Run locally
 
@@ -163,7 +178,7 @@ These are plans, not implemented features or promised dates. See the [roadmap](d
 
 Helios is educational software, not a navigation instrument, precision ephemeris engine or complete survey. Interiors are simplified, atmosphere/ring lighting is approximate, and unresolved companions may use schematic layouts. The scene is preloaded rather than streamed. Dense names can overlap, the Three.js client chunk is large, and ULTRA can be expensive. Short browser checks do not establish sustained GPU performance or leak freedom. Accessibility coverage is incomplete.
 
-The initial public release is tagged `v1.0.0-source.1`. The current Education candidate package is `1.1.0-rc.1`; neither version number certifies production readiness. See [candidate validation](docs/EDUCATION_VALIDATION.md) and the [Education security review](docs/EDUCATION_SECURITY.md) for current checks. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings as historical evidence. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
+The initial public source release is tagged `v1.0.0-source.1`. Education 1.0 uses package/release version `1.1.0`. Version numbers do not certify scientific, classroom or security readiness. See the [workspace review](docs/education/WORKSPACE_REVIEW.md), [original candidate validation](docs/EDUCATION_VALIDATION.md) and [Education security review](docs/EDUCATION_SECURITY.md) for dated evidence. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
 
 ## Contributing and credits
 
