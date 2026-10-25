@@ -10,9 +10,13 @@ There are 21 stages across four lessons: nine in Our Solar System and four each 
 
 A stage contains a target, an instruction, a concise explanation, scientific evidence and, where appropriate, a knowledge check. Its scene button uses the existing travel/inspection controls. Interior stages target a particular modeled layer, and the planet-comparison stage opens the existing Earth comparison.
 
-The stage records reaching its scene target. It can also be completed through **Read a nonvisual alternative** followed by **Use this alternative for this stage**. The alternative provides the relevant information in text; it is not an empty bypass. A stage with a question still requires a correct answer before **Next stage** becomes available. Wrong choices show explanatory feedback and can be changed.
+The stage records reaching its scene target. It can also be completed through **Read a nonvisual alternative** followed by **Use this alternative for this stage**. The alternative provides the relevant information in text; it is not an empty bypass. A question requires a valid answer attempt before **Next stage** becomes available, but incorrect answers do not lock the learner in place. Feedback explains the answer. **Retry question** clears only that answer, and retries are unlimited.
 
 Use **Previous** to revisit an earlier stage. On the final stage, **Complete lesson** records completion and summarizes the objectives. You can restart or choose another lesson.
+
+Completion records participation separately from accuracy. The summary reports how many answers were correct. **Retake lesson questions** clears all answers for the current lesson and starts its questions again while preserving scene visits/written alternatives. **Restart lesson from beginning** starts a fresh lesson route. **Teacher tools & retries** also offers a confirmed fresh start for the next learner, clearing this browser’s saved progress rather than a school account.
+
+On desktop, drag the reader’s left divider to resize it. Focus the divider and use Left/Right to adjust, Home/End for its limits, or Enter/double-click for the default. The browser remembers the preferred width; window resizing keeps a usable scene. Mobile uses the full-width reader and View scene / Read lesson instead of a tiny split.
 
 ## Pause, resume and recover
 

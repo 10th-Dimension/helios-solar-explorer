@@ -217,6 +217,7 @@ export default function Home() {
   const [compareOpen, setCompareOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
   const [educationOpen, setEducationOpen] = useState(false);
+  const [educationPanelWidth,setEducationPanelWidth] = useState<number | null>(null);
   const [educationTarget, setEducationTarget] = useState<EducationTarget | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
@@ -520,7 +521,7 @@ export default function Home() {
   }, [arrivedStellarId, compareOpen, dataOpen, detailOpen, experienceMode, focusedExoplanetId, focusedId, focusedSystemObjectId, interiorMode, leaveDestinationSystem, minimalUi, quickTravelOpen, returnToDestinationSystem, returnToSystem, selectedExoplanetId, selectedId, selectedStellarId, selectedSystemObjectId, spatialScale, stellarTravel, toggleMinimalUi, travelToWorld, world.layers.length]);
 
   return (
-    <main className={`app-shell mode-${experienceMode.toLowerCase()} world-${world.id} ${minimalUi ? 'minimal-ui' : ''} ${educationOpen ? 'education-active' : ''} ${interiorMode ? 'interior-active' : ''} ${stellarTravel?.status === 'traveling' ? 'interstellar-active' : ''}`} style={{ '--world': world.color, '--accent': world.accent } as React.CSSProperties}>
+    <main className={`app-shell mode-${experienceMode.toLowerCase()} world-${world.id} ${minimalUi ? 'minimal-ui' : ''} ${educationOpen ? 'education-active' : ''} ${interiorMode ? 'interior-active' : ''} ${stellarTravel?.status === 'traveling' ? 'interstellar-active' : ''}`} style={{ '--world': world.color, '--accent': world.accent, ...(educationPanelWidth === null ? {} : {'--education-width': `${educationPanelWidth}px`}) } as React.CSSProperties}>
       <header className="explore-hud">
         <button className="brand" onClick={returnToSystem}><i />HELIOS <span>LIVE COSMIC ATLAS</span></button>
         <div className="explore-location"><span>{arrivedStellarObject ? 'DESTINATION FRAME' : spatialScale.replace('_', ' ')}</span><strong>{selectedSystemObject?.name ?? selectedExoplanet?.name ?? arrivedStellarObject?.name ?? selectedStellarObject?.name ?? (focusedId ? world.name : 'Home [Our Sun]')}</strong></div>
@@ -631,7 +632,7 @@ export default function Home() {
         <div><strong>{stellarTravel.status === 'arrived' ? travellingStellarObject.name : `${stellarTravel.remainingLightYears.toFixed(2)} ly`}</strong><em>{getStellarObject(stellarTravel.sourceId ?? 'sol')?.name ?? 'Home [Our Sun]'} → {travellingStellarObject.name}</em></div>
         <p>{stellarTravel.status === 'arrived' ? `${getStellarSystem(travellingStellarObject.systemId)?.name.toUpperCase()} · DESTINATION GEOMETRY LIVE` : `${stellarTravel.totalLightYears.toFixed(2)} LY MODEL LEG · REMAINING DISTANCE DERIVED FROM THE ACTIVE RENDER PATH · 8.4 SEC VISUALIZATION`}</p>
       </div>}
-      {educationOpen && <EducationPanel onClose={() => { setEducationOpen(false); setEducationTarget(null); }} onNavigate={navigateEducation} observed={{worldId:focusedId,layerIndex:interiorMode ? activeLayer : null,stellarId:arrivedStellarId,exoplanetId:focusedExoplanetId,compareOpen,interiorMode}} />}
+      {educationOpen && <EducationPanel onResize={setEducationPanelWidth} onClose={() => { setEducationOpen(false); setEducationTarget(null); }} onNavigate={navigateEducation} observed={{worldId:focusedId,layerIndex:interiorMode ? activeLayer : null,stellarId:arrivedStellarId,exoplanetId:focusedExoplanetId,compareOpen,interiorMode}} />}
       <CatalogPanel open={experienceMode === 'CATALOG'} selectedId={selectedCatalogId} onSelect={setSelectedCatalogId} onTravel={handleCatalogTravel} onClose={() => setExperienceMode('EXPLORE')} />
       {travelTo && <div className="spatial-travel"><span>TRAVELLING THROUGH SYSTEM SPACE</span><strong>{travelTo.name}</strong><em>{travelTo.distance} REAL MEAN ORBIT · 2.1 SEC VISUALIZED TRAVEL</em><div><i /></div></div>}
       {mapOpen && <SystemMap current={world} onSelect={travelToWorld} onClose={() => setMapOpen(false)} />}

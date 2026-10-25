@@ -1,5 +1,13 @@
 # Changelog
 
+## Current main — resizable lessons, retries and evidence layout repair
+
+- Add a draggable, keyboard-accessible lesson divider with a local width preference and bounded scene/reader sizes.
+- Add Retry question and Retake lesson questions, unlimited optional retries, continued progression after incorrect attempts and completion accuracy separate from participation.
+- Add shared-browser teacher reset guidance and keep fresh-learner progress clearing confirmed.
+- Restrict layer/environment row grid rules to direct children so nested scientific evidence stays in a readable document flow. Isolate badges and remove nested evidence scrolling in information drawers.
+- Preserve scientific values, source confidence/provenance, four lessons,21stages,16questions and one renderer/canvas. The published v1.1.0 tag remains the earlier release snapshot; these changes are a subsequent main/Site update.
+
 ## v1.1.0 — Helios Education 1.0
 
 - Public live Site: https://helios-solar-explorer.chasewilcox93.chatgpt.site/ . Education 1.0 was first deployed with owner approval after PR #15; this release adds the learning workspace redesign.

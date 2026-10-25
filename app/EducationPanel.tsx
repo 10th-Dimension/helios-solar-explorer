@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { EducationResizeHandle } from './EducationResizeHandle';
 import { SourceInspector } from './SourceInspector';
 import {
   EDUCATION_STORAGE_KEY, currentEducationStage, educationReducer, educationResumeLabel, educationTargetLabel,
@@ -12,9 +13,10 @@ export type EducationPanelProps = {
   onClose: () => void;
   onNavigate: (target: EducationTarget) => void;
   observed?: EducationObserved;
+  onResize: (width:number) => void;
 };
 
-export function EducationPanel({ onClose, onNavigate, observed }: EducationPanelProps) {
+export function EducationPanel({ onClose, onNavigate, observed, onResize }: EducationPanelProps) {
   const [session, setSession] = useState<EducationSession>(initialEducationSession);
   const [sceneView, setSceneView] = useState(false);
   const sceneToggleRef = useRef<HTMLButtonElement>(null);
@@ -23,13 +25,15 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
   const [confirmClear, setConfirmClear] = useState(false);
   const [pendingLessonId, setPendingLessonId] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const questionRef = useRef<HTMLFieldSetElement>(null);
   const readingRef = useRef<HTMLDivElement>(null);
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
   const startButtonRef = useRef<HTMLButtonElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const dispatch = useCallback((action: EducationAction) => {
-    if (['start', 'next', 'back', 'resume', 'library', 'clear'].includes(action.type)) setSceneView(false);
+    if (['start', 'next', 'back', 'resume', 'library', 'clear', 'retake-questions'].includes(action.type)) setSceneView(false);
     setSession(current => educationReducer(current, action));
+    if (action.type === 'retake-questions') queueMicrotask(() => { readingRef.current?.scrollTo({top:0}); headingRef.current?.focus({preventScroll:true}); });
   }, []);
 
   useEffect(() => {
@@ -104,6 +108,7 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
         else closeAndSave();
       }
     }}>
+      {!showLibrary && !sceneView && <EducationResizeHandle onResize={onResize} />}
       <header className="education-header">
         <div><span>HELIOS · EDUCATION</span><h2 ref={showLibrary || session.status !== 'active' ? headingRef : undefined} tabIndex={-1}>{showLibrary ? 'Learn by exploring' : session.status === 'completed' ? 'Lesson complete' : lesson.title}</h2></div>
         <div className="education-header-actions">{!showLibrary && session.status === 'active' && <button type="button" ref={sceneToggleRef} aria-expanded={!sceneView} aria-controls="education-reading" onClick={() => setSceneView(value => !value)}>{sceneView ? 'Read lesson' : 'View scene'}</button>}<button type="button" onClick={closeAndSave} aria-label="Pause education and return to free exploration">Exit ×</button></div>
@@ -130,7 +135,7 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
       ) : session.status === 'paused' ? (
         <section className="education-paused"><h3>Paused at stage {session.stageIndex + 1}</h3><p>The scene remains available. Resume when you are ready; your lesson does not depend on where the camera currently points.</p><button type="button" onClick={() => dispatch({ type: 'resume' })}>Resume lesson</button><button type="button" onClick={() => dispatch({ type: 'library' })}>Choose a lesson</button></section>
       ) : session.status === 'completed' ? (
-        <section className="education-complete" role="status"><h3>{lesson.title}</h3><p>You completed {lesson.stages.length} stages and their knowledge checks.</p><p>{session.alternativeStageIds.length ? `You used the written alternative in ${session.alternativeStageIds.length} stage${session.alternativeStageIds.length === 1 ? '' : 's'}. It teaches the same concepts without requiring the canvas.` : 'You completed the scene interactions for this journey.'}</p><ul>{lesson.objectives.map(objective => <li key={objective}>{objective}</li>)}</ul><button type="button" onClick={() => dispatch({ type: 'library' })}>Choose another lesson</button><button type="button" onClick={() => dispatch({ type: 'start', lessonId: lesson.id })}>Restart this lesson</button><button type="button" onClick={closeAndSave}>Continue free exploration</button></section>
+        <section className="education-complete" role="status"><h3>{lesson.title}</h3><p>You explored {lesson.stages.length} stages and attempted their knowledge checks.</p><p>{session.alternativeStageIds.length ? `You used the written alternative in ${session.alternativeStageIds.length} stage${session.alternativeStageIds.length === 1 ? '' : 's'}. It teaches the same concepts without requiring the canvas.` : 'You completed the scene interactions for this journey.'}</p><p>Questions correct: {lesson.stages.filter(item => item.question && session.answers[item.id] === item.question.correctOptionId).length} of {lesson.stages.filter(item => item.question).length}. Finishing a journey records participation, not a perfect score.</p><button type="button" onClick={() => dispatch({type:'retake-questions'})}>Retake lesson questions</button><ul>{lesson.objectives.map(objective => <li key={objective}>{objective}</li>)}</ul><button type="button" onClick={() => dispatch({ type: 'library' })}>Choose another lesson</button><button type="button" onClick={() => dispatch({ type: 'start', lessonId: lesson.id })}>Restart this lesson</button><button type="button" onClick={closeAndSave}>Continue free exploration</button></section>
       ) : stage ? (
         <section className="education-stage" aria-labelledby="education-stage-title">
           <div className="education-progress"><label htmlFor="education-stage-progress">Stage {session.stageIndex + 1} of {lesson.stages.length}</label><progress id="education-stage-progress" max={lesson.stages.length} value={session.stageIndex + 1} /></div>
@@ -141,14 +146,15 @@ export function EducationPanel({ onClose, onNavigate, observed }: EducationPanel
           <SourceInspector claimIds={stage.claimIds} label="Scientific evidence for this stage" />
           <p className="education-interaction" role="status">{interactionDone ? session.alternativeStageIds.includes(stage.id) ? 'Written alternative recorded for this stage.' : 'Scene interaction reached.' : 'Visit the scene target, or use the written alternative, before continuing.'}</p>
           <details key={stage.id} className="education-alternative"><summary>Read a nonvisual alternative</summary><p>{stage.accessibleAlternative}</p><button type="button" onClick={() => dispatch({ type: 'alternative' })} disabled={session.alternativeStageIds.includes(stage.id)}>Use this alternative for this stage</button></details>
-          {stage.question && <fieldset className="education-question"><legend>{stage.question.prompt}</legend>{stage.question.options.map(option => <label key={option.id}><input type="radio" name={stage.question!.id} value={option.id} checked={selectedAnswer === option.id} onChange={() => dispatch({ type: 'answer', optionId: option.id })} /><span>{option.label}</span></label>)}{selectedAnswer && <div className={`education-feedback ${correct ? 'correct' : 'retry'}`} role="status"><strong>{correct ? 'Correct.' : 'Try another answer.'}</strong><p>{stage.question.explanation}</p></div>}</fieldset>}
+          {stage.question && <fieldset className="education-question" ref={questionRef}><legend>{stage.question.prompt}</legend>{stage.question.options.map(option => <label key={option.id}><input type="radio" name={stage.question!.id} value={option.id} checked={selectedAnswer === option.id} onChange={() => dispatch({ type: 'answer', optionId: option.id })} /><span>{option.label}</span></label>)}{selectedAnswer && <div className={`education-feedback ${correct ? 'correct' : 'retry'}`} role="status"><strong>{correct ? 'Correct.' : 'Not quite — retry or keep exploring.'}</strong><p>{stage.question.explanation}</p></div>}<button type="button" disabled={!selectedAnswer} onClick={() => { dispatch({type:'retry-question'}); questionRef.current?.querySelector('input')?.focus({preventScroll:true}); }}>Retry question</button></fieldset>}
 
         </section>
       ) : null}
+      {loaded && <details className="education-teacher-tools"><summary>Teacher tools & retries</summary><p>Retries are unlimited. A learner can continue after an attempted answer, even when it is incorrect. Retaking questions keeps explored targets; restarting a lesson starts its route again. Progress belongs only to this browser, not a student account or gradebook.</p>{lesson && <><button type="button" onClick={() => dispatch({type:'retake-questions'})}>Retake lesson questions</button><button type="button" onClick={() => { dispatch({type:'library'}); requestStart(lesson.id); }}>Restart lesson from beginning</button></>}<button type="button" onClick={() => { dispatch({type:'library'}); setConfirmClear(true); }}>Start fresh for next learner</button></details>}
       </div>
       {!sceneView && !showLibrary && session.status === 'active' && stage && lesson && <footer className="education-footer">
         <div className="education-actions"><button type="button" disabled={session.stageIndex === 0} onClick={() => dispatch({type:'back'})}>Previous</button><button type="button" className="education-next" disabled={!stageCanAdvance(session)} onClick={() => dispatch({type:'next'})}>{session.stageIndex === lesson.stages.length - 1 ? 'Complete lesson' : 'Next stage →'}</button></div>
-        {!stageCanAdvance(session) && <p className="education-next-hint">{!interactionDone ? 'Explore the scene or record the written alternative to continue.' : 'Choose the correct answer above to continue.'}</p>}
+        {!stageCanAdvance(session) && <p className="education-next-hint">{!interactionDone ? 'Explore the scene or record the written alternative to continue.' : 'Choose an answer above to continue. You can retry it at any time.'}</p>}
         <div className="education-secondary-actions"><button type="button" onClick={() => dispatch({type:'pause'})}>Pause lesson</button><button type="button" onClick={() => dispatch({type:'library'})}>Lesson library</button><span>{session.stageIndex + 1} / {lesson.stages.length}</span></div>
       </footer>}
     </aside>
