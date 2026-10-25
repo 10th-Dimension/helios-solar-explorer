@@ -10,6 +10,11 @@ import type { CosmicScale, ExoplanetFocusRequest, StellarTravelRequest, SystemOb
 import type { GraphicsQuality } from './graphicsQuality';
 import { getBodyOrientation } from './bodyOrientation';
 import { confidenceCopy, worlds, type Confidence, type World } from './worlds';
+import { AccessibleDialog } from './AccessibleDialog';
+import { SourceInspector } from './SourceInspector';
+import { claimsForContext } from './science';
+import { EducationPanel } from './EducationPanel';
+import type { EducationTarget } from './education';
 
 type ViewMode = 'overview' | 'interior' | 'environment';
 type ExperienceMode = 'EXPLORE' | 'CATALOG';
@@ -24,7 +29,7 @@ const SolarSystemScene = dynamic(() => import('./SolarSystemScene'), {
 function ConfidenceMark({ level, compact = false }: { level: Confidence; compact?: boolean }) {
   return (
     <span className={`confidence ${level}`} title={confidenceCopy[level]}>
-      <i />{compact ? level.slice(0, 3) : level}
+      <i aria-hidden="true" /><span aria-hidden="true">{compact ? level.slice(0, 3) : level}</span><span className="sr-only">{level}: {confidenceCopy[level]}</span>
     </span>
   );
 }
@@ -44,12 +49,12 @@ function PlanetVisual({ world, small = false }: { world: World; small?: boolean 
   );
 }
 
-function Metric({ label, value, compare }: { label: string; value: string; compare?: string }) {
+function Metric({ label, value, compare, claimId }: { label: string; value: string; compare?: string; claimId?: string }) {
   return (
     <div className="metric">
       <span>{label}</span>
       <strong>{value}</strong>
-      {compare && <em>{compare}</em>}
+      {compare && <em>{compare}</em>}{claimId && <SourceInspector claimIds={[claimId]} label={`Evidence: ${label.toLowerCase()}`} />}
     </div>
   );
 }
@@ -58,20 +63,20 @@ function Overview({ world }: { world: World }) {
   return (
     <div className="view-grid">
       <section className="story-card">
-        <div className="eyebrow-row"><span>PLANET STORY</span><ConfidenceMark level="measured" compact /></div>
-        <p>{world.story}</p>
+        <div className="eyebrow-row"><span>PLANET STORY</span><span className="model-note">SUMMARY · MIXED EVIDENCE</span></div>
+        <p>{world.story}</p><SourceInspector context={{kind:'world',id:world.id}} label="Evidence for this world's facts" />
         <div className="truth-line"><ConfidenceMark level="illustrative" /><span>{world.visualNote}</span></div>
       </section>
       <section className="metrics-grid">
-        <Metric label="RADIUS" value={world.radius} compare={`${world.radiusEarth.toFixed(world.radiusEarth < 10 ? 2 : 1)}× Earth`} />
-        <Metric label="GRAVITY" value={world.gravity} compare={`${world.gravityEarth.toFixed(world.gravityEarth < 10 ? 2 : 1)}× Earth`} />
-        <Metric label="DAY" value={world.day} />
-        <Metric label="YEAR" value={world.year} />
-        <Metric label="FROM SUN" value={world.distance} />
-        <Metric label="MOONS" value={world.moons} />
+        <Metric claimId={`world.${world.id}.radius`} label="RADIUS" value={world.radius} compare={`${world.radiusEarth.toFixed(world.radiusEarth < 10 ? 2 : 1)}× Earth`} />
+        <Metric claimId={`world.${world.id}.gravity`} label="GRAVITY" value={world.gravity} compare={`${world.gravityEarth.toFixed(world.gravityEarth < 10 ? 2 : 1)}× Earth`} />
+        <Metric claimId={`world.${world.id}.day`} label="DAY" value={world.day} />
+        <Metric claimId={`world.${world.id}.year`} label="YEAR" value={world.year} />
+        <Metric claimId={`world.${world.id}.distance`} label="FROM SUN" value={world.distance} />
+        <Metric claimId={`world.${world.id}.moons`} label="MOONS" value={world.moons} />
       </section>
       <section className="fact-strip">
-        {world.facts.map((fact) => <div key={fact.label}><ConfidenceMark level={fact.confidence} compact /><span>{fact.label}</span><strong>{fact.value}</strong></div>)}
+        {world.facts.map((fact,index) => <div key={fact.label}><ConfidenceMark level={claimsForContext({kind:'world',id:world.id,index})[0]?.confidence ?? fact.confidence} compact /><span>{fact.label}</span><strong>{fact.value}</strong><SourceInspector context={{kind:'world',id:world.id,index}} label={`Evidence: ${fact.label}`} /></div>)}
       </section>
     </div>
   );
@@ -97,7 +102,7 @@ function Interior({ world }: { world: World }) {
             <span className="layer-number">0{i + 1}</span>
             <i style={{ background: layer.color }} />
             <div><h3>{layer.name}</h3><p>{layer.note}</p></div>
-            <ConfidenceMark level={layer.confidence} compact />
+            <ConfidenceMark level={layer.confidence} compact /><SourceInspector context={{kind:'layer',id:world.id,index:i}} label={`Evidence: ${layer.name}`} />
           </article>
         ))}
         <p className="model-caveat">Interior boundaries are simplified. We infer deep structure from gravity, magnetic fields, seismology where available, equations of state, and formation models—not from direct photographs.</p>
@@ -123,7 +128,7 @@ function Environment({ world }: { world: World }) {
 
 function SystemMap({ current, onSelect, onClose }: { current: World; onSelect: (id: string) => void; onClose: () => void }) {
   return (
-    <div className="modal system-modal" role="dialog" aria-modal="true" aria-label="Solar System map">
+    <AccessibleDialog className="modal system-modal" label="Solar System map" onClose={onClose}>
       <button className="modal-close" onClick={onClose} aria-label="Close system map">CLOSE ×</button>
       <div className="map-heading"><span>SYSTEM MAP</span><h2>One star. Eight worlds.</h2><p>Orbital spacing and body sizes are compressed for exploration. Distances below are real average orbital distances.</p></div>
       <div className="system-map">
@@ -135,7 +140,7 @@ function SystemMap({ current, onSelect, onClose }: { current: World; onSelect: (
         ))}
       </div>
       <div className="scale-note"><span>EXPLORATION SCALE</span><p>A true-scale view would make most worlds microscopic and leave immense empty gaps. This map preserves order and relative context without pretending the spacing is literal.</p></div>
-    </div>
+    </AccessibleDialog>
   );
 }
 
@@ -145,7 +150,7 @@ function ComparePanel({ world, onClose }: { world: World; onClose: () => void })
     ['Radius', world.radiusEarth, 1], ['Mass', Number.parseFloat(world.mass.replaceAll(',', '')), 1], ['Gravity', world.gravityEarth, 1],
   ] as const;
   return (
-    <div className="modal compare-modal" role="dialog" aria-modal="true" aria-label={`${world.name} compared with Earth`}>
+    <AccessibleDialog className="modal compare-modal" label={`${world.name} compared with Earth`} onClose={onClose}>
       <button className="modal-close" onClick={onClose}>CLOSE ×</button>
       <div className="compare-heading"><span>EARTH REFERENCE</span><h2>{world.name} <i>vs</i> Earth</h2></div>
       <div className="compare-worlds">
@@ -160,7 +165,7 @@ function ComparePanel({ world, onClose }: { world: World; onClose: () => void })
         })}
       </div>
       <div className="weight-card"><span>IF YOU WEIGH 180 LB ON EARTH</span><strong>{Math.round(180 * world.gravityEarth).toLocaleString()} lb</strong><p>Scale reading based on surface/cloud-top gravity—not mass or the experience of standing there.</p></div>
-    </div>
+    </AccessibleDialog>
   );
 }
 
@@ -176,13 +181,13 @@ function CatalogPanel({ open, selectedId, onSelect, onTravel, onClose }: { open:
   const selected = filtered.find((object) => object.id === selectedId) ?? filtered[0];
 
   return (
-    <aside className={`catalog-panel ${open ? 'open' : ''}`} aria-hidden={!open} aria-label="Helios object catalog">
+    <aside className={`catalog-panel ${open ? 'open' : ''}`} aria-hidden={!open} inert={!open} aria-label="Helios object catalog">
       <div className="catalog-heading"><span>CATALOG MODE</span><button onClick={onClose}>RETURN TO EXPLORE ×</button><strong>Real places.<br />One universe.</strong><p>Search the bounded scientific catalog, inspect an object, then continue through the same live spatial scene.</p></div>
       <label className="catalog-search"><span>SEARCH OBJECTS</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Proxima, Sirius, planet…" autoComplete="off" /></label>
       <div className="catalog-filters" aria-label="Catalog categories">{(['ALL', 'STAR', 'PLANET', 'PLANETARY SYSTEM', 'MULTIPLES', 'STELLAR REMNANT', 'BROWN DWARF'] as const).map((item) => <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>)}</div>
       <div className="catalog-refine"><label>RANGE <select aria-label="Catalog distance" value={distanceLimit} onChange={event=>setDistanceLimit(Number(event.target.value))}><option value={10}>WITHIN 10 LY</option><option value={20}>WITHIN 20 LY</option><option value={100}>ALL NEARBY</option></select></label><label>SPECTRUM <select aria-label="Spectral group" value={spectral} onChange={event=>setSpectral(event.target.value)}>{['ALL','A','F','G','K','M','D','L','T','Y'].map(group=><option key={group}>{group}</option>)}</select></label><span>{filtered.length} OBJECTS</span></div>
-      <div className="catalog-results" role="listbox" aria-label="Scientific objects">
-        {filtered.map((object) => <button key={object.id} role="option" aria-selected={selected?.id === object.id} className={selected?.id === object.id ? 'active' : ''} onClick={() => onSelect(object.id)}><i /><span><strong>{object.name}</strong><em>{object.category} · {object.distanceLightYears.toFixed(2)} LY</em></span><b>↗</b></button>)}
+      <div className="catalog-results" aria-label="Scientific objects">
+        {filtered.map((object) => <button key={object.id} aria-pressed={selected?.id === object.id} className={selected?.id === object.id ? 'active' : ''} onClick={() => onSelect(object.id)}><i /><span><strong>{object.name}</strong><em>{object.category} · {object.distanceLightYears.toFixed(2)} LY</em></span><b>↗</b></button>)}
         {!filtered.length && <p>No objects match this search.</p>}
       </div>
       {selected && <section className="catalog-detail" aria-label={`${selected.name} catalog detail`}>
@@ -191,6 +196,7 @@ function CatalogPanel({ open, selectedId, onSelect, onTravel, onClose }: { open:
         {selected.category === 'STELLAR REMNANT' && <p className="catalog-object-science">A white dwarf is an exposed stellar core: roughly planet-sized in physical radius, supported by electron degeneracy, with extreme density. Render size and brightness are exaggerated for approach; spectral type is cataloged. No accretion disk is invented.</p>}
         {selected.category === 'BROWN DWARF' && <p className="catalog-object-science">A cool substellar object below sustained hydrogen fusion. Its spectral class is cataloged; the dim warm rendering is illustrative and does not imply a resolved visible-light photograph.</p>}
         <a className="catalog-source" href={getStellarObject(selected.id)?.astrometry?.sourceUrl ?? getExoplanet(selected.id)?.provenance.sourceUrl ?? 'https://science.nasa.gov/sun/'} target="_blank" rel="noreferrer">OPEN SOURCE RECORD ↗</a>
+        <SourceInspector context={selected.id === 'sol' ? {kind:'world',id:'sun'} : {kind:selected.category === 'PLANET' ? 'exoplanet' : 'stellar',id:selected.id}} label="Catalog evidence and dates" />
         <button className="catalog-travel" onClick={() => onTravel(selected)}>{selected.id === 'sol' ? 'RETURN HOME' : 'TAKE ME THERE'} <span>→</span></button>
       </section>}
     </aside>
@@ -200,6 +206,7 @@ function CatalogPanel({ open, selectedId, onSelect, onTravel, onClose }: { open:
 export default function Home() {
   const [graphicsQuality, setGraphicsQuality] = useState<GraphicsQuality | 'AUTO'>('AUTO');
   const [eventPreview, setEventPreview] = useState(0);
+  const [pauseAnimations, setPauseAnimations] = useState(false);
   const [auroraPreview, setAuroraPreview] = useState(false);
   const [experienceMode, setExperienceMode] = useState<ExperienceMode>('EXPLORE');
   const [selectedCatalogId, setSelectedCatalogId] = useState('proxima-centauri');
@@ -209,6 +216,8 @@ export default function Home() {
   const [mapOpen, setMapOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
+  const [educationOpen, setEducationOpen] = useState(false);
+  const [educationTarget, setEducationTarget] = useState<EducationTarget | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [selectedStellarId, setSelectedStellarId] = useState<string | null>(null);
@@ -437,8 +446,52 @@ export default function Home() {
     return () => window.clearTimeout(timer);
   }, [stellarTravel?.status]);
 
+  const navigateEducation = useCallback((target: EducationTarget) => {
+    setMinimalUi(false); setInteriorMode(false); setDetailOpen(false); setDataOpen(false); setCompareOpen(false);
+    setEducationTarget(target);
+    if (target.kind === 'home') { returnToSystem(); setEducationTarget(null); }
+    else if (target.kind === 'world') {
+      if (focusedId === target.id) {
+        if (target.layerIndex !== undefined) { setInteriorMode(true); setActiveLayer(target.layerIndex); }
+        if (target.compare) setCompareOpen(true);
+        setEducationTarget(null);
+      } else travelToWorld(target.id);
+    }
+    else if (target.kind === 'stellar') {
+      if (arrivedStellarId === target.id) returnToDestinationSystem();
+      else travelToStellarObject(target.id);
+      setEducationTarget(null);
+    }
+    else {
+      const planet = getExoplanet(target.id);
+      if (planet) travelToStellarObject(planet.hostStarId, {kind:'EXOPLANET',id:planet.id});
+    }
+  }, [returnToSystem, returnToDestinationSystem, travelToWorld, travelToStellarObject, focusedId, arrivedStellarId]);
+  useEffect(() => {
+    if (!educationTarget) return;
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+    if (educationTarget.kind === 'world' && focusedId === educationTarget.id) {
+      if (educationTarget.layerIndex !== undefined) { setInteriorMode(true); setActiveLayer(educationTarget.layerIndex); }
+      if (educationTarget.compare) setCompareOpen(true);
+      setEducationTarget(null);
+    } else if (educationTarget.kind === 'exoplanet') {
+      const planet = getExoplanet(educationTarget.id);
+      if (planet && arrivedStellarId === planet.hostStarId && selectedExoplanetId === planet.id) {
+        setExoplanetFocusRequest(current => ({targetId:planet.id,sequence:current.sequence + 1}));
+        setEducationTarget(null);
+      }
+    }
+    });
+    return () => { cancelled = true; };
+  }, [educationTarget, focusedId, arrivedStellarId, selectedExoplanetId]);
+
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input,textarea,select,button,[contenteditable="true"],.education-panel,dialog')) return;
       if (event.key === 'Escape') {
         if (experienceMode === 'CATALOG') { setExperienceMode('EXPLORE'); return; }
         if (stellarTravel) { returnToSystem(); return; }
@@ -467,17 +520,17 @@ export default function Home() {
   }, [arrivedStellarId, compareOpen, dataOpen, detailOpen, experienceMode, focusedExoplanetId, focusedId, focusedSystemObjectId, interiorMode, leaveDestinationSystem, minimalUi, quickTravelOpen, returnToDestinationSystem, returnToSystem, selectedExoplanetId, selectedId, selectedStellarId, selectedSystemObjectId, spatialScale, stellarTravel, toggleMinimalUi, travelToWorld, world.layers.length]);
 
   return (
-    <main className={`app-shell mode-${experienceMode.toLowerCase()} world-${world.id} ${minimalUi ? 'minimal-ui' : ''} ${interiorMode ? 'interior-active' : ''} ${stellarTravel?.status === 'traveling' ? 'interstellar-active' : ''}`} style={{ '--world': world.color, '--accent': world.accent } as React.CSSProperties}>
+    <main className={`app-shell mode-${experienceMode.toLowerCase()} world-${world.id} ${minimalUi ? 'minimal-ui' : ''} ${educationOpen ? 'education-active' : ''} ${interiorMode ? 'interior-active' : ''} ${stellarTravel?.status === 'traveling' ? 'interstellar-active' : ''}`} style={{ '--world': world.color, '--accent': world.accent } as React.CSSProperties}>
       <header className="explore-hud">
         <button className="brand" onClick={returnToSystem}><i />HELIOS <span>LIVE COSMIC ATLAS</span></button>
         <div className="explore-location"><span>{arrivedStellarObject ? 'DESTINATION FRAME' : spatialScale.replace('_', ' ')}</span><strong>{selectedSystemObject?.name ?? selectedExoplanet?.name ?? arrivedStellarObject?.name ?? selectedStellarObject?.name ?? (focusedId ? world.name : 'Home [Our Sun]')}</strong></div>
-        <nav><label className="quality-picker" title="Graphics quality"><select aria-label="Graphics quality" value={graphicsQuality} onChange={event => setGraphicsQuality(event.target.value as GraphicsQuality | 'AUTO')}>{['AUTO','ULTRA','HIGH','BALANCED'].map(tier => <option key={tier}>{tier}</option>)}</select></label><button className={experienceMode === 'CATALOG' ? 'active' : ''} onClick={() => setExperienceMode('CATALOG')}>CATALOG</button><button onClick={() => setQuickTravelOpen((open) => !open)}>WORLDS</button><button onClick={() => setDataOpen(true)}>SCIENCE</button><button onClick={toggleMinimalUi}>HIDE HUD</button></nav>
+        <nav><button className={educationOpen ? 'active' : ''} aria-expanded={educationOpen} onClick={() => { setEducationOpen(open => !open); setMinimalUi(false); setExperienceMode('EXPLORE'); setDataOpen(false); }}>EDUCATION</button><label className="quality-picker" title="Graphics quality"><select aria-label="Graphics quality" value={graphicsQuality} onChange={event => setGraphicsQuality(event.target.value as GraphicsQuality | 'AUTO')}>{['AUTO','ULTRA','HIGH','BALANCED'].map(tier => <option key={tier}>{tier}</option>)}</select></label><button className={experienceMode === 'CATALOG' ? 'active' : ''} onClick={() => setExperienceMode('CATALOG')}>CATALOG</button><button onClick={() => setQuickTravelOpen((open) => !open)}>WORLDS</button><button onClick={() => setDataOpen(true)}>SCIENCE</button><button aria-pressed={pauseAnimations} onClick={() => setPauseAnimations(value => !value)}>{pauseAnimations ? 'RESUME MOTION' : 'PAUSE MOTION'}</button><button onClick={toggleMinimalUi}>HIDE HUD</button></nav>
       </header>
 
       {minimalUi && <><button className="restore-ui" onClick={toggleMinimalUi}>HELIOS · RESTORE HUD</button><div className="minimal-context"><span>{arrivedStellarObject ? `DESTINATION · ${arrivedStellarObject.name.toUpperCase()}` : 'EXPLORE MODE'}</span><strong>{selectedSystemObject?.name.toUpperCase() ?? selectedExoplanet?.name.toUpperCase() ?? selectedStellarObject?.name.toUpperCase() ?? (focusedId ? world.name.toUpperCase() : spatialScale.replace('_', ' '))}</strong></div></>}
 
       <section className={`space-stage ${detailOpen ? 'detail-active' : ''}`}>
-        <SolarSystemScene graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
+        <SolarSystemScene pauseAnimations={pauseAnimations} graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
 
         <div className={`system-intro ${focusedId || travelTo || spatialScale === 'LOCAL_STELLAR' || spatialScale === 'STELLAR_SYSTEM' || arrivedStellarId ? 'hidden' : ''}`}>
           <p>YOU ARE HERE · HOME [OUR SUN]</p>
@@ -510,10 +563,11 @@ export default function Home() {
           <dl className="exoplanet-metrics">
             <div><dt>ORBIT</dt><dd>{selectedExoplanet.semiMajorAxisAU} AU <ConfidenceMark level="measured" compact /></dd></div>
             <div><dt>PERIOD</dt><dd>{selectedExoplanet.orbitalPeriodDays} DAYS <ConfidenceMark level="measured" compact /></dd></div>
-            <div><dt>{selectedExoplanet.massProvenance === 'MASS' ? 'DYNAMICAL MASS' : 'MINIMUM MASS'}</dt><dd>{selectedExoplanet.massEarth ?? selectedExoplanet.minimumMassEarth} M⊕ <ConfidenceMark level="measured" compact /></dd></div>
+            <div><dt>{selectedExoplanet.massProvenance === 'MASS' ? 'DYNAMICAL MASS' : 'MINIMUM MASS'}</dt><dd>{selectedExoplanet.massEarth ?? selectedExoplanet.minimumMassEarth} M⊕ <ConfidenceMark level="inferred" compact /></dd></div>
             <div><dt>MODELED RADIUS</dt><dd>{selectedExoplanet.radiusEarth} R⊕ <ConfidenceMark level={selectedExoplanet.radiusConfidence} compact /></dd></div>
-            <div><dt>EQUILIBRIUM TEMP.</dt><dd>{selectedExoplanet.equilibriumTemperatureK ?? 'UNKNOWN'} K <ConfidenceMark level={selectedExoplanet.temperatureConfidence} compact /></dd></div>
+            <div><dt>EQUILIBRIUM TEMP.</dt><dd>{selectedExoplanet.equilibriumTemperatureK === null ? 'UNKNOWN' : `${selectedExoplanet.equilibriumTemperatureK} K`} <ConfidenceMark level={selectedExoplanet.equilibriumTemperatureK === null ? 'unknown' : selectedExoplanet.temperatureConfidence} compact /></dd></div>
           </dl>
+          <SourceInspector context={{kind:'exoplanet',id:selectedExoplanet.id}} label="Evidence for planet properties" />
           <p>{selectedExoplanet.visualNote} · APPEARANCE <ConfidenceMark level={selectedExoplanet.appearanceConfidence} compact /> · NASA EXOPLANET ARCHIVE PSCOMPPARS</p>
         </section>}
 
@@ -521,7 +575,7 @@ export default function Home() {
           <div><span>{selectedSystemObject.objectClass.replace('_', ' ')} · {selectedSystemObject.spectralType}</span><strong>{selectedSystemObject.name}</strong><em>{selectedSystemObject.designation}</em></div>
           <div className="stellar-object-actions">{focusedSystemObjectId !== selectedSystemObject.id && <button className="travel-star" onClick={approachSystemObject}>APPROACH</button>}<button onClick={returnToDestinationSystem}>BACK TO SYSTEM</button><button onClick={returnToSystem}>HOME</button></div>
           <dl className="system-member-metrics"><div><dt>OBJECT CLASS</dt><dd>{selectedSystemObject.stellarType}</dd></div><div><dt>SYSTEM</dt><dd>{destinationSystem?.name}</dd></div>{selectedDestinationOrbit && <div><dt>RELATIVE ORBIT</dt><dd>{selectedDestinationOrbit.scientific.semiMajorAxis} {selectedDestinationOrbit.scientific.unit} · ~{selectedDestinationOrbit.scientific.period} {selectedDestinationOrbit.scientific.periodUnit.toUpperCase()}{selectedDestinationOrbit.scientific.period === 1 ? '' : 'S'} <ConfidenceMark level="measured" compact /></dd></div>}</dl>
-          <p>SIMBAD CATALOG OBJECT · SYSTEM GEOMETRY ILLUSTRATIVE UNLESS AN ORBIT IS CITED · APPEARANCE ILLUSTRATIVE</p>
+          <SourceInspector context={{kind:'stellar',id:selectedSystemObject.id}} label="Stellar evidence and dates" /><p>SIMBAD CATALOG OBJECT · SYSTEM GEOMETRY ILLUSTRATIVE UNLESS AN ORBIT IS CITED · APPEARANCE ILLUSTRATIVE</p>
         </section>}
 
         {focusedId && !travelTo && <section className="object-dock" aria-label={`${world.name} exploration controls`}>
@@ -542,12 +596,12 @@ export default function Home() {
         {focusedId && interiorMode && <aside className="interior-inspector" aria-label={`${world.name} 3D interior layers`}>
           <div><span>{world.id === 'sun' ? 'STELLAR ENERGY REGIONS · HELIOPHYSICS MODEL' : world.kind.toLowerCase().includes('gas giant') ? 'PRESSURE DESCENT · MODEL-DEPENDENT' : world.kind.toLowerCase().includes('ice giant') ? 'VOLATILE-RICH INTERIOR · MODEL-DEPENDENT' : `3D CUTAWAY · ${world.id === 'earth' ? 'STRONGLY CONSTRAINED' : 'MODEL-DEPENDENT'}`}</span><strong>{world.name} interior</strong><p>{world.id === 'sun' ? 'Translucent plasma regions represent energy transport, not solid shells. Orbit and approach the luminous model.' : world.kind.toLowerCase().includes('gas giant') ? 'There is no ground boundary. Translucent volumes represent increasing pressure, density, and changing hydrogen states with depth.' : world.kind.toLowerCase().includes('ice giant') ? 'The translucent deep region is a hot high-pressure fluid rich in water, ammonia, and methane components—not ordinary frozen ice.' : 'Relative regions are simplified and not to scale. Rotate and zoom the cutaway exactly as you would the exterior.'}</p></div>
           <div className="interior-layer-buttons">{world.layers.map((layer, index) => <button key={layer.name} className={activeLayer === index ? 'active' : ''} aria-pressed={activeLayer === index} onClick={() => setActiveLayer(index)}><i style={{ background: layer.color }} /><span>{layer.name}</span><ConfidenceMark level={layer.confidence} compact /></button>)}</div>
-          <article className="active-layer-note"><span>{world.layers[activeLayer]?.confidence.toUpperCase()}</span><strong>{world.layers[activeLayer]?.name}</strong><p>{world.layers[activeLayer]?.note}</p></article>
+          <SourceInspector context={{kind:'layer',id:world.id,index:activeLayer}} label="Evidence for selected interior region" /><article className="active-layer-note"><span>{world.layers[activeLayer]?.confidence.toUpperCase()}</span><strong>{world.layers[activeLayer]?.name}</strong><p>{world.layers[activeLayer]?.note}</p></article>
           <p className="interior-truth">{world.id === 'earth' ? 'Earth’s major boundaries are constrained primarily by seismic waves, gravity, geomagnetism, and mineral physics.' : world.id === 'sun' ? 'Solar regions are constrained by helioseismology, neutrinos, spectroscopy, and stellar physics; this is not a solid cross-section.' : 'Deep structure is inferred from gravity, magnetic fields, spacecraft observations, high-pressure physics, and formation models—not direct photographs.'}</p>
           <button className="exit-interior" onClick={() => setInteriorMode(false)}>RESTORE EXTERIOR</button>
         </aside>}
 
-        <aside className={`knowledge-drawer ${detailOpen ? 'open' : ''}`} aria-hidden={!detailOpen}>
+        <aside className={`knowledge-drawer ${detailOpen ? 'open' : ''}`} aria-hidden={!detailOpen || minimalUi} inert={!detailOpen || minimalUi} aria-label={`${world.name} information`}>
           <button className="drawer-back" onClick={() => setDetailOpen(false)}>← CLOSE INFORMATION</button>
           <div className="world-heading">
             <p><span>{world.index}</span>{world.kind}</p>
@@ -555,8 +609,8 @@ export default function Home() {
             <h2>{world.tagline}</h2>
           </div>
           <div className="drawer-actions"><button onClick={() => setCompareOpen(true)}>COMPARE WITH EARTH</button><button onClick={() => { setDetailOpen(false); setActiveLayer(world.layers.length - 1); setInteriorMode(true); }}>OPEN 3D INTERIOR</button><span>{world.visualLabel}</span></div>
-          <div className="view-tabs" role="tablist">
-            {(['overview', 'interior', 'environment'] as ViewMode[]).map((tab) => <button key={tab} className={view === tab ? 'active' : ''} onClick={() => setView(tab)} role="tab" aria-selected={view === tab}>{tab}</button>)}
+          <div className="view-tabs" aria-label="Information views">
+            {(['overview', 'interior', 'environment'] as ViewMode[]).map((tab) => <button key={tab} className={view === tab ? 'active' : ''} onClick={() => setView(tab)} aria-pressed={view === tab}>{tab}</button>)}
           </div>
           <div className="view-content" key={`${world.id}-${view}`}>
             {view === 'overview' && <Overview world={world} />}
@@ -566,7 +620,7 @@ export default function Home() {
         </aside>
       </section>
 
-      <footer className={`world-rail quick-rail ${quickTravelOpen ? 'open' : ''}`} aria-label="Accessible quick travel">
+      <footer className={`world-rail quick-rail ${quickTravelOpen ? 'open' : ''}`} inert={!quickTravelOpen || minimalUi} aria-label="Accessible quick travel">
         <button className="rail-arrow" onClick={() => { const i = worlds.indexOf(world); travelToWorld(worlds[(i - 1 + worlds.length) % worlds.length].id); }} aria-label="Previous world">←</button>
         <div className="rail-worlds">{worlds.map((item) => <button key={item.id} aria-label={`Travel to ${item.name}`} onClick={() => travelToWorld(item.id)} className={item.id === selectedId ? 'active' : ''}><i style={{ background: item.color, transform: `scale(${Math.min(1.4, .65 + item.scale / 5)})` }} /><span>{item.name}</span><em>{item.distance}</em></button>)}</div>
         <button className="rail-arrow" onClick={() => { const i = worlds.indexOf(world); travelToWorld(worlds[(i + 1) % worlds.length].id); }} aria-label="Next world">→</button>
@@ -577,12 +631,12 @@ export default function Home() {
         <div><strong>{stellarTravel.status === 'arrived' ? travellingStellarObject.name : `${stellarTravel.remainingLightYears.toFixed(2)} ly`}</strong><em>{getStellarObject(stellarTravel.sourceId ?? 'sol')?.name ?? 'Home [Our Sun]'} → {travellingStellarObject.name}</em></div>
         <p>{stellarTravel.status === 'arrived' ? `${getStellarSystem(travellingStellarObject.systemId)?.name.toUpperCase()} · DESTINATION GEOMETRY LIVE` : `${stellarTravel.totalLightYears.toFixed(2)} LY MODEL LEG · REMAINING DISTANCE DERIVED FROM THE ACTIVE RENDER PATH · 8.4 SEC VISUALIZATION`}</p>
       </div>}
+      {educationOpen && <EducationPanel onClose={() => { setEducationOpen(false); setEducationTarget(null); }} onNavigate={navigateEducation} observed={{worldId:focusedId,layerIndex:interiorMode ? activeLayer : null,stellarId:arrivedStellarId,exoplanetId:focusedExoplanetId,compareOpen,interiorMode}} />}
       <CatalogPanel open={experienceMode === 'CATALOG'} selectedId={selectedCatalogId} onSelect={setSelectedCatalogId} onTravel={handleCatalogTravel} onClose={() => setExperienceMode('EXPLORE')} />
       {travelTo && <div className="spatial-travel"><span>TRAVELLING THROUGH SYSTEM SPACE</span><strong>{travelTo.name}</strong><em>{travelTo.distance} REAL MEAN ORBIT · 2.1 SEC VISUALIZED TRAVEL</em><div><i /></div></div>}
-      {dataOpen && <aside className="render-science"><strong>VISUALIZATION SCIENCE</strong><p>{focusedId ? `${world.name}: IAU J2000 pole · ${getBodyOrientation(world.id)?.obliquityDeg}° obliquity · signed rotation accelerated 1080×. Phase is illustrative.` : 'IAU body axes · catalog astrometry · historical NASA imagery'}</p><p>Earth: NASA Blue Marble July 2004, VIIRS Black Marble 2016 city lights and MODIS cloud composite. Clouds drift illustratively. Auroral curtains are folded altitude sheets: green lower emission and a weaker red upper tail, approximately 100–500 km. Strong preview stays on until toggled off. Motion and brightness are illustrative, not live weather or an event forecast.</p><button onClick={() => { if (focusedId === 'earth') { setInteriorMode(false); setAuroraPreview(true); } else setEventPreview(n=>n+1); setDataOpen(false); }}>{focusedId === 'earth' ? 'SHOW STRONG EARTH AURORA · STAYS ON' : 'PREVIEW ILLUSTRATIVE ACTIVITY · 16 SEC'}</button></aside>}
       {mapOpen && <SystemMap current={world} onSelect={travelToWorld} onClose={() => setMapOpen(false)} />}
       {compareOpen && <ComparePanel world={world} onClose={() => setCompareOpen(false)} />}
-      {dataOpen && <div className="modal science-modal" role="dialog" aria-modal="true"><button className="modal-close" onClick={() => setDataOpen(false)}>CLOSE ×</button><span className="science-kicker">EPISTEMIC KEY</span><h2>What do we actually know?</h2><p className="science-lead">The interface separates observation from model, open questions, and artwork. A polished picture should never become a false claim.</p><div className="confidence-guide">{(['measured', 'inferred', 'uncertain', 'unknown', 'illustrative'] as Confidence[]).map((level) => <div key={level}><ConfidenceMark level={level} /><p>{confidenceCopy[level]}</p></div>)}</div><div className="sources"><h3>PRIMARY REFERENCES</h3><a href="https://science.nasa.gov/solar-system/" target="_blank" rel="noreferrer">NASA Solar System Exploration ↗</a><a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" target="_blank" rel="noreferrer">NASA Planetary Fact Sheet ↗</a><a href="https://science.nasa.gov/sun/" target="_blank" rel="noreferrer">NASA Sun Science ↗</a><a href="https://simbad.cds.unistra.fr/simbad/" target="_blank" rel="noreferrer">SIMBAD Astronomical Database ↗</a><a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noreferrer">NASA Exoplanet Archive ↗</a><a href="https://science.nasa.gov/asset/hubble/the-dog-star-sirius-and-its-tiny-companion/" target="_blank" rel="noreferrer">NASA Hubble · Sirius A/B ↗</a><a href="https://crf.usno.navy.mil/data_products/WDS/orb6/orb6.html" target="_blank" rel="noreferrer">USNO Visual Binary Orbit Catalog ↗</a><p>Stellar directions propagate ICRS J2000.0 catalog coordinates to fixed Julian epoch 2026.81 with linear tangent proper motion. Radial velocity is applied when cataloged; missing velocities are held at zero. Binary orbit acceleration is omitted. Scientific coordinates remain separate from compressed, floating-origin render coordinates. Values are rounded for comprehension, and time-sensitive catalogs may change.</p></div></div>}
+      {dataOpen && <AccessibleDialog className="modal science-modal" label="Scientific evidence and visualization limits" onClose={() => setDataOpen(false)}><button className="modal-close" onClick={() => setDataOpen(false)}>CLOSE ×</button><span className="science-kicker">EPISTEMIC KEY</span><p className="science-lead">{focusedId ? `${world.name}: J2000 pole, ${getBodyOrientation(world.id)?.obliquityDeg}° obliquity; visual spin accelerated 1080×. Phase and cutaway geometry are illustrative.` : 'Scientific positions and distances remain separate from compressed display spacing and exaggerated sizes.'}</p><button className="science-preview" onClick={() => { if (focusedId === 'earth') { setInteriorMode(false); setAuroraPreview(true); } else setEventPreview(n => n + 1); setDataOpen(false); }}>{focusedId === 'earth' ? 'SHOW STRONG EARTH AURORA' : 'PREVIEW ILLUSTRATIVE SOLAR ACTIVITY'}</button><h2>What do we actually know?</h2><p className="science-lead">The interface separates observation from model, open questions, and artwork. A polished picture should never become a false claim.</p><div className="confidence-guide">{(['measured', 'inferred', 'uncertain', 'unknown', 'illustrative'] as Confidence[]).map((level) => <div key={level}><ConfidenceMark level={level} /><p>{confidenceCopy[level]}</p></div>)}</div><SourceInspector context={selectedExoplanetId ? {kind:'exoplanet',id:selectedExoplanetId} : selectedStellarId ? {kind:'stellar',id:selectedStellarId} : {kind:'world',id:world.id}} label="Evidence for the selected object" /><div className="sources"><h3>PRIMARY REFERENCES</h3><a href="https://science.nasa.gov/solar-system/" target="_blank" rel="noreferrer">NASA Solar System Exploration ↗</a><a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" target="_blank" rel="noreferrer">NASA Planetary Fact Sheet ↗</a><a href="https://science.nasa.gov/sun/" target="_blank" rel="noreferrer">NASA Sun Science ↗</a><a href="https://simbad.cds.unistra.fr/simbad/" target="_blank" rel="noreferrer">SIMBAD Astronomical Database ↗</a><a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noreferrer">NASA Exoplanet Archive ↗</a><a href="https://science.nasa.gov/asset/hubble/the-dog-star-sirius-and-its-tiny-companion/" target="_blank" rel="noreferrer">NASA Hubble · Sirius A/B ↗</a><a href="https://crf.usno.navy.mil/data_products/WDS/orb6/orb6.html" target="_blank" rel="noreferrer">USNO Visual Binary Orbit Catalog ↗</a><p>Stellar directions propagate ICRS J2000.0 catalog coordinates to fixed Julian epoch 2026.81 with linear tangent proper motion. Radial velocity is applied when cataloged; missing velocities are held at zero. Binary orbit acceleration is omitted. Scientific coordinates remain separate from compressed, floating-origin render coordinates. Values are rounded for comprehension, and time-sensitive catalogs may change.</p></div></AccessibleDialog>}
     </main>
   );
 }

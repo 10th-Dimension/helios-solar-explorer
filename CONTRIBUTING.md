@@ -1,5 +1,7 @@
 # Contributing to Helios
 
+For Education 1.0, read [the lesson contributor guide](docs/education/CONTRIBUTING_LESSONS.md) and [the scientific audit](docs/SCIENCE_AUDIT.md). Preserve claim/source IDs, confidence, separate source dates and raw snapshots. Scientific-correction and education/accessibility issue forms are available.
+
 Open an issue before a large architectural change, new object class or catalog refresh. Describe the user problem, evidence and acceptance checks. Bug reports should include browser/OS, viewport, graphics tier and reproduction steps. Sanitize screenshots and logs.
 
 ## Before a pull request
