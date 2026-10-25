@@ -39,7 +39,7 @@ The Sun's orange exterior is an explicitly false-color ultraviolet illustration.
 
 ## Your progress and privacy
 
-One current lesson attempt and the completed-lesson markers are stored only in this browser when local storage is available. Starting or restarting a lesson replaces the unfinished current attempt; this is not a separate saved attempt for every lesson. Progress is not sent to a school dashboard. Shared computers may retain earlier progress, so restart a lesson before beginning a new attempt. **Delete saved lesson progress** in the lesson library asks for confirmation before clearing it. Clearing browser site data also clears saved progress. Private-browsing or blocked-storage settings may prevent progress from surviving a reload; you can still use the current lesson.
+One current lesson attempt and the completed-lesson markers are stored only in this browser when local storage is available. Starting or restarting a lesson replaces the unfinished current attempt; this is not a separate saved attempt for every lesson. If unfinished progress would be lost, choose **Start and replace current progress** or **Keep current lesson** at the confirmation. Progress is not sent to a school dashboard. Shared computers may retain earlier progress, so restart a lesson before beginning a new attempt. **Delete saved lesson progress** in the lesson library asks for confirmation before clearing it. Clearing browser site data also clears saved progress. Private-browsing or blocked-storage settings may prevent progress from surviving a reload; you can still use the current lesson.
 
 ## If something goes wrong
 
