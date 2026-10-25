@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.0 — Helios Education 1.0
+
+- Public live Site: https://helios-solar-explorer.chasewilcox93.chatgpt.site/ . Education 1.0 was first deployed with owner approval after PR #15; this release adds the learning workspace redesign.
+- Replace the narrow lesson sidebar with a spacious two-column library and a wider reading workspace beside the existing scene.
+- Keep navigation visible in a persistent footer, enlarge reading/quiz controls, remove nested source scrolling and explain disabled progression.
+- Add View scene / Read lesson switching, including automatic scene reveal on small-screen target navigation.
+- Close conflicting Catalog/Worlds overlays, reset only the lesson reading scroll on stage changes, and cancel pending confirmation with Escape before exiting Education.
+- Retain all four lessons, 21 stages, 16 questions, written alternatives, source disclosures, local progress and existing scientific snapshots.
+- Add the public live link, full lesson inventory, educator links and release verification notes. Independent classroom certification and broad device/assistive-technology acceptance remain outside this release's evidence.
+
 ## Education 1.0 release candidate — 1.1.0-rc.1
 
 - Four optional guided journeys in the existing scene, with 21 stages, 16 knowledge checks, real target/layer/comparison gates and equivalent written alternatives.

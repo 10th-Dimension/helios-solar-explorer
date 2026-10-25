@@ -15,7 +15,7 @@ These are boundaries of the software and evidence, not features to hide from lea
 
 ## Accessibility and classroom use
 
-The release candidate implements native modal focus behavior, inert hidden panels, labeled quiz controls, focus indicators and text alternatives. It is not an independently certified WCAG 2.2 AA implementation. A 3D visual scene cannot carry all educational meaning for every learner; use the text alternative and source disclosures where needed. A teacher should check the actual devices and assistive technologies used in class.
+Education 1.0 implements native modal focus behavior, inert hidden panels, labeled quiz controls, focus indicators and text alternatives. It is not an independently certified WCAG 2.2 AA implementation. A 3D visual scene cannot carry all educational meaning for every learner; use the text alternative and source disclosures where needed. A teacher should check the actual devices and assistive technologies used in class.
 
 The manual **PAUSE MOTION** control was exercised in a production-build browser: the visual clock remained at 26.484 seconds across a stellar-to-planet-to-Home journey while manual travel remained active. This is one bounded observed path, not a claim that every animation or assistive-technology combination has been verified. OS media emulation was not exposed by the available browser capabilities, so visual acceptance of an operating-system reduced-motion preference is **NOT VERIFIED**. The source implements the preference; that is a different evidence level.
 
@@ -31,7 +31,7 @@ Touch and pinch depend on the browser's support. Low-memory devices or missing W
 
 ## Hosting, security and release state
 
-No public demo URL is claimed by these documents. The Education candidate must not replace or alter the owner's existing hosted application without new approval. See [deployment instructions](DEPLOYMENT.md) for a separate staging copy and [security findings](../EDUCATION_SECURITY.md) before exposure to untrusted traffic.
+[The public Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/) includes Education 1.0 following explicit owner publication approval. Future deployments still require the owner’s authorized scope; independent staging remains separate. See [deployment instructions](DEPLOYMENT.md) for a separate staging copy and [security findings](../EDUCATION_SECURITY.md) before exposure to untrusted traffic.
 
 The current security report is a dated dependency review, not a penetration test. A passing public-file guard or secret scanner cannot prove that all possible disclosures or vulnerabilities are absent. Host operators remain responsible for TLS, access policy, server updates, request limits and response headers.
 

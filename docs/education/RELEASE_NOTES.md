@@ -1,26 +1,46 @@
-# Helios Education 1.0 release candidate
+# Helios Education 1.0 — v1.1.0
 
-Package version: `1.1.0-rc.1`. Education content version: `education-1.0.0-rc.1`. This source candidate is prepared for review; it does not authorize a merge, published production release or change to the owner's hosted application.
+[Launch the live public Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/) · [Source repository](https://github.com/10th-Dimension/helios-solar-explorer)
 
-## What's included
+Education 1.0 turns Helios's continuous 3D universe into a guided learning space. The full application is available as MIT-licensed open source; historical NASA image assets retain their separate provenance notices.
 
-- Optional Education entry point and a lesson library integrated with the existing 3D exploration experience.
-- Four complete guided journeys covering the Solar System, the Sun's interior, planetary interiors and nearby stars/exoplanets.
-- Twenty-one stages and sixteen questions with immediate explanations, retry, completion, restart and browser-local pause/resume.
-- Scene-target completion through the existing travel, layer and comparison controls, plus equivalent written alternatives.
-- Structured scientific claims, centralized source relationships, confidence, source dates and explicit limits on snapshot-only or unresolved evidence.
-- Education and scientific-contract tests, improved focus/keyboard behavior and documented classroom limitations.
-- Teacher/student guides, exact question answer keys, a printable worksheet, contributor forms, standalone deployment instructions and launch drafts.
-- Narrow dependency remediation for the inherited image-size and Zod advisory paths, with the audit and runtime-verification boundary recorded separately.
+## A roomier place to learn
 
-## Preserved experience
+- Spacious two-column lesson library and a wider reader beside the existing 3D scene.
+- Larger text and answer choices, persistent Previous/Next controls, and clear explanations when progression is disabled.
+- View scene / Read lesson switching; small-screen scene navigation reveals the object instead of leaving it covered by a reader.
+- Source disclosures expand in the reading flow, and teacher/student guides are available directly from Education.
+- Conflicting overlays close when switching modes. Stage changes reset the reader rather than scrolling the universe. Escape cancels a pending progress confirmation before exiting.
 
-The continuous Three.js scene, free exploration, Solar System bodies, cutaways, catalog-backed stars, confirmed exoplanet destinations, Earth aurora, Sun animation, quality controls and existing source records remain part of Helios. Education reuses those systems rather than introducing a second universe or a dashboard replacement.
+## Four complete journeys
 
-## Review before release
+| Lesson | Stages | Questions |
+| --- | --- | --- |
+| Our Solar System | 9 | 4 |
+| Inside the Sun | 4 | 4 |
+| Inside the Planets | 4 | 4 |
+| Beyond Our Solar System | 4 | 4 |
 
-Read the [candidate validation evidence](../EDUCATION_VALIDATION.md), [scientific audit](../SCIENCE_AUDIT.md), [security review](../EDUCATION_SECURITY.md) and [known limitations](KNOWN_LIMITATIONS.md). A build, automated test suite or zero-advisory dependency audit does not establish complete scientific verification, WCAG certification, sustained GPU performance or classroom effectiveness.
+The 21 stages use existing navigation, interiors and planetary comparison. All 16 knowledge checks include feedback and retry. Every stage provides an explicit written alternative. Progress stays in local browser storage with pause/resume, completion review and protected restart/replacement; no learner account or remote gradebook is required.
 
-A separately deployed public non-production demo is not claimed. Deployment instructions are available, but the existing hosted application remains outside this candidate's authorization boundary. The owner must approve the intended source merge/release and production target.
+## Evidence alongside the experience
 
-The launch kit contains drafts only. No social posts, outreach messages, paid promotion or commercial soundtrack assets have been published or bundled.
+A registry of 514 claims and 130 sources separates confidence from verification status and distinguishes publication, observation, retrieval and review dates. Original scientific snapshots and numerical world data are preserved. Missing values remain unknown; modeled interiors, inferred planet properties and illustrative solar/auroral activity remain disclosed. Counts describe coverage, not blanket scientific verification.
+
+The release also retains the Sun and eight planets, Planet Stories, environments, cutaways, Earth imagery and auroras, 83 stellar/substellar records, 65 selectable anchors and 24 curated confirmed exoplanets.
+
+## Use and contribute
+
+Run with Node.js 24: clone the repository, run `npm ci`, then `npm run dev`. Open the local address printed by the server. No ChatGPT Sites account, hosting credentials or database is required.
+
+- [Teacher guide and answer key](https://github.com/10th-Dimension/helios-solar-explorer/blob/v1.1.0/docs/education/TEACHER_GUIDE.md)
+- [Student guide](https://github.com/10th-Dimension/helios-solar-explorer/blob/v1.1.0/docs/education/STUDENT_GUIDE.md)
+- [Printable learning sheet](https://github.com/10th-Dimension/helios-solar-explorer/blob/v1.1.0/docs/education/learning-sheet.html)
+- [UI review and verification](https://github.com/10th-Dimension/helios-solar-explorer/blob/v1.1.0/docs/education/WORKSPACE_REVIEW.md)
+- [Scientific audit](https://github.com/10th-Dimension/helios-solar-explorer/blob/v1.1.0/docs/SCIENCE_AUDIT.md)
+
+## Verification and limits
+
+Repository tests cover stellar snapshots, aurora geometry, wheel easing, solar geometry, claim/source relationships and all education state paths. Actual browser checks are recorded separately in the workspace review; a build is not a UI pass.
+
+This release is not independently classroom- or WCAG-certified. Historical catalog dates, scientific uncertainties, physical mobile/touch and screen-reader combinations, OS reduced-motion visual acceptance, and sustained GPU/memory qualification retain their documented limits. Hosting operators remain responsible for deployment security. No claim of a completely bug-free application is made.
