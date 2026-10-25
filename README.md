@@ -46,6 +46,10 @@ Choose **EDUCATION** for four complete journeys in the same scene: Our Solar Sys
 
 The learning workspace includes a spacious lesson library, a wider reading pane beside the live scene, large answer choices, persistent Previous/Next controls, and **View scene / Read lesson** switching. On small screens, traveling to a scene target folds the reading pane so the object and interior controls can be inspected; Read lesson brings the explanation and quiz back. Opening Catalog or Worlds closes the Education overlay while retaining browser-local progress.
 
+Drag the lesson panel’s left-edge divider to choose how much room the lesson and scene receive. The divider also supports arrow keys, Home/End limits and Enter or double-click to restore the default width. Width is saved locally and bounded to keep both views usable; mobile retains the full-width reader/scene switch.
+
+Retries are optional and unlimited. **Retry question** clears the current answer; **Retake lesson questions** clears the lesson’s answers while preserving its explored targets. A valid answer attempt permits continuing even when incorrect. Completion separates participation from accuracy and reports the current attempt’s correct-answer count. **Teacher tools & retries** includes a confirmed fresh start for the next learner on a shared browser; this is not an account-based gradebook.
+
 | Journey | What learners do | Stages / questions |
 | --- | --- | --- |
 | Our Solar System | Visit the Sun and eight planets; distinguish planetary groups, gravity and scientific distances from screen spacing | 9 / 4 |
