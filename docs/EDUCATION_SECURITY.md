@@ -21,6 +21,8 @@ Registry inspection also found Vinext 1.3.0, whose peer requirements include `@v
 
 Integration applied the Vinext-scoped image-size override and a compatible Zod update: image-size 2.0.2 → 2.0.3 and Zod 4.4.3 → 4.6.7 (the advisory's first patched version is 4.6.6). React, Vinext and the application runtime versions were retained. The fresh full audit after that change reported **zero findings**. This is a dependency-advisory result, not a security certification. Metadata/image checks, production build and browser-runtime evidence are recorded separately in the final validation report; those runtime results must not be inferred from the audit count. Rerun `npm audit` whenever the lockfile changes or before a hosting decision; advisories can change independently of source.
 
+The patched named `imageSize(buffer)` API was exercised on the actual bundled assets: the share card parsed as PNG 1200×630, cloud JPEG as 2048×1024, day JPEG as 5400×2700 and night JPEG as 3600×1800. All four returned dimensions successfully. This confirms compatibility for those trusted asset formats; it is not adversarial parser testing or proof of exploit reachability.
+
 ## Application/privacy boundaries
 
 - Education requires no account, API credential, database, student identity, advertising or analytics service.
