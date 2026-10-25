@@ -1,0 +1,39 @@
+name: Scientific correction or source update
+description: Report a specific claim, its evidence and uncertainty without discarding provenance.
+labels: [science]
+body:
+  - type: input
+    id: claim
+    attributes:
+      label: Object and claim identifier or exact displayed wording
+      description: Include the lesson/stage or interior region if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Existing claim, proposed correction and why it matters
+      description: Distinguish a source snapshot from a current observation. Do not replace uncertainty with a remembered value.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Specific primary source and dates
+      description: Link the relevant record, paper or table. State publication/observation dates if known and retrieval date separately. Say when a date is unknown.
+    validations:
+      required: true
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: Proposed claim confidence
+      options: [measured, inferred, uncertain, unknown, illustrative]
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Limitations, units and provenance changes
+      description: Explain source disagreement, inference, unknown values and whether a snapshot refresh is needed. Do not upload private data or credentials.
+    validations:
+      required: true

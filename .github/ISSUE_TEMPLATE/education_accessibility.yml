@@ -1,0 +1,34 @@
+name: Education, accessibility or classroom performance
+description: Report a reproducible learning-flow or access problem with bounded evidence.
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Lesson content, Keyboard or focus, Screen-reader access, Motion or visual presentation, Mobile or touch layout, Performance, Saved progress]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: What task were you trying to complete?
+      description: Include lesson/stage, exact steps, expected and actual behavior. Do not include student names, accounts or assessment records.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Browser, device/OS, viewport and graphics tier
+      description: Add assistive technology or reduced-motion settings only if relevant and you want to share them.
+    validations:
+      required: true
+  - type: textarea
+    id: alternative
+    attributes:
+      label: Did the written alternative or Home recovery help?
+      description: Describe whether the scientific explanation remained accessible.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Distinguish an impression from a measured delay/frame rate. Include duration and reproduction frequency. Never attach credentials, student information or personal browser logs.
