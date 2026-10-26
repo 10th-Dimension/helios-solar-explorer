@@ -1,6 +1,6 @@
 # Helios Education 1.0 — v1.1.0
 
-[Launch the live public Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/) · [Source repository](https://github.com/10th-Dimension/helios-solar-explorer)
+[Launch the live public Helios Site](https://helios-solar-explorer.10thdimension.chatgpt.site/) · [Source repository](https://github.com/10th-Dimension/helios-solar-explorer)
 
 Education 1.0 turns Helios's continuous 3D universe into a guided learning space. The full application is available as MIT-licensed open source; historical NASA image assets retain their separate provenance notices.
 

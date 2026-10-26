@@ -2,7 +2,7 @@
 
 Helios keeps the 3D universe as the main interface. Education adds guided questions, explanations and source inspection to the existing scene. Free exploration remains available.
 
-This documentation accompanies Helios Education 1.0, package/release `1.1.0`. [Open the live public Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/). It is not a statement of curriculum accreditation, WCAG conformance certification or independently validated classroom outcomes.
+This documentation accompanies Helios Education 1.0, package/release `1.1.0`. [Open the live public Site](https://helios-solar-explorer.10thdimension.chatgpt.site/). It is not a statement of curriculum accreditation, WCAG conformance certification or independently validated classroom outcomes.
 
 ## Start here
 

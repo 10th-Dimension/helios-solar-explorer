@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 
 // Owner explicitly approved publishing this existing public Site link.
 // This exception never permits another Site host, credentials or deployment IDs.
-const approvedPublicOrigin = /https:\/\/helios-solar-explorer\.chasewilcox93\.chatgpt\.site(?=[/\s)#?]|$)/g;
+const approvedPublicOrigin = /https:\/\/helios-solar-explorer\.10thdimension\.chatgpt\.site(?=[/\s)#?]|$)/g;
 const withoutApprovedOrigin = line => line.replace(approvedPublicOrigin, '');
 
 // A deterministic public-file guard; use a dedicated scanner as well.
@@ -27,11 +27,11 @@ const rules = [
   ['personal-email', /[A-Z0-9._%+-]+@(?:gmail|outlook|hotmail|yahoo|beltc\.ctc)\.(?:com|edu)/i],
 ];
 const hostingIdentityRule = rules.find(([name]) => name === 'private-host-identity')[1];
-const approvedExample = 'https://' + 'helios-solar-explorer.chasewilcox93.chatgpt.site/';
+const approvedExample = 'https://' + 'helios-solar-explorer.10thdimension.chatgpt.site/';
 assert.ok(!hostingIdentityRule.test(withoutApprovedOrigin(approvedExample)));
 assert.ok(hostingIdentityRule.test(withoutApprovedOrigin('https://' + 'another-private.chatgpt.site/')));
 assert.ok(hostingIdentityRule.test(withoutApprovedOrigin(approvedExample + ' appgprj_' + 'a'.repeat(32))));
-assert.ok(hostingIdentityRule.test(withoutApprovedOrigin('https://' + 'helios-solar-explorer.chasewilcox93.chatgpt.site.evil.chatgpt.site/')));
+assert.ok(hostingIdentityRule.test(withoutApprovedOrigin('https://' + 'helios-solar-explorer.10thdimension.chatgpt.site.evil.chatgpt.site/')));
 for (const file of files) {
   if (forbidden.test(file) && file !== '.env.example') findings.push({file, rule:'forbidden-path'});
   const bytes = readFileSync(file);
