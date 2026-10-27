@@ -2,7 +2,7 @@
 
 **Explore our home system. Learn how we know. Keep going.**
 
-**[Launch the live Helios Site](https://helios-solar-explorer.10thdimension.chatgpt.site/)** · **[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+**[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
 
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
