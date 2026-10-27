@@ -1,6 +1,6 @@
 # Education 1.0 learning workspace review
 
-Package/release: `1.1.0`; product: Helios Education 1.0. Review date: 2026-10-24 Pacific.
+Package/release: `1.1.0`; product: Helios Education 1.0. Review date: 2026-10-24 Pacific. [Live public Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/).
 
 The previous layout put a long lesson, evidence, quiz and navigation into a 430px sidebar. The redesign uses a wide two-column library, a reading workspace up to 620px beside a resized existing scene, 16px body text, larger answer targets and a persistent navigation footer. The existing renderer's ResizeObserver updates its aspect ratio; no second scene or canvas is created.
 

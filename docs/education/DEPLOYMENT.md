@@ -2,7 +2,7 @@
 
 The Education 1.0 candidate runs from this repository without the author's hosting project, credentials, application account or database. No separately configured non-production deployment target was available in the reviewed repository. These instructions prepare an independent staging copy; they do not claim that a public demo has been deployed.
 
-The owner subsequently approved production publication to the existing public Helios Site. The instructions below describe an independent staging copy, not a new deployment authorization. Future merges/releases/hosting changes must follow the owner’s current instructions.
+The owner subsequently approved production publication to [the existing public Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/). The instructions below describe an independent staging copy, not a new deployment authorization. Future merges/releases/hosting changes must follow the owner’s current instructions.
 
 ## Build and local production verification
 
