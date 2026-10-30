@@ -1,25 +1,37 @@
 # Changelog
 
-## Current main — npm 10 clean-install repair
+## v1.1.1 — Interaction fixes and dependency maintenance
+
+Includes the resizable Education reader and retries added after v1.1.0, readable evidence panels, coordinated framework maintenance, npm 10 compatibility, planetary layer callouts and the build updates below. The v1.1.0 tag remains unchanged.
+
+### coordinated build updates and planetary interior labels
+
+- Update the pinned checkout/setup-node actions to 7.0.1/7.1.0 and Tailwind/PostCSS together to 4.3.3. Retain both Node/npm verification environments, strict dependency checks, read-only CI permissions and disabled credential persistence.
+- Move planetary layer names and explanations to the side inspector, with a thin screen-space leader and marker attached to the selected region. The callout is present on opening and follows rotation/zoom without covering the planet with a text box. Planet names, the Sun's labels, layer values and scientific content stay unchanged.
+- Increase orbit-line opacity slightly in the Solar System and destination systems while preserving their existing focus/travel fades and orbital geometry.
+- Hide decorative selection rings consistently across planets, stars and destination objects. Keep physical Saturn/Uranus rings, orbital paths, object names, picking and selection controls.
+- Group future Tailwind/PostCSS updates and the two build-action updates so each related pair is reviewed together. ESLint 10 remains on hold for its separate unsupported-peer issue.
+
+### npm 10 clean-install repair
 
 - Replace the deeply nested Vinext override with a direct, version-scoped `satori@0.33.5` override to patched fflate 0.7.5. This preserves the security fix while allowing clean installs under npm 10.9.2 as well as npm 11.17.0; unrelated fflate 0.8.3 consumers stay unchanged.
 - Pin and print npm versions in CI alongside Node 22.13.0 and Node 24. Disable matrix fail-fast so one failure does not cancel the other environment's verification.
 - Retain strict peer checks, the full dependency-tree check, all application/science suites and secret scanning. The earlier merged Node 22 types and React build plugin updates remain included; ESLint 10 stays deferred for its documented unsupported peers.
 
-## Current main — development dependency maintenance
+### development dependency maintenance
 
 - Update the React build plugin from 6.0.2 to 6.1.2 and Node 22 type definitions from 22.19.19 to 22.20.5, retaining Node 22 support instead of adopting Node 26 types.
 - Validate clean installs with strict peer dependencies and inspect the full dependency tree. Run the verification workflow on both the minimum supported Node 22.13.0 and Node 24.
 - Defer ESLint 10: the current Next configuration includes import, accessibility and React plugins whose published peer ranges stop at ESLint 9. A passing ordinary install/lint run does not resolve that dependency incompatibility.
 - Hosted Site, application modules, scientific content and release tags are unchanged by this repository-only maintenance.
 
-## Current main — coordinated framework maintenance
+### coordinated framework maintenance
 
 - Update Vinext to 1.3.0 together with @vitejs/plugin-rsc 0.5.38; Vinext's App Router requires plugin-rsc 0.5.37 or newer.
 - Override only Vinext's Satori dependency path to patched fflate 0.7.5, resolving GHSA-px8p-9vwx-vf98 without downgrading the framework. Remove the obsolete image-size override because Vinext 1.3.0 no longer depends on it.
 - Group future Vinext and plugin-rsc Dependabot updates so the framework pair is tested together. Application features, scientific snapshots and the v1.1.0 release tag are unchanged.
 
-## Current main — resizable lessons, retries and evidence layout repair
+### resizable lessons, retries and evidence layout repair
 
 - Add a draggable, keyboard-accessible lesson divider with a local width preference and bounded scene/reader sizes.
 - Add Retry question and Retake lesson questions, unlimited optional retries, continued progression after incorrect attempts and completion accuracy separate from participation.

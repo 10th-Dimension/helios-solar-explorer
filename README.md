@@ -2,7 +2,7 @@
 
 **Explore our home system. Learn how we know. Keep going.**
 
-**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Latest release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.1)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
 
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
@@ -35,6 +35,8 @@ These counts describe the included scientific snapshot. The 107 Catalog entries 
 - See NASA historical Earth day, night-light and cloud composites with illumination-aware city lights.
 - Toggle folded auroral curtains and Earth's polar-night view. Aurora activity is procedural—not live space weather.
 - Inspect Saturn/Uranus rings, body-specific spin axes, retrograde rotation, giant-planet materials and solar activity illustrations.
+- Read planetary layer names and explanations beside their cutaway, connected to the selected region by a moving leader line. Planet names and the Sun’s labels retain their existing placement.
+- Follow slightly brighter orbital paths without decorative selection rings obscuring planets or stars. Saturn’s and Uranus’s physical rings remain visible.
 - Home uses a labeled ultraviolet false-color presentation with visibly churning orange plasma and occasional eruptive loops, informed by NASA SDO references. There is one solar view, with accelerated illustrative activity.
 - Choose AUTO, ULTRA, HIGH or BALANCED quality; narrow viewports use a lower automatic tier.
 - Keep exploration quiet with on-demand information, Catalog/Explore overlays and HUD hiding.
