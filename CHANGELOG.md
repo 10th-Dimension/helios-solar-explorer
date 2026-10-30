@@ -16,7 +16,7 @@
 
 ## v1.1.0 — Helios Education 1.0
 
-- Public live Site: https://helios-solar-explorer.chasewilcox93.chatgpt.site/ . Education 1.0 was first deployed with owner approval after PR #15; this release adds the learning workspace redesign.
+- Public live Site: https://helios-solar-explorer.eager-ape-4538.chatgpt.site/ . Education 1.0 was first deployed with owner approval after PR #15; this release adds the learning workspace redesign.
 - Replace the narrow lesson sidebar with a spacious two-column library and a wider reading workspace beside the existing scene.
 - Keep navigation visible in a persistent footer, enlarge reading/quiz controls, remove nested source scrolling and explain disabled progression.
 - Add View scene / Read lesson switching, including automatic scene reveal on small-screen target navigation.

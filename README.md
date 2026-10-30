@@ -2,12 +2,12 @@
 
 **Explore our home system. Learn how we know. Keep going.**
 
-**[Launch the live Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/)** · **[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Education 1.0 release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.0)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
 
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
 
-Helios is an interactive 3D cosmic atlas built by **Chase Wilcox**. Start at **Home [Our Sun]**, orbit the planets, open their 3D interiors, then move outward into a neighborhood of real cataloged stars and confirmed exoplanets—all inside one continuous Three.js scene.
+Helios is an interactive 3D cosmic atlas built by **10th-Dimension**. Start at **Home [Our Sun]**, orbit the planets, open their 3D interiors, then move outward into a neighborhood of real cataloged stars and confirmed exoplanets—all inside one continuous Three.js scene.
 
 The universe is the interface. Information appears when you ask for it, not every time you select something. A beautiful visualization should never pretend we know more than we do.
 
@@ -190,7 +190,7 @@ Focused issues, primary-source corrections, performance measurements and pull re
 
 Dependabot opens proposed dependency updates; it does not automatically merge them. A failed check on an open pull request describes that proposed version combination, not necessarily the default branch. React, React DOM and the server-components package require coordinated updates; see the [dependency-update policy](CONTRIBUTING.md#dependency-updates).
 
-Built by [Chase Wilcox / 10th-Dimension](https://github.com/10th-Dimension), with AI-assisted development. Scientific providers and upstream libraries are credited separately; no affiliation or endorsement is implied.
+Built by [10th-Dimension](https://github.com/10th-Dimension), with AI-assisted development. Scientific providers and upstream libraries are credited separately; no affiliation or endorsement is implied.
 
 ## License
 
