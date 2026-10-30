@@ -3,7 +3,7 @@
 ## Current main — coordinated build updates and planetary interior labels
 
 - Update the pinned checkout/setup-node actions to 7.0.1/7.1.0 and Tailwind/PostCSS together to 4.3.3. Retain both Node/npm verification environments, strict dependency checks, read-only CI permissions and disabled credential persistence.
-- Draw planetary interior labels after the transparent cutaway surfaces so their text appears immediately and remains in front while rotating. The Sun's label behavior, layer values and scientific content stay unchanged.
+- Move planetary layer names and explanations to the side inspector, with a thin screen-space leader and marker attached to the selected region. The callout is present on opening and follows rotation/zoom without covering the planet with a text box. Planet names, the Sun's labels, layer values and scientific content stay unchanged.
 - Group future Tailwind/PostCSS updates and the two build-action updates so each related pair is reviewed together. ESLint 10 remains on hold for its separate unsupported-peer issue.
 
 ## Current main — npm 10 clean-install repair
