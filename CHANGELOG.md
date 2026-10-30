@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — coordinated dependency review
+
+- Update Vinext to 1.3.1, React DOM types to 19.3.0, and Three.js to 0.186.1 with matching 0.186.0 type definitions. Group future Three.js/runtime type updates for coordinated review.
+- Retain TypeScript 5.9.3: the combined TypeScript 7 candidate fails strict dependency resolution because current typescript-eslint peers require TypeScript below 6.1.0. Keep PR #25 draft until compatible tooling is available. ESLint 10 remains on hold separately.
+- Preserve the existing application, scientific content, public Site identity and released v1.1.1 tag. Dependency upgrades require the existing two-environment CI and rendered-scene checks before publication.
+
 ## v1.1.1 — Interaction fixes and dependency maintenance
 
 Includes the resizable Education reader and retries added after v1.1.0, readable evidence panels, coordinated framework maintenance, npm 10 compatibility, planetary layer callouts and the build updates below. The v1.1.0 tag remains unchanged.
