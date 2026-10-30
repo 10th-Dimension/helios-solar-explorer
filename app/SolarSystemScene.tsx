@@ -121,6 +121,9 @@ type StellarTravelTransition = {
 const systemCamera = new THREE.Vector3(0, 57, 122);
 const systemTarget = new THREE.Vector3(0, 0, 0);
 
+// Selection is conveyed by the HUD and names; decorative rings can resemble physical rings.
+const SHOW_SELECTION_RINGS = false;
+
 function makeLabel(world: World) {
   const canvas = document.createElement('canvas');
   canvas.width = 512;
@@ -319,7 +322,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       const material = mesh?.material as THREE.MeshStandardMaterial | undefined;
       if (material?.isMeshStandardMaterial && id !== 'sun') material.emissiveIntensity = .008;
       const selection = group.userData.selection as THREE.Mesh | undefined;
-      if (selection) selection.visible = id !== 'earth' && id === selectedId;
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id !== 'earth' && id === selectedId);
     });
   }, [selectedId]);
 
@@ -327,7 +330,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     selectedStellarRef.current = selectedStellarId;
     runtimeRef.current?.stellarGroups.forEach((group, id) => {
       const selection = group.userData.selection as THREE.Mesh | undefined;
-      if (selection) selection.visible = id === selectedStellarId && runtimeRef.current!.stellarBlend > .15;
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id === selectedStellarId && runtimeRef.current!.stellarBlend > .15);
     });
   }, [selectedStellarId]);
 
@@ -336,7 +339,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     runtimeRef.current?.exoplanetGroups.forEach((group, id) => {
       const selection = group.userData.selection as THREE.Mesh | undefined;
       const planet = group.userData.exoplanet as ExoplanetRecord | undefined;
-      if (selection) selection.visible = id === selectedExoplanetId && planet?.hostStarId === arrivedStellarRef.current;
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id === selectedExoplanetId && planet?.hostStarId === arrivedStellarRef.current);
     });
   }, [selectedExoplanetId]);
 
@@ -344,7 +347,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     selectedSystemObjectRef.current = selectedSystemObjectId;
     runtimeRef.current?.systemObjectGroups.forEach((group, id) => {
       const selection = group.userData.selection as THREE.Mesh | undefined;
-      if (selection) selection.visible = id === selectedSystemObjectId && Boolean(arrivedStellarRef.current);
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id === selectedSystemObjectId && Boolean(arrivedStellarRef.current));
     });
   }, [selectedSystemObjectId]);
 
@@ -357,12 +360,12 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     runtimeRef.current?.exoplanetGroups.forEach((group, id) => {
       const planet = group.userData.exoplanet as ExoplanetRecord | undefined;
       const selection = group.userData.selection as THREE.Mesh | undefined;
-      if (selection) selection.visible = id === selectedExoplanetRef.current && planet?.hostStarId === arrivedStellarId;
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id === selectedExoplanetRef.current && planet?.hostStarId === arrivedStellarId);
     });
     runtimeRef.current?.systemObjectGroups.forEach((group, id) => {
       const selection = group.userData.selection as THREE.Mesh | undefined;
       const anchorId = group.userData.destinationAnchorId as string | undefined;
-      if (selection) selection.visible = id === selectedSystemObjectRef.current && anchorId === arrivedStellarId;
+      if (selection) selection.visible = SHOW_SELECTION_RINGS && (id === selectedSystemObjectRef.current && anchorId === arrivedStellarId);
     });
   }, [arrivedStellarId]);
 
@@ -1006,7 +1009,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       const selectionMaterial = new THREE.MeshBasicMaterial({ color: new THREE.Color(world.accent), transparent: true, opacity: .72, depthWrite: false });
       const selection = new THREE.Mesh(selectionGeometry, selectionMaterial);
       selection.rotation.x = Math.PI * .5;
-      selection.visible = entity.id === selectedRef.current;
+      selection.visible = SHOW_SELECTION_RINGS && (entity.id === selectedRef.current);
       group.add(selection);
       group.userData.selection = selection;
       disposables.push(selectionGeometry, selectionMaterial);
@@ -1168,7 +1171,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         }
         const selection = group.userData.selection as THREE.Mesh;
         selection.rotation.z = elapsed * .14;
-        selection.visible = id !== 'earth' && id === selectedRef.current && distanceToCamera > entity.renderRadius * 5.5 && (runtime?.stellarBlend ?? 0) < .64;
+        selection.visible = SHOW_SELECTION_RINGS && (id !== 'earth' && id === selectedRef.current && distanceToCamera > entity.renderRadius * 5.5 && (runtime?.stellarBlend ?? 0) < .64);
         const label = group.userData.label as THREE.Sprite;
         label.visible = (!activeFocus || activeFocus === id) && distanceToCamera > entity.renderRadius * 6.5 && (runtime?.stellarBlend ?? 0) < .58;
         if (runtime) group.visible = (!activeFocus || activeFocus === id || runtime.inspectionBlend < .78) && (id === 'sun' || runtime.stellarBlend < .96);
@@ -1190,7 +1193,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         glow.scale.setScalar(THREE.MathUtils.damp(glow.scale.x, glowScale, 4.5, delta));
         core.scale.setScalar(THREE.MathUtils.damp(core.scale.x, coreScale, 4.5, delta));
         const selection = group.userData.selection as THREE.Mesh;
-        selection.visible = id === selectedStellarRef.current && blend > .15;
+        selection.visible = SHOW_SELECTION_RINGS && (id === selectedStellarRef.current && blend > .15);
         if (selection.visible) {
           const groupWorldPosition = new THREE.Vector3();
           group.getWorldPosition(groupWorldPosition);
@@ -1213,7 +1216,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         const mesh = group.userData.planetMesh as THREE.Mesh;
         const selection = group.userData.selection as THREE.Mesh;
         mesh.rotation.y = elapsed * .12 + planet.phase;
-        selection.visible = id === selectedExoplanetRef.current && planet.hostStarId === arrivedStellarRef.current && runtime?.focusedExoplanetId !== id;
+        selection.visible = SHOW_SELECTION_RINGS && (id === selectedExoplanetRef.current && planet.hostStarId === arrivedStellarRef.current && runtime?.focusedExoplanetId !== id);
         if (selection.visible) {
           selection.lookAt(camera.position);
           selection.rotation.z = elapsed * .18;
@@ -1232,7 +1235,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
           const glowScale = baseGlowScale * THREE.MathUtils.clamp(camera.position.distanceTo(worldPosition) / 105, .075, 1);
           glow.scale.setScalar(THREE.MathUtils.damp(glow.scale.x, glowScale, 6, delta));
         }
-        selection.visible = id === selectedSystemObjectRef.current && group.userData.destinationAnchorId === arrivedStellarRef.current && runtime?.focusedSystemObjectId !== id;
+        selection.visible = SHOW_SELECTION_RINGS && (id === selectedSystemObjectRef.current && group.userData.destinationAnchorId === arrivedStellarRef.current && runtime?.focusedSystemObjectId !== id);
         if (selection.visible) {
           selection.lookAt(camera.position);
           selection.rotation.z = elapsed * .16;

@@ -5,6 +5,7 @@
 - Update the pinned checkout/setup-node actions to 7.0.1/7.1.0 and Tailwind/PostCSS together to 4.3.3. Retain both Node/npm verification environments, strict dependency checks, read-only CI permissions and disabled credential persistence.
 - Move planetary layer names and explanations to the side inspector, with a thin screen-space leader and marker attached to the selected region. The callout is present on opening and follows rotation/zoom without covering the planet with a text box. Planet names, the Sun's labels, layer values and scientific content stay unchanged.
 - Increase orbit-line opacity slightly in the Solar System and destination systems while preserving their existing focus/travel fades and orbital geometry.
+- Hide decorative selection rings consistently across planets, stars and destination objects. Keep physical Saturn/Uranus rings, orbital paths, object names, picking and selection controls.
 - Group future Tailwind/PostCSS updates and the two build-action updates so each related pair is reviewed together. ESLint 10 remains on hold for its separate unsupported-peer issue.
 
 ## Current main — npm 10 clean-install repair
