@@ -54,10 +54,8 @@
   },
   "type": "module",
   "overrides": {
-    "vinext": {
-      "satori": {
-        "fflate": "0.7.5"
-      }
+    "satori@0.33.5": {
+      "fflate": "0.7.5"
     }
   }
 }

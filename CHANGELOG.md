@@ -1,5 +1,11 @@
 # Changelog
 
+## Current main — npm 10 clean-install repair
+
+- Replace the deeply nested Vinext override with a direct, version-scoped `satori@0.33.5` override to patched fflate 0.7.5. This preserves the security fix while allowing clean installs under npm 10.9.2 as well as npm 11.17.0; unrelated fflate 0.8.3 consumers stay unchanged.
+- Pin and print npm versions in CI alongside Node 22.13.0 and Node 24. Disable matrix fail-fast so one failure does not cancel the other environment's verification.
+- Retain strict peer checks, the full dependency-tree check, all application/science suites and secret scanning. The earlier merged Node 22 types and React build plugin updates remain included; ESLint 10 stays deferred for its documented unsupported peers.
+
 ## Current main — development dependency maintenance
 
 - Update the React build plugin from 6.0.2 to 6.1.2 and Node 22 type definitions from 22.19.19 to 22.20.5, retaining Node 22 support instead of adopting Node 26 types.
