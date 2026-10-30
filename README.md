@@ -69,7 +69,7 @@ The [workspace review](docs/education/WORKSPACE_REVIEW.md) records this release'
 
 ## Run locally
 
-Use **Node.js 24**, npm and a modern WebGL-capable browser. CI checks both Node.js 24 and the minimum supported Node.js 22.13.0. Node type definitions stay on the supported 22.x series.
+Use **Node.js 24**, npm and a modern WebGL-capable browser. CI checks Node.js 24 with npm 11.17.0 and the minimum supported Node.js 22.13.0 with npm 10.9.2. Node type definitions stay on the supported 22.x series.
 
 ```bash
 git clone https://github.com/10th-Dimension/helios-solar-explorer.git
