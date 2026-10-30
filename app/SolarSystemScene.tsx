@@ -967,6 +967,9 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         }
 
         const layerLabel = makeInteriorLabel(layer.name, layer.color);
+        // Planetary cutaway faces are transparent and can otherwise sort over
+        // this depth-independent annotation as the camera rotates.
+        if (classification !== 'star') layerLabel.renderOrder = 100;
         layerLabel.position.set(outerRadius * .12, outerRadius * .9, -.04);
         layerLabel.userData.layerIndex = layerIndex;
         layerLabel.visible = false;

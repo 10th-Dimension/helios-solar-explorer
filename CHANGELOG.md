@@ -1,5 +1,11 @@
 # Changelog
 
+## Current main — coordinated build updates and planetary interior labels
+
+- Update the pinned checkout/setup-node actions to 7.0.1/7.1.0 and Tailwind/PostCSS together to 4.3.3. Retain both Node/npm verification environments, strict dependency checks, read-only CI permissions and disabled credential persistence.
+- Draw planetary interior labels after the transparent cutaway surfaces so their text appears immediately and remains in front while rotating. The Sun's label behavior, layer values and scientific content stay unchanged.
+- Group future Tailwind/PostCSS updates and the two build-action updates so each related pair is reviewed together. ESLint 10 remains on hold for its separate unsupported-peer issue.
+
 ## Current main — npm 10 clean-install repair
 
 - Replace the deeply nested Vinext override with a direct, version-scoped `satori@0.33.5` override to patched fflate 0.7.5. This preserves the security fix while allowing clean installs under npm 10.9.2 as well as npm 11.17.0; unrelated fflate 0.8.3 consumers stay unchanged.
