@@ -1440,7 +1440,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         leader.dataset.visible = 'false';
         const group = selectedRef.current && selectedRef.current !== 'sun' ? bodyGroups.get(selectedRef.current) : undefined;
         const interior = group?.userData.interiorGroup as THREE.Group | undefined;
-        const note = calloutTargetRef.current.current;
+        const note = calloutTargetRef.current?.current;
         const panel = note?.closest('aside');
         const panelStyle = panel ? getComputedStyle(panel) : null;
         const anchor = interior?.visible ? interior.children.find(child => child.userData.layerCalloutAnchor && child.userData.layerIndex === group?.userData.activeLayer) : undefined;
