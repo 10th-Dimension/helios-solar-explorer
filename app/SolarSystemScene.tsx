@@ -765,7 +765,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
           orbitPoints.push(new THREE.Vector3(Math.cos(angle) * orbit.render.radius, Math.sin(angle) * Math.sin(incline) * orbit.render.radius, Math.sin(angle) * orbit.render.radius));
         }
         const orbitGeometry = new THREE.BufferGeometry().setFromPoints(orbitPoints);
-        const orbitMaterial = new THREE.LineBasicMaterial({ color: destination.kind === 'BINARY_STELLAR_SYSTEM' ? 0x9db9e4 : 0x8eb1c8, transparent: true, opacity: .26, depthWrite: false });
+        const orbitMaterial = new THREE.LineBasicMaterial({ color: destination.kind === 'BINARY_STELLAR_SYSTEM' ? 0x9db9e4 : 0x8eb1c8, transparent: true, opacity: .34, depthWrite: false });
         systemGroup.add(new THREE.LineLoop(orbitGeometry, orbitMaterial));
         disposables.push(orbitGeometry, orbitMaterial);
       });
@@ -858,7 +858,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
           points.push(new THREE.Vector3(Math.cos(angle) * entity.renderOrbit, Math.sin(angle) * Math.sin(incline) * entity.renderOrbit, Math.sin(angle) * entity.renderOrbit));
         }
         const geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const material = new THREE.LineBasicMaterial({ color: 0x617087, transparent: true, opacity: .22 });
+        const material = new THREE.LineBasicMaterial({ color: 0x617087, transparent: true, opacity: .34 });
         solarGroup.add(new THREE.LineLoop(geometry, material));
         orbitMaterials.push(material);
         disposables.push(geometry, material);
@@ -1147,7 +1147,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
         runtime.stellarBlend = THREE.MathUtils.damp(runtime.stellarBlend, desiredStellarBlend, 4.2, delta);
         const solarDomainScale = THREE.MathUtils.lerp(1, .055, smoothstep(.08, 1, runtime.stellarBlend));
         runtime.solarGroup.scale.setScalar(solarDomainScale);
-        runtime.orbitMaterials.forEach((orbitMaterial) => { orbitMaterial.opacity = .22 * (1 - runtime.inspectionBlend * .94) * (1 - runtime.stellarBlend); });
+        runtime.orbitMaterials.forEach((orbitMaterial) => { orbitMaterial.opacity = .34 * (1 - runtime.inspectionBlend * .94) * (1 - runtime.stellarBlend); });
       }
       bodyGroups.forEach((group, id) => {
         const mesh = group.userData.bodyMesh as THREE.Mesh;
