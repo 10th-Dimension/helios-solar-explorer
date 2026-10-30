@@ -2,7 +2,7 @@
 
 **Explore our home system. Learn how we know. Keep going.**
 
-**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Latest release](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.1)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Latest release — v1.1.2](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.2)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
 
 [![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
 [![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
@@ -10,6 +10,22 @@
 Helios is an interactive 3D cosmic atlas built by **10th-Dimension**. Start at **Home [Our Sun]**, orbit the planets, open their 3D interiors, then move outward into a neighborhood of real cataloged stars and confirmed exoplanets—all inside one continuous Three.js scene.
 
 The universe is the interface. Information appears when you ask for it, not every time you select something. A beautiful visualization should never pretend we know more than we do.
+
+## Current release and live Site
+
+**v1.1.2** records the coordinated dependency updates already deployed to the existing public Site as **Version 21**. The release and Version 21 share the same application code and dependency versions; this release finalizes repository documentation and package-version metadata after that deployment.
+
+| Component | Current version |
+| --- | --- |
+| Vinext | 1.3.1 |
+| Three.js / Three.js types | 0.186.1 / 0.186.0 |
+| React DOM types | 19.3.0 |
+| TypeScript | 5.9.3 |
+| ESLint | 9.39.4 |
+
+PRs [#23](https://github.com/10th-Dimension/helios-solar-explorer/pull/23), [#24](https://github.com/10th-Dimension/helios-solar-explorer/pull/24) and [#26](https://github.com/10th-Dimension/helios-solar-explorer/pull/26) were tested together and merged. **TypeScript 7 [#25](https://github.com/10th-Dimension/helios-solar-explorer/pull/25) remains on hold:** strict installation rejects it because the current typescript-eslint tooling supports TypeScript below 6.1.0. **ESLint 10 [#14](https://github.com/10th-Dimension/helios-solar-explorer/pull/14) remains on hold:** the current lint plugins' peer ranges stop at ESLint 9. Neither upgrade is forced past its compatibility checks.
+
+The [deployed dependency set passed both CI environments](https://github.com/10th-Dimension/helios-solar-explorer/actions/runs/41115677637), including strict clean installs, dependency-tree checks, seven verification suites, type checking, lint, production build, public-file audit and full-history secret scanning. Dependency audits reported zero findings. The hosting Worker build and bounded live checks of scene rendering, planetary callouts and Education resume/answer/retry also passed. These checks do not establish exhaustive browser, accessibility, scientific or classroom certification. Earlier release tags remain unchanged; see the [changelog](CHANGELOG.md).
 
 ![The Helios stellar neighborhood with persistent selectable names](docs/images/stellar-neighborhood.jpg)
 
@@ -67,7 +83,7 @@ Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide 
 
 ![Actual Education workspace with a wider reader and persistent navigation beside the existing scene](docs/images/education-workspace.jpg)
 
-The [workspace review](docs/education/WORKSPACE_REVIEW.md) records this release's UI fixes and verification scope. The [earlier candidate validation](docs/EDUCATION_VALIDATION.md) preserves the original Education review evidence. The hosted application and standalone source share the educational features; you can run or modify the complete application without a ChatGPT Sites account.
+The dated [workspace review](docs/education/WORKSPACE_REVIEW.md) records the Education redesign's UI fixes and verification scope. The [earlier candidate validation](docs/EDUCATION_VALIDATION.md) preserves the original Education review evidence. The hosted application and standalone source share the educational features; you can run or modify the complete application without a ChatGPT Sites account.
 
 ## Run locally
 
@@ -184,7 +200,7 @@ These are plans, not implemented features or promised dates. See the [roadmap](d
 
 Helios is educational software, not a navigation instrument, precision ephemeris engine or complete survey. Interiors are simplified, atmosphere/ring lighting is approximate, and unresolved companions may use schematic layouts. The scene is preloaded rather than streamed. Dense names can overlap, the Three.js client chunk is large, and ULTRA can be expensive. Short browser checks do not establish sustained GPU performance or leak freedom. Accessibility coverage is incomplete.
 
-The initial public source release is tagged `v1.0.0-source.1`. Education 1.0 uses package/release version `1.1.0`. Version numbers do not certify scientific, classroom or security readiness. See the [workspace review](docs/education/WORKSPACE_REVIEW.md), [original candidate validation](docs/EDUCATION_VALIDATION.md) and [Education security review](docs/EDUCATION_SECURITY.md) for dated evidence. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
+The initial public source release is tagged `v1.0.0-source.1`. Education 1.0 first shipped in `v1.1.0`; the current package/release is `v1.1.2` and retains its four lessons plus the later reader, retry and evidence-layout improvements. Version numbers do not certify scientific, classroom or security readiness. See the [workspace review](docs/education/WORKSPACE_REVIEW.md), [original candidate validation](docs/EDUCATION_VALIDATION.md) and [Education security review](docs/EDUCATION_SECURITY.md) for dated evidence. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
 
 ## Contributing and credits
 
