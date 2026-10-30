@@ -1,5 +1,12 @@
 # Changelog
 
+## Current main — development dependency maintenance
+
+- Update the React build plugin from 6.0.2 to 6.1.2 and Node 22 type definitions from 22.19.19 to 22.20.5, retaining Node 22 support instead of adopting Node 26 types.
+- Validate clean installs with strict peer dependencies and inspect the full dependency tree. Run the verification workflow on both the minimum supported Node 22.13.0 and Node 24.
+- Defer ESLint 10: the current Next configuration includes import, accessibility and React plugins whose published peer ranges stop at ESLint 9. A passing ordinary install/lint run does not resolve that dependency incompatibility.
+- Hosted Site, application modules, scientific content and release tags are unchanged by this repository-only maintenance.
+
 ## Current main — coordinated framework maintenance
 
 - Update Vinext to 1.3.0 together with @vitejs/plugin-rsc 0.5.38; Vinext's App Router requires plugin-rsc 0.5.37 or newer.
