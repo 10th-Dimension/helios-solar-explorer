@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "A spatial-first 3D Solar System and nearby-star explorer with scientific provenance.",
   "license": "MIT",
-  "author": "Chase Wilcox",
+  "author": "10th-Dimension",
   "repository": {
     "type": "git",
     "url": "https://github.com/10th-Dimension/helios-solar-explorer.git"

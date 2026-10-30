@@ -31,7 +31,7 @@ Touch and pinch depend on the browser's support. Low-memory devices or missing W
 
 ## Hosting, security and release state
 
-[The public Helios Site](https://helios-solar-explorer.chasewilcox93.chatgpt.site/) includes Education 1.0 following explicit owner publication approval. Future deployments still require the owner’s authorized scope; independent staging remains separate. See [deployment instructions](DEPLOYMENT.md) for a separate staging copy and [security findings](../EDUCATION_SECURITY.md) before exposure to untrusted traffic.
+[The public Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/) includes Education 1.0 following explicit owner publication approval. Future deployments still require the owner’s authorized scope; independent staging remains separate. See [deployment instructions](DEPLOYMENT.md) for a separate staging copy and [security findings](../EDUCATION_SECURITY.md) before exposure to untrusted traffic.
 
 The current security report is a dated dependency review, not a penetration test. A passing public-file guard or secret scanner cannot prove that all possible disclosures or vulnerabilities are absent. Host operators remain responsible for TLS, access policy, server updates, request limits and response headers.
 
