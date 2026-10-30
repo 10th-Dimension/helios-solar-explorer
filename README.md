@@ -13,7 +13,7 @@ The universe is the interface. Information appears when you ask for it, not ever
 
 ## Current release and live Site
 
-**v1.1.2** records the coordinated dependency updates already deployed to the existing public Site as **Version 21**. The release and Version 21 share the same application code and dependency versions; this release finalizes repository documentation and package-version metadata after that deployment.
+**v1.1.2** is deployed to the existing public Site. The hosted package version, application code and updated dependency versions match the GitHub release. The hosting build retains its provider-specific integration; the standalone source runs independently using the instructions below.
 
 | Component | Current version |
 | --- | --- |
