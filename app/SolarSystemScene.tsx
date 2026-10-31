@@ -1104,7 +1104,9 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
 
     const pressed = new Set<string>();
     const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.target as HTMLElement | null)?.matches('input, textarea, select, button')) return;
+      if (event.defaultPrevented || document.querySelector('dialog[open]')) return;
+      const target = event.target;
+      if (target instanceof HTMLElement && target.closest('input, textarea, select, button, [contenteditable="true"], .education-panel, dialog')) return;
       pressed.add(event.key.toLowerCase());
     };
     const onKeyUp = (event: KeyboardEvent) => pressed.delete(event.key.toLowerCase());
@@ -1309,6 +1311,8 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
           }
         }
       }
+      // A dialog may open after a movement key was pressed in the scene.
+      if (document.querySelector('dialog[open]')) pressed.clear();
       if (runtime && !runtime.transition && !runtime.stellarTravel && ((!followingRef.current && runtime.focusedId) || runtime.cosmicScale === 'LOCAL_STELLAR' || runtime.cosmicScale === 'STELLAR_SYSTEM') && pressed.size) {
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
