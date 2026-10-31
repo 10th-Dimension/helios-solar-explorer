@@ -448,6 +448,11 @@ export default function Home() {
     return () => window.clearTimeout(timer);
   }, [stellarTravel?.status]);
 
+  const closeEducation = useCallback(() => {
+    setEducationOpen(false);
+    setEducationTarget(null);
+  }, []);
+
   const navigateEducation = useCallback((target: EducationTarget) => {
     setMinimalUi(false); setInteriorMode(false); setDetailOpen(false); setDataOpen(false); setCompareOpen(false);
     setEducationTarget(target);
@@ -470,7 +475,7 @@ export default function Home() {
     }
   }, [returnToSystem, returnToDestinationSystem, travelToWorld, travelToStellarObject, focusedId, arrivedStellarId]);
   useEffect(() => {
-    if (!educationTarget) return;
+    if (!educationOpen || !educationTarget) return;
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
@@ -487,7 +492,7 @@ export default function Home() {
     }
     });
     return () => { cancelled = true; };
-  }, [educationTarget, focusedId, arrivedStellarId, selectedExoplanetId]);
+  }, [educationOpen, educationTarget, focusedId, arrivedStellarId, selectedExoplanetId]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -526,7 +531,7 @@ export default function Home() {
       <header className="explore-hud">
         <button className="brand" onClick={returnToSystem}><i />HELIOS <span>LIVE COSMIC ATLAS</span></button>
         <div className="explore-location"><span>{arrivedStellarObject ? 'DESTINATION FRAME' : spatialScale.replace('_', ' ')}</span><strong>{selectedSystemObject?.name ?? selectedExoplanet?.name ?? arrivedStellarObject?.name ?? selectedStellarObject?.name ?? (focusedId ? world.name : 'Home [Our Sun]')}</strong></div>
-        <nav><button className={educationOpen ? 'active' : ''} aria-expanded={educationOpen} onClick={() => { setEducationOpen(open => !open); setMinimalUi(false); setExperienceMode('EXPLORE'); setDataOpen(false); setDetailOpen(false); setQuickTravelOpen(false); setCompareOpen(false); }}>EDUCATION</button><label className="quality-picker" title="Graphics quality"><select aria-label="Graphics quality" value={graphicsQuality} onChange={event => setGraphicsQuality(event.target.value as GraphicsQuality | 'AUTO')}>{['AUTO','ULTRA','HIGH','BALANCED'].map(tier => <option key={tier}>{tier}</option>)}</select></label><button className={experienceMode === 'CATALOG' ? 'active' : ''} onClick={() => { setEducationOpen(false); setExperienceMode('CATALOG'); }}>CATALOG</button><button onClick={() => { setEducationOpen(false); setQuickTravelOpen((open) => !open); }}>WORLDS</button><button onClick={() => setDataOpen(true)}>SCIENCE</button><button aria-pressed={pauseAnimations} onClick={() => setPauseAnimations(value => !value)}>{pauseAnimations ? 'RESUME MOTION' : 'PAUSE MOTION'}</button><button onClick={() => { setEducationOpen(false); toggleMinimalUi(); }}>HIDE HUD</button></nav>
+        <nav><button className={educationOpen ? 'active' : ''} aria-expanded={educationOpen} onClick={() => { if (educationOpen) closeEducation(); else setEducationOpen(true); setMinimalUi(false); setExperienceMode('EXPLORE'); setDataOpen(false); setDetailOpen(false); setQuickTravelOpen(false); setCompareOpen(false); }}>EDUCATION</button><label className="quality-picker" title="Graphics quality"><select aria-label="Graphics quality" value={graphicsQuality} onChange={event => setGraphicsQuality(event.target.value as GraphicsQuality | 'AUTO')}>{['AUTO','ULTRA','HIGH','BALANCED'].map(tier => <option key={tier}>{tier}</option>)}</select></label><button className={experienceMode === 'CATALOG' ? 'active' : ''} onClick={() => { closeEducation(); setExperienceMode('CATALOG'); }}>CATALOG</button><button onClick={() => { closeEducation(); setQuickTravelOpen((open) => !open); }}>WORLDS</button><button onClick={() => setDataOpen(true)}>SCIENCE</button><button aria-pressed={pauseAnimations} onClick={() => setPauseAnimations(value => !value)}>{pauseAnimations ? 'RESUME MOTION' : 'PAUSE MOTION'}</button><button onClick={() => { closeEducation(); toggleMinimalUi(); }}>HIDE HUD</button></nav>
       </header>
 
       {minimalUi && <><button className="restore-ui" onClick={toggleMinimalUi}>HELIOS · RESTORE HUD</button><div className="minimal-context"><span>{arrivedStellarObject ? `DESTINATION · ${arrivedStellarObject.name.toUpperCase()}` : 'EXPLORE MODE'}</span><strong>{selectedSystemObject?.name.toUpperCase() ?? selectedExoplanet?.name.toUpperCase() ?? selectedStellarObject?.name.toUpperCase() ?? (focusedId ? world.name.toUpperCase() : spatialScale.replace('_', ' '))}</strong></div></>}
@@ -633,7 +638,7 @@ export default function Home() {
         <div><strong>{stellarTravel.status === 'arrived' ? travellingStellarObject.name : `${stellarTravel.remainingLightYears.toFixed(2)} ly`}</strong><em>{getStellarObject(stellarTravel.sourceId ?? 'sol')?.name ?? 'Home [Our Sun]'} → {travellingStellarObject.name}</em></div>
         <p>{stellarTravel.status === 'arrived' ? `${getStellarSystem(travellingStellarObject.systemId)?.name.toUpperCase()} · DESTINATION GEOMETRY LIVE` : `${stellarTravel.totalLightYears.toFixed(2)} LY MODEL LEG · REMAINING DISTANCE DERIVED FROM THE ACTIVE RENDER PATH · 8.4 SEC VISUALIZATION`}</p>
       </div>}
-      {educationOpen && <EducationPanel onResize={setEducationPanelWidth} onClose={() => { setEducationOpen(false); setEducationTarget(null); }} onNavigate={navigateEducation} observed={{worldId:focusedId,layerIndex:interiorMode ? activeLayer : null,stellarId:arrivedStellarId,exoplanetId:focusedExoplanetId,compareOpen,interiorMode}} />}
+      {educationOpen && <EducationPanel onResize={setEducationPanelWidth} onClose={closeEducation} onNavigate={navigateEducation} observed={{worldId:focusedId,layerIndex:interiorMode ? activeLayer : null,stellarId:arrivedStellarId,exoplanetId:focusedExoplanetId,compareOpen,interiorMode}} />}
       <CatalogPanel open={experienceMode === 'CATALOG'} selectedId={selectedCatalogId} onSelect={setSelectedCatalogId} onTravel={handleCatalogTravel} onClose={() => setExperienceMode('EXPLORE')} />
       {travelTo && <div className="spatial-travel"><span>TRAVELLING THROUGH SYSTEM SPACE</span><strong>{travelTo.name}</strong><em>{travelTo.distance} REAL MEAN ORBIT · 2.1 SEC VISUALIZED TRAVEL</em><div><i /></div></div>}
       {mapOpen && <SystemMap current={world} onSelect={travelToWorld} onClose={() => setMapOpen(false)} />}
