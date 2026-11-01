@@ -213,6 +213,7 @@ export default function Home() {
   const [selectedId, setSelectedId] = useState('earth');
   const [view, setView] = useState<ViewMode>('overview');
   const [travelTo, setTravelTo] = useState<World | null>(null);
+  const [sceneUnavailable, setSceneUnavailable] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
@@ -240,6 +241,10 @@ export default function Home() {
   const [systemObjectFocusRequest, setSystemObjectFocusRequest] = useState<SystemObjectFocusRequest>({ targetId: null, sequence: 0 });
   const arrivalSelectionRef = useRef<ArrivalSelection | null>(null);
   const interiorNoteRef = useRef<HTMLElement>(null);
+  const informationHeadingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (sceneUnavailable && detailOpen) informationHeadingRef.current?.focus();
+  }, [sceneUnavailable, detailOpen, selectedId]);
   const world = useMemo(() => worlds.find((item) => item.id === selectedId)!, [selectedId]);
   const selectedStellarObject = useMemo(() => selectedStellarId ? getStellarObject(selectedStellarId) ?? null : null, [selectedStellarId]);
   const selectedStellarSystem = selectedStellarObject ? getStellarSystem(selectedStellarObject.systemId) : null;
@@ -250,6 +255,7 @@ export default function Home() {
   const destinationSystem = useMemo(() => getDestinationSystemByAnchor(arrivedStellarId) ?? null, [arrivedStellarId]);
   const selectedDestinationBody = destinationSystem?.bodies.find((body) => body.objectId === selectedSystemObjectId) ?? null;
   const selectedDestinationOrbit = destinationSystem?.orbits.find((orbit) => orbit.bodyId === selectedDestinationBody?.id) ?? null;
+  const canReadWorld = Boolean(focusedId || (sceneUnavailable && focusRequest.targetId));
   const travellingStellarObject = stellarTravel ? getStellarObject(stellarTravel.targetId) ?? null : null;
 
   const travelToWorld = useCallback((id: string) => {
@@ -267,7 +273,7 @@ export default function Home() {
     setExoplanetFocusRequest((current) => ({ targetId: null, sequence: current.sequence + 1 }));
     setSystemObjectFocusRequest((current) => ({ targetId: null, sequence: current.sequence + 1 }));
     setView('overview');
-    setDetailOpen(false);
+    setDetailOpen(sceneUnavailable);
     setFocusedId(null);
     setInteriorMode(false);
     setActiveLayer(0);
@@ -276,9 +282,9 @@ export default function Home() {
     setCompareOpen(false);
     setQuickTravelOpen(false);
     setExperienceMode('EXPLORE');
-    setTravelTo(next);
+    setTravelTo(sceneUnavailable ? null : next);
     setFocusRequest((current) => ({ targetId: id, sequence: current.sequence + 1 }));
-  }, []);
+  }, [sceneUnavailable]);
 
   const returnToSystem = useCallback(() => {
     setDetailOpen(false);
@@ -306,6 +312,12 @@ export default function Home() {
     setTravelTo(null);
     setFocusedId(id);
   }, []);
+
+  const handleSceneUnavailable = useCallback(() => {
+    setSceneUnavailable(true);
+    setTravelTo(null);
+    if (focusRequest.targetId) setDetailOpen(true);
+  }, [focusRequest.targetId]);
 
   const selectStellarObject = useCallback((id: string) => {
     setSelectedStellarId(id);
@@ -507,13 +519,13 @@ export default function Home() {
         if (compareOpen) { setCompareOpen(false); return; }
         if (detailOpen) { setDetailOpen(false); return; }
         if (interiorMode) { setInteriorMode(false); return; }
-        if (focusedId) { returnToSystem(); return; }
+        if (canReadWorld) { returnToSystem(); return; }
         if (selectedStellarId) { setSelectedStellarId(null); return; }
         if (arrivedStellarId) { leaveDestinationSystem(); return; }
         if (quickTravelOpen) { setQuickTravelOpen(false); return; }
         if (minimalUi) { setMinimalUi(false); return; }
       }
-      if (event.key.toLowerCase() === 'i' && focusedId) { setDetailOpen((open) => !open); return; }
+      if (event.key.toLowerCase() === 'i' && canReadWorld) { setDetailOpen((open) => !open); return; }
       if (event.key.toLowerCase() === 'x' && focusedId) { setDetailOpen(false); setInteriorMode((open) => { if (!open) setActiveLayer(world.layers.length - 1); return !open; }); return; }
       if (event.key.toLowerCase() === 'm') { toggleMinimalUi(); return; }
       if (spatialScale === 'LOCAL_STELLAR' || spatialScale === 'STELLAR_SYSTEM') return;
@@ -524,22 +536,22 @@ export default function Home() {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [arrivedStellarId, compareOpen, dataOpen, detailOpen, experienceMode, focusedExoplanetId, focusedId, focusedSystemObjectId, interiorMode, leaveDestinationSystem, minimalUi, quickTravelOpen, returnToDestinationSystem, returnToSystem, selectedExoplanetId, selectedId, selectedStellarId, selectedSystemObjectId, spatialScale, stellarTravel, toggleMinimalUi, travelToWorld, world.layers.length]);
+  }, [arrivedStellarId, canReadWorld, compareOpen, dataOpen, detailOpen, experienceMode, focusedExoplanetId, focusedId, focusedSystemObjectId, interiorMode, leaveDestinationSystem, minimalUi, quickTravelOpen, returnToDestinationSystem, returnToSystem, selectedExoplanetId, selectedId, selectedStellarId, selectedSystemObjectId, spatialScale, stellarTravel, toggleMinimalUi, travelToWorld, world.layers.length]);
 
   return (
     <main className={`app-shell mode-${experienceMode.toLowerCase()} world-${world.id} ${minimalUi ? 'minimal-ui' : ''} ${educationOpen ? 'education-active' : ''} ${interiorMode ? 'interior-active' : ''} ${stellarTravel?.status === 'traveling' ? 'interstellar-active' : ''}`} style={{ '--world': world.color, '--accent': world.accent, ...(educationPanelWidth === null ? {} : {'--education-width': `${educationPanelWidth}px`}) } as React.CSSProperties}>
       <header className="explore-hud">
         <button className="brand" onClick={returnToSystem}><i />HELIOS <span>LIVE COSMIC ATLAS</span></button>
-        <div className="explore-location"><span>{arrivedStellarObject ? 'DESTINATION FRAME' : spatialScale.replace('_', ' ')}</span><strong>{selectedSystemObject?.name ?? selectedExoplanet?.name ?? arrivedStellarObject?.name ?? selectedStellarObject?.name ?? (focusedId ? world.name : 'Home [Our Sun]')}</strong></div>
+        <div className="explore-location"><span>{arrivedStellarObject ? 'DESTINATION FRAME' : spatialScale.replace('_', ' ')}</span><strong>{selectedSystemObject?.name ?? selectedExoplanet?.name ?? arrivedStellarObject?.name ?? selectedStellarObject?.name ?? (canReadWorld ? world.name : 'Home [Our Sun]')}</strong></div>
         <nav><button className={educationOpen ? 'active' : ''} aria-expanded={educationOpen} onClick={() => { if (educationOpen) closeEducation(); else setEducationOpen(true); setMinimalUi(false); setExperienceMode('EXPLORE'); setDataOpen(false); setDetailOpen(false); setQuickTravelOpen(false); setCompareOpen(false); }}>EDUCATION</button><label className="quality-picker" title="Graphics quality"><select aria-label="Graphics quality" value={graphicsQuality} onChange={event => setGraphicsQuality(event.target.value as GraphicsQuality | 'AUTO')}>{['AUTO','ULTRA','HIGH','BALANCED'].map(tier => <option key={tier}>{tier}</option>)}</select></label><button className={experienceMode === 'CATALOG' ? 'active' : ''} onClick={() => { closeEducation(); setExperienceMode('CATALOG'); }}>CATALOG</button><button onClick={() => { closeEducation(); setQuickTravelOpen((open) => !open); }}>WORLDS</button><button onClick={() => setDataOpen(true)}>SCIENCE</button><button aria-pressed={pauseAnimations} onClick={() => setPauseAnimations(value => !value)}>{pauseAnimations ? 'RESUME MOTION' : 'PAUSE MOTION'}</button><button onClick={() => { closeEducation(); toggleMinimalUi(); }}>HIDE HUD</button></nav>
       </header>
 
-      {minimalUi && <><button className="restore-ui" onClick={toggleMinimalUi}>HELIOS · RESTORE HUD</button><div className="minimal-context"><span>{arrivedStellarObject ? `DESTINATION · ${arrivedStellarObject.name.toUpperCase()}` : 'EXPLORE MODE'}</span><strong>{selectedSystemObject?.name.toUpperCase() ?? selectedExoplanet?.name.toUpperCase() ?? selectedStellarObject?.name.toUpperCase() ?? (focusedId ? world.name.toUpperCase() : spatialScale.replace('_', ' '))}</strong></div></>}
+      {minimalUi && <><button className="restore-ui" onClick={toggleMinimalUi}>HELIOS · RESTORE HUD</button><div className="minimal-context"><span>{arrivedStellarObject ? `DESTINATION · ${arrivedStellarObject.name.toUpperCase()}` : 'EXPLORE MODE'}</span><strong>{selectedSystemObject?.name.toUpperCase() ?? selectedExoplanet?.name.toUpperCase() ?? selectedStellarObject?.name.toUpperCase() ?? (canReadWorld ? world.name.toUpperCase() : spatialScale.replace('_', ' '))}</strong></div></>}
 
       <section className={`space-stage ${detailOpen ? 'detail-active' : ''}`}>
-        <SolarSystemScene pauseAnimations={pauseAnimations} graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} interiorNoteRef={interiorNoteRef} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
+        <SolarSystemScene pauseAnimations={pauseAnimations} graphicsQuality={graphicsQuality} eventPreview={eventPreview} auroraPreview={auroraPreview && focusedId === 'earth' && !interiorMode} selectedId={selectedId} selectedStellarId={selectedStellarId} selectedExoplanetId={selectedExoplanetId} selectedSystemObjectId={selectedSystemObjectId} arrivedStellarId={arrivedStellarId} focusRequest={focusRequest} stellarTravelRequest={stellarTravelRequest} exoplanetFocusRequest={exoplanetFocusRequest} systemObjectFocusRequest={systemObjectFocusRequest} interiorMode={interiorMode} activeLayer={activeLayer} interiorNoteRef={interiorNoteRef} following={following} onSelect={travelToWorld} onSelectStellar={selectStellarObject} onSelectExoplanet={selectExoplanet} onSelectSystemObject={selectSystemObject} onArrive={handleArrival} onUnavailable={handleSceneUnavailable} onStellarTravelProgress={handleStellarTravelProgress} onStellarArrive={handleStellarArrival} onExoplanetArrive={handleExoplanetArrival} onSystemObjectArrive={handleSystemObjectArrival} onScaleChange={setSpatialScale} />
 
-        <div className={`system-intro ${focusedId || travelTo || spatialScale === 'LOCAL_STELLAR' || spatialScale === 'STELLAR_SYSTEM' || arrivedStellarId ? 'hidden' : ''}`}>
+        <div className={`system-intro ${canReadWorld || travelTo || spatialScale === 'LOCAL_STELLAR' || spatialScale === 'STELLAR_SYSTEM' || arrivedStellarId ? 'hidden' : ''}`}>
           <p>YOU ARE HERE · HOME [OUR SUN]</p>
           <h1>A navigable model<br />of our home system.</h1>
           <span>Drag to look around. Scroll to move through space. Select a world directly to travel.</span>
@@ -585,17 +597,17 @@ export default function Home() {
           <SourceInspector context={{kind:'stellar',id:selectedSystemObject.id}} label="Stellar evidence and dates" /><p>SIMBAD CATALOG OBJECT · SYSTEM GEOMETRY ILLUSTRATIVE UNLESS AN ORBIT IS CITED · APPEARANCE ILLUSTRATIVE</p>
         </section>}
 
-        {focusedId && !travelTo && <section className="object-dock" aria-label={`${world.name} exploration controls`}>
+        {canReadWorld && !travelTo && <section className="object-dock" aria-label={`${world.name} exploration controls`}>
           <div><span>{world.index} · {world.kind}</span><strong>{world.name}</strong><em>{world.distance} FROM OUR SUN</em></div>
           <div className="object-actions">
             <button onClick={() => { setInteriorMode(false); setDetailOpen(true); }}>INFO <kbd>I</kbd></button>
-            <button className={interiorMode ? 'active' : ''} aria-pressed={interiorMode} onClick={() => { setDetailOpen(false); setAuroraPreview(false); setInteriorMode((open) => { if (!open) setActiveLayer(world.layers.length - 1); return !open; }); }}>INTERIOR <kbd>X</kbd></button>
-            <button className={!following ? 'active' : ''} aria-pressed={!following} onClick={() => following ? setFollowing(false) : refocusWorld()}>{following ? 'RELEASE' : 'REFOCUS'}</button>
+            {!sceneUnavailable && <><button className={interiorMode ? 'active' : ''} aria-pressed={interiorMode} onClick={() => { setDetailOpen(false); setAuroraPreview(false); setInteriorMode((open) => { if (!open) setActiveLayer(world.layers.length - 1); return !open; }); }}>INTERIOR <kbd>X</kbd></button>
+            <button className={!following ? 'active' : ''} aria-pressed={!following} onClick={() => following ? setFollowing(false) : refocusWorld()}>{following ? 'RELEASE' : 'REFOCUS'}</button></>}
             <button onClick={() => setDataOpen(true)}>SCIENCE</button>
-            {world.id === 'earth' && <button aria-label="Strong aurora preview" aria-pressed={auroraPreview} className={auroraPreview ? 'active' : ''} onClick={() => { setInteriorMode(false); setDetailOpen(false); setFollowing(true); setAuroraPreview(value=>!value); }}>{auroraPreview ? 'AURORA ON' : 'AURORA'}</button>}
+            {!sceneUnavailable && world.id === 'earth' && <button aria-label="Strong aurora preview" aria-pressed={auroraPreview} className={auroraPreview ? 'active' : ''} onClick={() => { setInteriorMode(false); setDetailOpen(false); setFollowing(true); setAuroraPreview(value=>!value); }}>{auroraPreview ? 'AURORA ON' : 'AURORA'}</button>}
             <button onClick={returnToSystem}>SYSTEM</button>
           </div>
-          <p>{world.id === 'sun' ? 'ULTRAVIOLET · FALSE COLOR · ACCELERATED PLASMA & ERUPTIVE LOOPS · ILLUSTRATIVE, NOT LIVE' : world.id === 'earth' && auroraPreview ? 'STRONG AURORA PREVIEW · ILLUSTRATIVE · STAYS ON UNTIL SWITCHED OFF · DRAG TO ORBIT' : following ? 'FOLLOW MODE · drag to circle · scroll to approach · release for WASD / Q E drift' : 'FREE DRIFT · WASD to move · Q E vertical · Shift accelerates · re-focus anytime'}</p>
+          <p>{sceneUnavailable ? 'WORLD INFORMATION · 3D UNAVAILABLE' : world.id === 'sun' ? 'ULTRAVIOLET · FALSE COLOR · ACCELERATED PLASMA & ERUPTIVE LOOPS · ILLUSTRATIVE, NOT LIVE' : world.id === 'earth' && auroraPreview ? 'STRONG AURORA PREVIEW · ILLUSTRATIVE · STAYS ON UNTIL SWITCHED OFF · DRAG TO ORBIT' : following ? 'FOLLOW MODE · drag to circle · scroll to approach · release for WASD / Q E drift' : 'FREE DRIFT · WASD to move · Q E vertical · Shift accelerates · re-focus anytime'}</p>
         </section>}
 
         {focusedId && !following && !travelTo && <div className="drift-status"><i /><span>FREE DRIFT</span><strong>{world.name} released</strong><em>WASD · Q/E vertical · Shift accelerate</em></div>}
@@ -612,10 +624,10 @@ export default function Home() {
           <button className="drawer-back" onClick={() => setDetailOpen(false)}>← CLOSE INFORMATION</button>
           <div className="world-heading">
             <p><span>{world.index}</span>{world.kind}</p>
-            <h1>{world.name}</h1>
+            <h1 ref={informationHeadingRef} tabIndex={-1}>{world.name}</h1>
             <h2>{world.tagline}</h2>
           </div>
-          <div className="drawer-actions"><button onClick={() => setCompareOpen(true)}>COMPARE WITH EARTH</button><button onClick={() => { setDetailOpen(false); setActiveLayer(world.layers.length - 1); setInteriorMode(true); }}>OPEN 3D INTERIOR</button><span>{world.visualLabel}</span></div>
+          <div className="drawer-actions"><button onClick={() => setCompareOpen(true)}>COMPARE WITH EARTH</button>{!sceneUnavailable && <button onClick={() => { setDetailOpen(false); setActiveLayer(world.layers.length - 1); setInteriorMode(true); }}>OPEN 3D INTERIOR</button>}<span>{world.visualLabel}</span></div>
           <div className="view-tabs" aria-label="Information views">
             {(['overview', 'interior', 'environment'] as ViewMode[]).map((tab) => <button key={tab} className={view === tab ? 'active' : ''} onClick={() => setView(tab)} aria-pressed={view === tab}>{tab}</button>)}
           </div>

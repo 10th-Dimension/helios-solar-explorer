@@ -50,6 +50,7 @@ type SceneProps = {
   onSelectExoplanet: (id: string) => void;
   onSelectSystemObject: (id: string) => void;
   onArrive: (id: string | null) => void;
+  onUnavailable: () => void;
   onStellarTravelProgress: (targetId: string, progress: number, remainingLightYears: number) => void;
   onStellarArrive: (targetId: string) => void;
   onExoplanetArrive: (targetId: string) => void;
@@ -266,7 +267,7 @@ function smoothstep(minimum: number, maximum: number, value: number) {
   return normalized * normalized * (3 - 2 * normalized);
 }
 
-export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, pauseAnimations = false, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, interiorNoteRef, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
+export default function SolarSystemScene({ graphicsQuality, eventPreview, auroraPreview, pauseAnimations = false, selectedId, selectedStellarId, selectedExoplanetId, selectedSystemObjectId, arrivedStellarId, focusRequest, stellarTravelRequest, exoplanetFocusRequest, systemObjectFocusRequest, interiorMode, activeLayer, interiorNoteRef, following, onSelect, onSelectStellar, onSelectExoplanet, onSelectSystemObject, onArrive, onUnavailable, onStellarTravelProgress, onStellarArrive, onExoplanetArrive, onSystemObjectArrive, onScaleChange }: SceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
   const layerLeaderRef = useRef<SVGSVGElement>(null);
@@ -284,6 +285,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
   const onSelectExoplanetRef = useRef(onSelectExoplanet);
   const onSelectSystemObjectRef = useRef(onSelectSystemObject);
   const onArriveRef = useRef(onArrive);
+  const onUnavailableRef = useRef(onUnavailable);
   const onStellarTravelProgressRef = useRef(onStellarTravelProgress);
   const onStellarArriveRef = useRef(onStellarArrive);
   const onExoplanetArriveRef = useRef(onExoplanetArrive);
@@ -308,6 +310,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
   useEffect(() => { onSelectExoplanetRef.current = onSelectExoplanet; }, [onSelectExoplanet]);
   useEffect(() => { onSelectSystemObjectRef.current = onSelectSystemObject; }, [onSelectSystemObject]);
   useEffect(() => { onArriveRef.current = onArrive; }, [onArrive]);
+  useEffect(() => { onUnavailableRef.current = onUnavailable; }, [onUnavailable]);
   useEffect(() => { onStellarTravelProgressRef.current = onStellarTravelProgress; }, [onStellarTravelProgress]);
   useEffect(() => { onStellarArriveRef.current = onStellarArrive; }, [onStellarArrive]);
   useEffect(() => { onExoplanetArriveRef.current = onExoplanetArrive; }, [onExoplanetArrive]);
@@ -460,6 +463,8 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     const catalogDistance = stellarTravelRequest.distanceLightYears || distanceLightYears(object);
     runtime.transition = null;
     runtime.focusedId = null;
+    runtime.focusedExoplanetId = null;
+    runtime.focusedSystemObjectId = null;
     runtime.controls.enabled = false;
     runtime.stellarTravel = {
       startAt: performance.now(),
@@ -550,7 +555,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     } catch {
-      const errorTimer = window.setTimeout(() => setWebglError(true), 0);
+      const errorTimer = window.setTimeout(() => { setWebglError(true); onUnavailableRef.current(); }, 0);
       return () => window.clearTimeout(errorTimer);
     }
 
@@ -1110,8 +1115,10 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       pressed.add(event.key.toLowerCase());
     };
     const onKeyUp = (event: KeyboardEvent) => pressed.delete(event.key.toLowerCase());
+    const onBlur = () => pressed.clear();
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', onBlur);
 
     const calloutPoint = new THREE.Vector3();
     let frame = 0;
@@ -1492,6 +1499,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       renderer.domElement.removeEventListener('pointerup', onPointerUp);
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('blur', onBlur);
       controls.dispose();
       renderer.domElement.removeEventListener('wheel',onSmoothWheel,true);
       renderer.domElement.removeEventListener('pointerdown',clearWheel,true);
@@ -1524,7 +1532,7 @@ export default function SolarSystemScene({ graphicsQuality, eventPreview, aurora
       {hovered?.kind === 'stellar' && <div className="scene-hover stellar-hover"><span>✦</span><div><strong>{hovered.object.name}</strong><em>{hovered.object.stellarType} · {distanceLightYears(hovered.object).toFixed(2)} LY</em><small>{getStellarSystem(hovered.object.systemId)?.name}</small></div><b>SELECT ↗</b></div>}
       {hovered?.kind === 'exoplanet' && <div className="scene-hover stellar-hover"><span>◉</span><div><strong>{hovered.object.name}</strong><em>{hovered.object.status} · {hovered.object.semiMajorAxisAU} AU</em><small>{hovered.object.likelyClass}</small></div><b>INSPECT ↗</b></div>}
       {hovered?.kind === 'system-object' && <div className="scene-hover stellar-hover"><span>✦</span><div><strong>{hovered.object.name}</strong><em>{hovered.object.stellarType} · {hovered.object.spectralType}</em><small>DESTINATION-SYSTEM MEMBER</small></div><b>INSPECT ↗</b></div>}
-      {webglError && <div className="webgl-fallback"><strong>3D rendering is unavailable.</strong><p>Use Quick Travel to continue exploring the full Helios knowledge experience.</p></div>}
+      {webglError && <div className="webgl-fallback" role="status"><strong>3D rendering is unavailable.</strong><p>Choose WORLDS for Quick Travel to world information, or use the written alternatives in EDUCATION.</p></div>}
     </div>
   );
 }
