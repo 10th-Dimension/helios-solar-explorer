@@ -20,4 +20,4 @@ The tracked-file guard does not replace dedicated secret scanning or human revie
 
 Use `npm run build` followed by `npm start -- --hostname 127.0.0.1` for a local production-build preview. Bare `npm start` binds to all network interfaces by default. Helios does not configure your firewall, TLS, authentication or deployment provider, and the MIT license is not a claim that the current server/dependency stack is ready for untrusted traffic.
 
-The Verify workflow does not enforce `npm audit`; a green check does not mean zero vulnerable dependencies. Dependabot pull requests are proposals, not applied fixes. The audit report records dated findings for a particular source revision; rerun the audit before making a new hosting decision.
+The Verify workflow enforces `npm audit --audit-level=high`, failing CI for reported high or critical dependency vulnerabilities. Lower-severity advisories can remain while CI passes; a green check does not mean zero vulnerable dependencies. Dependabot pull requests are proposals, not applied fixes. The audit report records dated findings for a particular source revision; rerun the audit before making a new hosting decision.

@@ -1,9 +1,19 @@
 # Changelog
 
+## Changes since v1.1.2 — interaction fixes (2026-11-01)
+
+These fixes were merged after the v1.1.2 tag; the package version remains 1.1.2. Existing release tags retain their original snapshots.
+
+- [#29](https://github.com/10th-Dimension/helios-solar-explorer/pull/29): dismissing Education through Catalog, Worlds, Hide HUD, its toggle or Exit cancels pending lesson-target and arrival actions, preventing a late interior or comparison from opening.
+- [#29](https://github.com/10th-Dimension/helios-solar-explorer/pull/29): modal dialogs and editable controls block scene movement; opening a dialog also clears held movement so closing it does not resume stale drift.
+- [#30](https://github.com/10th-Dimension/helios-solar-explorer/pull/30): when WebGL renderer construction fails, cancel pending visual travel and provide readable world information with INFO/I and heading focus. Hide unavailable 3D actions and preserve Escape/I behavior.
+- [#30](https://github.com/10th-Dimension/helios-solar-explorer/pull/30): clear stale exoplanet/system-object focus when departing for another star, and release held movement keys and Shift on window blur.
+- Verification recorded in the PRs: the final [Node 22/24 Verify run](https://github.com/10th-Dimension/helios-solar-explorer/actions/runs/41260352455) passed all eight suites, including 21 focused interaction cases. Bounded browser checks covered Education dismissal during travel, renderer-failure information, keyboard shortcuts and stellar departure/arrival. The exact held-key OS-blur gesture remains deterministic-test-only; #29's held-key modal browser check was not performed.
+
 ## v1.1.2 — Coordinated dependency maintenance
 
 - Update Vinext to 1.3.1, React DOM types to 19.3.0, and Three.js to 0.186.1 with matching 0.186.0 type definitions. Group future Three.js/runtime type updates for coordinated review.
-- Retain TypeScript 5.9.3: the combined TypeScript 7 candidate fails strict dependency resolution because current typescript-eslint peers require TypeScript below 6.1.0. Keep PR #25 draft until compatible tooling is available. ESLint 10 remains on hold separately.
+- Retain TypeScript 5.9.3: the combined TypeScript 7 candidate fails strict dependency resolution because current typescript-eslint peers require TypeScript below 6.1.0. The TypeScript 7 proposal [#25](https://github.com/10th-Dimension/helios-solar-explorer/pull/25) and ESLint 10 proposal [#14](https://github.com/10th-Dimension/helios-solar-explorer/pull/14) were subsequently closed unmerged on 2026-10-31; both upgrades remain deferred until compatible tooling passes verification.
 - Preserve the existing application, scientific content, public Site identity and released v1.1.1 tag. The combined dependency set passed both Node/npm CI environments and the hosting Worker build, then deployed to the same public Site as Version 21. Bounded live checks covered rendered overview, planetary interior callouts and Education resume/answer/retry.
 - Align the README with the live Site, document current dependency versions and held upgrades, correct the historical Education version wording, and finalize package/release metadata as 1.1.2. No application or dependency changes are introduced by this documentation/release step.
 

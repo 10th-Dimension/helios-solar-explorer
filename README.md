@@ -11,25 +11,28 @@ Helios is an interactive 3D cosmic atlas built by **10th-Dimension**. Start at *
 
 The universe is the interface. Information appears when you ask for it, not every time you select something. A beautiful visualization should never pretend we know more than we do.
 
-## Current release and live Site
-
-**v1.1.2** is deployed to the existing public Site. The hosted package version, application code and updated dependency versions match the GitHub release. The hosting build retains its provider-specific integration; the standalone source runs independently using the instructions below.
-
-| Component | Current version |
-| --- | --- |
-| Vinext | 1.3.1 |
-| Three.js / Three.js types | 0.186.1 / 0.186.0 |
-| React DOM types | 19.3.0 |
-| TypeScript | 5.9.3 |
-| ESLint | 9.39.4 |
-
-PRs [#23](https://github.com/10th-Dimension/helios-solar-explorer/pull/23), [#24](https://github.com/10th-Dimension/helios-solar-explorer/pull/24) and [#26](https://github.com/10th-Dimension/helios-solar-explorer/pull/26) were tested together and merged. **TypeScript 7 [#25](https://github.com/10th-Dimension/helios-solar-explorer/pull/25) remains on hold:** strict installation rejects it because the current typescript-eslint tooling supports TypeScript below 6.1.0. **ESLint 10 [#14](https://github.com/10th-Dimension/helios-solar-explorer/pull/14) remains on hold:** the current lint plugins' peer ranges stop at ESLint 9. Neither upgrade is forced past its compatibility checks.
-
-The [deployed dependency set passed both CI environments](https://github.com/10th-Dimension/helios-solar-explorer/actions/runs/41115677637), including strict clean installs, dependency-tree checks, seven verification suites, type checking, lint, production build, public-file audit and full-history secret scanning. Dependency audits reported zero findings. The hosting Worker build and bounded live checks of scene rendering, planetary callouts and Education resume/answer/retry also passed. These checks do not establish exhaustive browser, accessibility, scientific or classroom certification. Earlier release tags remain unchanged; see the [changelog](CHANGELOG.md).
-
 ![The Helios stellar neighborhood with persistent selectable names](docs/images/stellar-neighborhood.jpg)
 
 *Actual application capture. Bright selectable objects are catalog-backed; the faint distant field is illustrative. Positions, sizes and travel are transformed for navigation.*
+
+- **Explore:** travel from the Sun and eight planets to nearby stars and confirmed exoplanets.
+- **Inspect:** open interactive planetary interiors and read source-linked scientific explanations.
+- **Learn:** follow four optional Education journeys with knowledge checks and browser-local progress.
+
+## Run locally
+
+Use **Node.js 24**, npm and a modern WebGL-capable browser. CI checks Node.js 24 with npm 11.17.0 and the minimum supported Node.js 22.13.0 with npm 10.9.2. Node type definitions stay on the supported 22.x series.
+
+```bash
+git clone https://github.com/10th-Dimension/helios-solar-explorer.git
+cd helios-solar-explorer
+npm ci
+npm run dev
+```
+
+Open the local address printed by the server (normally `http://localhost:3000`). **No API key, account, database or `.env` file is required.** Installation requires internet access; the font pipeline may contact Google Fonts. Astronomical records and Earth textures are local; source links open their providers.
+
+**This repository includes the complete Helios application source and a standalone configuration for running and modifying it.** You do not need ChatGPT, a ChatGPT Sites project or the author's hosting settings. Only deployment-specific settings and internal development notes are excluded; neither is needed to run the application.
 
 ## What you can explore
 
@@ -85,22 +88,7 @@ Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide 
 
 The dated [workspace review](docs/education/WORKSPACE_REVIEW.md) records the Education redesign's UI fixes and verification scope. The [earlier candidate validation](docs/EDUCATION_VALIDATION.md) preserves the original Education review evidence. The hosted application and standalone source share the educational features; you can run or modify the complete application without a ChatGPT Sites account.
 
-## Run locally
-
-Use **Node.js 24**, npm and a modern WebGL-capable browser. CI checks Node.js 24 with npm 11.17.0 and the minimum supported Node.js 22.13.0 with npm 10.9.2. Node type definitions stay on the supported 22.x series.
-
-```bash
-git clone https://github.com/10th-Dimension/helios-solar-explorer.git
-cd helios-solar-explorer
-npm ci
-npm run dev
-```
-
-Open the local address printed by the server (normally `http://localhost:3000`). **No API key, account, database or `.env` file is required.** Installation requires internet access; the font pipeline may contact Google Fonts. Astronomical records and Earth textures are local; source links open their providers.
-
-**This repository includes the complete Helios application source and a standalone configuration for running and modifying it.** You do not need ChatGPT, a ChatGPT Sites project or the author's hosting settings. Only deployment-specific settings and internal development notes are excluded; neither is needed to run the application.
-
-### Check or preview a production build locally
+## Check or preview a production build locally
 
 ```bash
 npm test               # Catalog/data, geometry, input, science graph and education contracts
@@ -201,6 +189,24 @@ These are plans, not implemented features or promised dates. See the [roadmap](d
 Helios is educational software, not a navigation instrument, precision ephemeris engine or complete survey. Interiors are simplified, atmosphere/ring lighting is approximate, and unresolved companions may use schematic layouts. The scene is preloaded rather than streamed. Dense names can overlap, the Three.js client chunk is large, and ULTRA can be expensive. Short browser checks do not establish sustained GPU performance or leak freedom. Accessibility coverage is incomplete.
 
 The initial public source release is tagged `v1.0.0-source.1`. Education 1.0 first shipped in `v1.1.0`; the current package/release is `v1.1.2` and retains its four lessons plus the later reader, retry and evidence-layout improvements. Version numbers do not certify scientific, classroom or security readiness. See the [workspace review](docs/education/WORKSPACE_REVIEW.md), [original candidate validation](docs/EDUCATION_VALIDATION.md) and [Education security review](docs/EDUCATION_SECURITY.md) for dated evidence. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
+
+## Maintenance and verification
+
+The latest tagged release and package version are **v1.1.2**. Main also includes the later interaction fixes in [#29](https://github.com/10th-Dimension/helios-solar-explorer/pull/29) and [#30](https://github.com/10th-Dimension/helios-solar-explorer/pull/30); see the [changelog](CHANGELOG.md). Existing release tags retain their original snapshots. The public Site is hosted separately; this repository's standalone source runs without the author's hosting configuration.
+
+| Component | Current version |
+| --- | --- |
+| Vinext | 1.3.1 |
+| Three.js / Three.js types | 0.186.1 / 0.186.0 |
+| React DOM types | 19.3.0 |
+| TypeScript | 5.9.3 |
+| ESLint | 9.39.4 |
+
+The coordinated dependency updates in [#23](https://github.com/10th-Dimension/helios-solar-explorer/pull/23), [#24](https://github.com/10th-Dimension/helios-solar-explorer/pull/24) and [#26](https://github.com/10th-Dimension/helios-solar-explorer/pull/26) were tested together and merged. The TypeScript 7 proposal [#25](https://github.com/10th-Dimension/helios-solar-explorer/pull/25) and ESLint 10 proposal [#14](https://github.com/10th-Dimension/helios-solar-explorer/pull/14) were **closed unmerged on 2026-10-31** after compatibility checks. Those upgrades remain deferred: the recorded typescript-eslint peer range excludes TypeScript 7, and the lint plugins' recorded peer ranges exclude ESLint 10. Reconsider them when compatible tooling passes strict installation and full verification.
+
+[PR #30's Verify run](https://github.com/10th-Dimension/helios-solar-explorer/actions/runs/41260352455) passed both Node/npm environments, including strict clean installs, dependency-tree checks, all eight test suites with 21 focused interaction cases, type checking, lint, production build, public-file audit and reachable-history secret scanning. CI also runs `npm audit --audit-level=high`; a passing result does not mean zero advisories.
+
+The PRs record bounded browser checks and their remaining limits. The exact held-key OS-blur gesture remains deterministic-test-only; [#29](https://github.com/10th-Dimension/helios-solar-explorer/pull/29) also records an unperformed held-key modal browser check. These results apply to the recorded revisions and do not establish exhaustive browser, accessibility, scientific or classroom certification.
 
 ## Contributing and credits
 
