@@ -4,7 +4,7 @@
 
 - Lead the README with exploration, interiors, guided lessons and an actual application capture; move maintenance details into linked development documentation.
 - Align page/share descriptions with the Solar System, nearby stars, curated exoplanets and lessons. Clarify first-release wording and CI audit thresholds.
-- Add a pinned Playwright browser suite and CI job for desktop interaction, lesson completion/persistence, fallback, reduced motion and a narrow-layout AUTO check.
+- Add a pinned local Playwright browser suite for desktop interaction, lesson completion/persistence, fallback, reduced motion and a narrow-layout AUTO check.
 - Format the existing scene/page/lesson components for reviewability; retain renderer ownership, scientific records and mobile graphics policy.
 - Document the currently reported moderate minimatch/toolchain advisory and why an incompatible major override is not forced. See the dated maintenance review.
 
