@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — Project overview and browser verification
+
+- Lead the README with exploration, interiors, guided lessons and an actual application capture; move maintenance details into linked development documentation.
+- Align page/share descriptions with the Solar System, nearby stars, curated exoplanets and lessons. Clarify first-release wording and CI audit thresholds.
+- Add a pinned local Playwright browser suite for desktop interaction, lesson completion/persistence, fallback, reduced motion and a narrow-layout AUTO check.
+- Format the existing scene/page/lesson components for reviewability; retain renderer ownership, scientific records and mobile graphics policy.
+- Document the currently reported moderate minimatch/toolchain advisory and why an incompatible major override is not forced. See the dated maintenance review.
+
 ## v1.1.2 — Coordinated dependency maintenance
 
 - Update Vinext to 1.3.1, React DOM types to 19.3.0, and Three.js to 0.186.1 with matching 0.186.0 type definitions. Group future Three.js/runtime type updates for coordinated review.

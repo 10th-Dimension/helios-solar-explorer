@@ -1,93 +1,58 @@
-# Helios — Solar System Explorer
+# HELIOS — Explore the Solar System and beyond
 
 **Explore our home system. Learn how we know. Keep going.**
 
-**[Launch the live Helios Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · **[Latest release — v1.1.2](https://github.com/10th-Dimension/helios-solar-explorer/releases/tag/v1.1.2)** · [Teacher guide](docs/education/TEACHER_GUIDE.md)
+HELIOS is an interactive 3D astronomy explorer by **10th-Dimension**. Travel from the Sun and eight planets to nearby stars and curated confirmed exoplanets, inspect Solar System interiors, and follow guided lessons—all within one continuous scene.
 
-[![MIT code license](https://img.shields.io/badge/code-MIT-blue.svg)](LICENSE)
-[![Verify](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml/badge.svg)](https://github.com/10th-Dimension/helios-solar-explorer/actions/workflows/verify.yml)
+**[Launch HELIOS](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** · [Run locally](#run-locally) · [Teacher guide](docs/education/TEACHER_GUIDE.md) · [Release notes](CHANGELOG.md)
 
-Helios is an interactive 3D cosmic atlas built by **10th-Dimension**. Start at **Home [Our Sun]**, orbit the planets, open their 3D interiors, then move outward into a neighborhood of real cataloged stars and confirmed exoplanets—all inside one continuous Three.js scene.
+![The HELIOS Solar System overview, with the Sun, planetary orbits and selectable worlds in one continuous scene](docs/images/solar-system-overview.svg)
 
-The universe is the interface. Information appears when you ask for it, not every time you select something. A beautiful visualization should never pretend we know more than we do.
+*Actual application capture. Distances and body sizes are transformed for navigation; the Sun uses an illustrative false-color view.*
 
-## Current release and live Site
+## What you can do
 
-**v1.1.2** is deployed to the existing public Site. The hosted package version, application code and updated dependency versions match the GitHub release. The hosting build retains its provider-specific integration; the standalone source runs independently using the instructions below.
+- **Explore our home system.** Orbit the Sun and all eight planets, read their stories, inspect their environments, and compare their properties with Earth.
+- **Look inside.** Select regions in interactive 3D cutaways and discover the evidence behind interior models.
+- **Keep going beyond the planets.** Navigate a neighborhood of cataloged stars and substellar objects, visit destination systems, and inspect 24 curated confirmed exoplanets across nine hosts.
+- **Learn in the same scene.** Four guided journeys connect exploration with explanations, questions and written alternatives. Pause and resume your lesson in the same browser.
+- **See how we know.** Inspect sources and distinguish measured properties, inferred models, uncertain claims, unknowns and illustrative visuals.
+- **Choose your view.** Adjust graphics quality, hide the HUD, inspect Earth's historical day/night imagery, or try an illustrative aurora preview.
 
-| Component | Current version |
+Information appears when you ask for it. You can explore freely, open a world's details, or follow a lesson without replacing the 3D scene.
+
+## Try this first
+
+1. Launch HELIOS and open **WORLDS**.
+2. Choose **Earth**, then **INTERIOR**. Select a layer to inspect its explanation and scientific evidence.
+3. Open **EDUCATION** for a guided journey, or **CATALOG** to find a nearby star or included exoplanet.
+
+The 3D scene needs a modern WebGL-capable browser. Desktop offers the most room for the scene and information panels. On phones, graphics start on **AUTO**, which selects a lower tier for narrow viewports. Written lesson alternatives also support learning without using the canvas.
+
+## Guided learning
+
+| Journey | What you investigate |
 | --- | --- |
-| Vinext | 1.3.1 |
-| Three.js / Three.js types | 0.186.1 / 0.186.0 |
-| React DOM types | 19.3.0 |
-| TypeScript | 5.9.3 |
-| ESLint | 9.39.4 |
+| Our Solar System | The Sun, eight planets, orbital order and the difference between scientific distance and screen spacing |
+| Inside the Sun | Fusion, energy transport and the evidence for solar interior regions |
+| Inside the Planets | Rocky and giant-planet interiors, indirect evidence and comparisons with Earth |
+| Beyond Our Solar System | Nearby stars, light-years, exoplanet detection and the limits of what we know |
 
-PRs [#23](https://github.com/10th-Dimension/helios-solar-explorer/pull/23), [#24](https://github.com/10th-Dimension/helios-solar-explorer/pull/24) and [#26](https://github.com/10th-Dimension/helios-solar-explorer/pull/26) were tested together and merged. **TypeScript 7 [#25](https://github.com/10th-Dimension/helios-solar-explorer/pull/25) remains on hold:** strict installation rejects it because the current typescript-eslint tooling supports TypeScript below 6.1.0. **ESLint 10 [#14](https://github.com/10th-Dimension/helios-solar-explorer/pull/14) remains on hold:** the current lint plugins' peer ranges stop at ESLint 9. Neither upgrade is forced past its compatibility checks.
+Together, the journeys contain **21 stages and 16 knowledge checks**. Every stage has a written alternative and source disclosures. Answers include feedback and optional retries; completion records participation separately from accuracy.
 
-The [deployed dependency set passed both CI environments](https://github.com/10th-Dimension/helios-solar-explorer/actions/runs/41115677637), including strict clean installs, dependency-tree checks, seven verification suites, type checking, lint, production build, public-file audit and full-history secret scanning. Dependency audits reported zero findings. The hosting Worker build and bounded live checks of scene rendering, planetary callouts and Education resume/answer/retry also passed. These checks do not establish exhaustive browser, accessibility, scientific or classroom certification. Earlier release tags remain unchanged; see the [changelog](CHANGELOG.md).
+Progress stays in local browser storage. No student account is required, and lesson progress is not sent to a server. Clearing browser storage removes it; a shared browser retains the previous learner's progress until it is reset.
 
-![The Helios stellar neighborhood with persistent selectable names](docs/images/stellar-neighborhood.jpg)
+[Student quick start](docs/education/STUDENT_GUIDE.md) · [Teacher guide and answer key](docs/education/TEACHER_GUIDE.md) · [Feature guide](docs/education/FEATURE_GUIDE.md) · [Printable learning sheet](docs/education/learning-sheet.html)
 
-*Actual application capture. Bright selectable objects are catalog-backed; the faint distant field is illustrative. Positions, sizes and travel are transformed for navigation.*
-
-## What you can explore
-
-| Included now | Scope |
+| Inspect interiors | Learn in the same scene |
 | --- | --- |
-| Solar System | The Sun and all eight planets, distinct exteriors, Planet Stories, environments and Earth-relative comparisons |
-| Interiors | Interactive 3D regional cutaways, layer selection and explanations of what is measured, inferred or model-dependent |
-| Stellar neighborhood | 83 stellar/substellar entries, including our Sun, represented by 65 selectable local navigation anchors |
-| Destinations | 64 external destination records: nine planetary systems, one binary-system layout, 16 other multiple-system layouts and 38 single-object frames |
-| Confirmed exoplanets | 24 curated planets across nine hosts, with references and explicit mass/radius confidence |
-| Catalog | 107 stellar/substellar/planet entries with name, class, distance, spectral and system filters |
+| ![Earth's selectable interior layers and their explanation beside the 3D cutaway](docs/images/earth-interior.svg) | ![The Solar System beside a guided lesson in the HELIOS Education workspace](docs/images/education-workspace.jpg) |
 
-These counts describe the included scientific snapshot. The 107 Catalog entries are the 83 stellar/substellar entries plus 24 exoplanets; the eight Solar System planets are explored separately through the scene and Worlds controls. A destination can be a stellar reference frame rather than a detailed planetary system, and unresolved sources can share one navigation anchor.
-
-### A living scene, not a slideshow
-
-- Orbit, approach, release into six-axis drift, refocus and travel without replacing the canvas.
-- Select visible stars through small persistent names, without zooming to reveal a label.
-- See NASA historical Earth day, night-light and cloud composites with illumination-aware city lights.
-- Toggle folded auroral curtains and Earth's polar-night view. Aurora activity is procedural—not live space weather.
-- Inspect Saturn/Uranus rings, body-specific spin axes, retrograde rotation, giant-planet materials and solar activity illustrations.
-- Read planetary layer names and explanations beside their cutaway, connected to the selected region by a moving leader line. Planet names and the Sun’s labels retain their existing placement.
-- Follow slightly brighter orbital paths without decorative selection rings obscuring planets or stars. Saturn’s and Uranus’s physical rings remain visible.
-- Home uses a labeled ultraviolet false-color presentation with visibly churning orange plasma and occasional eruptive loops, informed by NASA SDO references. There is one solar view, with accelerated illustrative activity.
-- Choose AUTO, ULTRA, HIGH or BALANCED quality; narrow viewports use a lower automatic tier.
-- Keep exploration quiet with on-demand information, Catalog/Explore overlays and HUD hiding.
-- Use eased wheel zoom with bounded input slices and reduced-motion handling.
-
-## Education 1.0
-
-Choose **EDUCATION** for four complete journeys in the same scene: Our Solar System, Inside the Sun, Inside the Planets, and Beyond Our Solar System. The 21 stages include 16 knowledge checks, source disclosures and written alternatives. Travel to real objects, select their interior layers and compare evidence. Pause, exit or resume with progress stored only in your browser; ordinary exploration remains available.
-
-The learning workspace includes a spacious lesson library, a wider reading pane beside the live scene, large answer choices, persistent Previous/Next controls, and **View scene / Read lesson** switching. On small screens, traveling to a scene target folds the reading pane so the object and interior controls can be inspected; Read lesson brings the explanation and quiz back. Opening Catalog or Worlds closes the Education overlay while retaining browser-local progress.
-
-Drag the lesson panel’s left-edge divider to choose how much room the lesson and scene receive. The divider also supports arrow keys, Home/End limits and Enter or double-click to restore the default width. Width is saved locally and bounded to keep both views usable; mobile retains the full-width reader/scene switch.
-
-Retries are optional and unlimited. **Retry question** clears the current answer; **Retake lesson questions** clears the lesson’s answers while preserving its explored targets. A valid answer attempt permits continuing even when incorrect. Completion separates participation from accuracy and reports the current attempt’s correct-answer count. **Teacher tools & retries** includes a confirmed fresh start for the next learner on a shared browser; this is not an account-based gradebook.
-
-| Journey | What learners do | Stages / questions |
-| --- | --- | --- |
-| Our Solar System | Visit the Sun and eight planets; distinguish planetary groups, gravity and scientific distances from screen spacing | 9 / 4 |
-| Inside the Sun | Explore core, radiative, convective and outer regions; follow energy transport and examine interior evidence | 4 / 4 |
-| Inside the Planets | Inspect Earth, Jupiter and Neptune interiors, then compare Neptune with Earth | 4 / 4 |
-| Beyond Our Solar System | Visit Proxima and its confirmed planet, interpret detection/inferred properties, and return Home | 4 / 4 |
-
-Every stage includes explanatory text, claim-specific source disclosures and an explicit written alternative. Questions give retry feedback and require the appropriate scene interaction or recorded alternative before progression. Progress supports pause, exit, resume, completion review and protected restart/replacement; it stays in local browser storage without student accounts or analytics. Manual Pause Motion remains available.
-
-The scientific registry maps **514 claims to 130 sources**, with separate confidence and verification status, missing values retained as unknown, and distinct publication/observation/retrieval/review dates. These are coverage counts, not a claim that all 514 facts were independently verified. Original scientific snapshots and numerical world data are preserved.
-
-Start with the [student guide](docs/education/STUDENT_GUIDE.md), [teacher guide and answer key](docs/education/TEACHER_GUIDE.md), or [printable learning sheet](docs/education/learning-sheet.html). The [science audit](docs/SCIENCE_AUDIT.md) distinguishes reviewed concepts from unresolved legacy values. Education 1.0 has not been independently classroom- or WCAG-certified.
-
-![Actual Education workspace with a wider reader and persistent navigation beside the existing scene](docs/images/education-workspace.jpg)
-
-The dated [workspace review](docs/education/WORKSPACE_REVIEW.md) records the Education redesign's UI fixes and verification scope. The [earlier candidate validation](docs/EDUCATION_VALIDATION.md) preserves the original Education review evidence. The hosted application and standalone source share the educational features; you can run or modify the complete application without a ChatGPT Sites account.
+*Actual application captures. Interior boundaries are simplified teaching models; the learning workspace shares the exploration scene.*
 
 ## Run locally
 
-Use **Node.js 24**, npm and a modern WebGL-capable browser. CI checks Node.js 24 with npm 11.17.0 and the minimum supported Node.js 22.13.0 with npm 10.9.2. Node type definitions stay on the supported 22.x series.
+Use **Node.js 24** and npm. The declared minimum is Node.js **22.13.0**; the verification workflow also checks that minimum.
 
 ```bash
 git clone https://github.com/10th-Dimension/helios-solar-explorer.git
@@ -96,120 +61,59 @@ npm ci
 npm run dev
 ```
 
-Open the local address printed by the server (normally `http://localhost:3000`). **No API key, account, database or `.env` file is required.** Installation requires internet access; the font pipeline may contact Google Fonts. Astronomical records and Earth textures are local; source links open their providers.
+Open the address printed by the server, normally `http://localhost:3000`. **No API key, account, database or `.env` file is required.** The complete application runs independently of the author's hosting setup.
 
-**This repository includes the complete Helios application source and a standalone configuration for running and modifying it.** You do not need ChatGPT, a ChatGPT Sites project or the author's hosting settings. Only deployment-specific settings and internal development notes are excluded; neither is needed to run the application.
+Installation requires internet access, and the font pipeline may contact Google Fonts. Astronomical records and Earth textures are bundled locally; external source links open their providers.
 
-### Check or preview a production build locally
+For a local production preview, keep development dependencies installed: they include Vinext, which runs the build and server commands.
 
 ```bash
-npm test               # Catalog/data, geometry, input, science graph and education contracts
-npm run typecheck
-npm run lint
-npm run audit:public   # Tracked-file secret/privacy/packaging guard
 npm run build
-npm start -- --hostname 127.0.0.1  # Preview the build on this computer only
+npm start -- --hostname 127.0.0.1
 ```
 
-Run these commands from the cloned repository. Keep development dependencies installed: Vinext is declared as a development dependency but is needed for both build and start commands. The source files are not a static HTML export, so opening them directly or serving them with a generic file server will not run Helios.
+[Development and verification commands](docs/DEVELOPMENT.md) · [Browser tests](docs/BROWSER_TESTING.md) · [Hosting guidance](docs/education/DEPLOYMENT.md)
 
-The explicit preview hostname matters: bare `npm start` listens on all network interfaces by default. Internet hosting is a separate, provider-specific task; no deployment pipeline or access control is configured here. Review the [candidate security findings](docs/EDUCATION_SECURITY.md) and [staging instructions](docs/education/DEPLOYMENT.md) before exposing a server to untrusted traffic. The author's separate hosted deployment is not required to run this code. `private: true` in `package.json` only prevents accidental npm publication; it does not restrict GitHub access or the MIT license.
-
-## Controls
+## Essential controls
 
 | Action | Control |
 | --- | --- |
 | Orbit/look | Drag |
 | Approach / change view depth | Scroll or pinch |
-| Select | Click an object or its name; Catalog is an alternative |
-| Free drift | Release focus, then W/A/S/D and Q/E; Shift accelerates |
-| Information | INFO or I |
-| Interior | Interior control or X |
-| Earth aurora preview | Approach Earth, then use AURORA; toggle again to restore the previous view |
-| Hide/restore HUD | HUD control or M |
-| Guided learning | EDUCATION; scene actions or a written alternative |
-| Pause animated activity | PAUSE MOTION; system reduced-motion preference is also honored |
-| Back out of the current interaction | Escape |
-| Adjacent Solar System world | Left/right arrows |
+| Select | Click an object or its name; use WORLDS or CATALOG as alternatives |
+| Inspect information | INFO or **I** |
+| Open an interior | INTERIOR or **X**, when available |
+| Free drift | Release focus, then **W/A/S/D**, **Q/E**; **Shift** accelerates |
+| Hide/restore the HUD | HUD control or **M** |
+| Pause animated activity | PAUSE MOTION; the system reduced-motion preference is also honored |
+| Back out | **Escape** |
 
-Actions depend on the object and frame. After using a button or text input, click the scene before using free-drift keys; movement keys are ignored while form controls have focus. Mobile layouts retain on-screen controls. Full keyboard/accessibility coverage is still a known limitation.
+Controls depend on the current object and view. After using a form control, click the scene before using movement keys. [The student guide](docs/education/STUDENT_GUIDE.md) explains lesson controls and alternatives.
 
-## Scientific honesty is part of the design
+## The science behind the view
 
-Typed records and the interface distinguish **measured**, **inferred**, **uncertain**, **unknown** and **illustrative** information.
+HELIOS combines preserved astronomical records with models designed for navigation and learning. Sources, confidence and verification status are shown separately: a citation does not make every property independently verified.
 
-- Scientific AU/light-year values are not Three.js coordinates. Spacing, size, travel duration and cutaways are navigation/teaching transforms.
-- Solar System phases are illustrative, not current ephemerides. Body poles use J2000 orientation with accelerated visual spin.
-- Stellar source astrometry remains ICRS J2000.0. A linear motion approximation produces fixed **Julian epoch 2026.81**; missing velocities are held, not measured zero.
-- The expansion snapshot was retrieved **2026-10-23 UTC**. Original records retain earlier query dates. Counts describe this curated snapshot, not a complete current census.
-- Confirmed does not mean directly photographed. Calculated radii remain inferred; dynamical and minimum masses are distinguished.
-- Controversial Tau Ceti planet rows and candidate Proxima c are not presented as confirmed destinations.
-- No invented exoplanet continents, oceans, atmospheres, life or interiors are presented as observations.
-- Historical imagery, auroras, solar activity and giant-planet weather are not live feeds.
+The included snapshot contains **83 stellar/substellar records** and **24 exoplanets**, giving **107 catalog entries**. The eight Solar System planets are explored separately. Multiple records can share a navigation anchor, and some destinations are stellar reference frames rather than detailed planetary systems. These are the project's curated snapshot counts, not a complete or live census.
 
-See [Science and data](docs/SCIENCE.md), [third-party notices](THIRD_PARTY_NOTICES.md), and the raw [SIMBAD](data/simbad-snapshot.json) / [NASA Exoplanet Archive](data/archive-snapshot.json) query snapshots.
+Body sizes, spacing, travel times, cutaway boundaries and rendered appearances include illustrative transforms. Planetary phases are not current ephemerides. Historical Earth imagery, procedural auroras and accelerated solar activity are not live feeds. Confirmation of an exoplanet does not imply a photograph of its surface or knowledge of its atmosphere or habitability.
 
-## Inside the project
+[Science and data](docs/SCIENCE.md) explains the snapshots, coordinate model and source providers. [The scientific audit](docs/SCIENCE_AUDIT.md) identifies reviewed concepts and unresolved legacy values. [Third-party notices](THIRD_PARTY_NOTICES.md) cover imagery, data, fonts and upstream libraries.
 
-Built with **React 19, TypeScript, Three.js, Vinext and Vite**, plus Tailwind/PostCSS. This is the existing application, not a replacement implementation.
+## Practical limitations and next steps
 
-```text
-app/
-  SolarSystemScene.tsx    Single renderer, scene, camera, controls and loop
-  page.tsx               Explore/Catalog state, docks and science UI
-  worlds.ts              Solar System narratives, facts and interiors
-  spatial.ts             Scientific/render Solar System separation
-  stellar.ts             Stellar contracts, epoch model and transforms
-  nearbyCatalog.ts       Expanded stellar/substellar records
-  exoplanets.ts          Planet contract and original Proxima records
-  exoplanetExpansion.ts  Added confirmed planets and references
-  destinationSystems.ts Data-driven system-local architecture
-  cosmicCoordinates.ts  Render-only floating origin
-  stellarLabels.ts      Persistent names and offset placement
-  celestialMaterials.ts Earth, atmosphere, ring and solar GPU materials
-  auroraCurtains.ts      Polar curtain geometry and emission shader
-  bodyOrientation.ts    Source-backed poles and signed visual spin
-  graphicsQuality.ts    Explicit rendering budgets
-  smoothWheel.ts        Bounded frame-independent wheel easing
-data/                    Raw scientific query snapshots
-public/                  Credited textures and application assets
-scripts/                 Science, geometry, input and release checks
-docs/                    Architecture, science, roadmap and audit
-```
+HELIOS is educational software. Interiors are simplified, some multiple-star layouts are schematic, and lighting is approximate. The scene preloads resources; large bundles, dense labels and higher graphics tiers can affect slower devices. Keyboard and accessibility coverage still has gaps; written alternatives are available for the guided lessons.
 
-[Architecture](docs/ARCHITECTURE.md) explains how the application fits together. [Changelog](CHANGELOG.md) describes the features added over time. The [documentation review](docs/DOCUMENTATION_REVIEW.md) records the consistency checks behind this guide.
+Next work includes measured performance improvements, better system detail and illumination, and broader interaction coverage. See the [roadmap](docs/ROADMAP.md) and [known limitations](docs/education/KNOWN_LIMITATIONS.md).
 
-## Education resources
+## Build with us
 
-The [education index](docs/education/README.md) links teacher, student and contributor guides, scientific limitations, a printable worksheet, release notes, deployment guidance and a launch kit. One current lesson attempt and completed markers stay in local browser storage with no student identity or analytics; delete progress from the library. Evidence disclosures give each fact's confidence, verification status and source dates. Source-reviewed concepts, historical snapshot matches and unresolved legacy values are distinct.
+Built with **React, TypeScript, Three.js, Vinext/Vite and Tailwind CSS**. [Architecture](docs/ARCHITECTURE.md) explains scene ownership, scientific/render coordinate separation and the education system; exact dependency versions are in [package.json](package.json).
 
-## What's next
-
-Helios is intended to grow. The next direction is **system detail and spatial fidelity**, not an indiscriminate star dump:
-
-- Epoch-aware fitted binary orbits with uncertainty, extending the current Sirius scale/period reference beyond its fixed illustrative phase.
-- Better planet-host illumination and ring shadows onto globes.
-- Measured GPU profiling, texture/geometry streaming and large-catalog interaction work.
-- Optional observed space-weather playback, separate from procedural previews.
-- Carefully sourced moons and more nearby systems once their contracts are ready.
-- Automated browser, accessibility, reduced-motion and long-session coverage.
-
-These are plans, not implemented features or promised dates. See the [roadmap](docs/ROADMAP.md).
-
-## Current limitations
-
-Helios is educational software, not a navigation instrument, precision ephemeris engine or complete survey. Interiors are simplified, atmosphere/ring lighting is approximate, and unresolved companions may use schematic layouts. The scene is preloaded rather than streamed. Dense names can overlap, the Three.js client chunk is large, and ULTRA can be expensive. Short browser checks do not establish sustained GPU performance or leak freedom. Accessibility coverage is incomplete.
-
-The initial public source release is tagged `v1.0.0-source.1`. Education 1.0 first shipped in `v1.1.0`; the current package/release is `v1.1.2` and retains its four lessons plus the later reader, retry and evidence-layout improvements. Version numbers do not certify scientific, classroom or security readiness. See the [workspace review](docs/education/WORKSPACE_REVIEW.md), [original candidate validation](docs/EDUCATION_VALIDATION.md) and [Education security review](docs/EDUCATION_SECURITY.md) for dated evidence. The [initial public-release audit](docs/PUBLIC_RELEASE_AUDIT.md) preserves older findings. A clean secret scan is not a guarantee against every possible disclosure or vulnerability.
-
-## Contributing and credits
-
-Focused issues, primary-source corrections, performance measurements and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md), and report security problems privately using [SECURITY.md](SECURITY.md).
-
-Dependabot opens proposed dependency updates; it does not automatically merge them. A failed check on an open pull request describes that proposed version combination, not necessarily the default branch. React, React DOM and the server-components package require coordinated updates; see the [dependency-update policy](CONTRIBUTING.md#dependency-updates).
+Bug reports, primary-source corrections, performance measurements and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), [lesson contributions](docs/education/CONTRIBUTING_LESSONS.md), or [the issue tracker](https://github.com/10th-Dimension/helios-solar-explorer/issues). Report security problems privately using [SECURITY.md](SECURITY.md).
 
 Built by [10th-Dimension](https://github.com/10th-Dimension), with AI-assisted development. Scientific providers and upstream libraries are credited separately; no affiliation or endorsement is implied.
 
 ## License
 
-Original application code and original documentation are **[MIT-licensed](LICENSE)**. NASA imagery, CDS/SIMBAD data, NASA Exoplanet Archive records, fonts and dependencies retain their own rights and terms. The MIT grant does **not** relicense them; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Original application code and documentation are **[MIT-licensed](LICENSE)**. Third-party imagery, data, fonts and dependencies retain their own terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

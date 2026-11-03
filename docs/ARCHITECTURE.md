@@ -36,4 +36,4 @@ No ChatGPT account, Sites project, original deployment manifest, database bindin
 
 ## Verification boundaries
 
-Source/data tests establish deterministic invariants, not visual quality. Production build establishes compilation, not runtime correctness. Browser smoke checks establish only the exercised paths. CPU label-layout measurements are not FPS/GPU benchmarks. Sustained performance, long-session memory behavior and broad accessibility coverage remain future work.
+Source/data tests establish deterministic invariants, not visual quality. Production build establishes compilation, not runtime correctness. The automated [browser suite](BROWSER_TESTING.md) checks the exercised interaction paths, including lesson persistence, fallback and reduced motion. It establishes only those paths. CPU label-layout measurements are not FPS/GPU benchmarks. Sustained performance, long-session memory behavior and broad accessibility coverage remain future work.

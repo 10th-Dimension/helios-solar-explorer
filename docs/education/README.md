@@ -2,7 +2,7 @@
 
 Helios keeps the 3D universe as the main interface. Education adds guided questions, explanations and source inspection to the existing scene. Free exploration remains available.
 
-This documentation accompanies Helios Education 1.0, package/release `1.1.0`. [Open the live public Site](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/). It is not a statement of curriculum accreditation, WCAG conformance certification or independently validated classroom outcomes.
+**[Open HELIOS](https://helios-solar-explorer.eager-ape-4538.chatgpt.site/)** and choose **EDUCATION** to start a journey. Lessons include explanations, source disclosures, questions and written alternatives; progress stays in your browser.
 
 ## Start here
 
@@ -35,3 +35,7 @@ The source of truth for lesson wording, destinations and questions is `app/educa
 ## Before a classroom session
 
 Run the application and complete the intended lesson on the actual devices and browser used in class. Select a suitable quality tier, check keyboard access and decide whether to use the visual interaction or its text alternative. Use the source disclosures to discuss both evidence and uncertainty. See the validation and limitations documents for the exact scope of checks performed on this candidate.
+
+## Version context
+
+Education 1.0 first shipped in package/release `1.1.0`. These are the maintained guides; see the [changelog](../../CHANGELOG.md) for later application updates and [known limitations](KNOWN_LIMITATIONS.md) for device, accessibility and classroom-use considerations.
