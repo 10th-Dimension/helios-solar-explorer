@@ -12,19 +12,32 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const title = 'HELIOS — Solar System and Nearby Stars';
+const description =
+  'Explore the Sun, planets and their interiors, nearby stars and curated exoplanets in 3D, with guided lessons and scientific sources.';
+
 export const metadata: Metadata = {
-  title: 'Helios — Solar System Explorer',
-  description: 'Navigate a living 3D model of the Solar System, then explore what each world is really like.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  title,
+  description,
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  ),
   openGraph: {
-    title: 'Helios — Solar System Explorer',
-    description: 'Navigate a living 3D model of the Solar System, then explore what each world is really like.',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Helios Solar System Explorer' }],
+    title,
+    description,
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'HELIOS Solar System Explorer',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Helios — Solar System Explorer',
-    description: 'Navigate a living 3D model of the Solar System, then explore what each world is really like.',
+    title,
+    description,
     images: ['/og.png'],
   },
 };

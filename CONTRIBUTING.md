@@ -12,12 +12,13 @@ Use Node 24 to match CI (the declared minimum is 22.13), install with `npm ci`, 
 npm test
 npm run typecheck
 npm run lint
+npm run format:check
 npm run audit:public
 npm run build
 git diff --check
 ```
 
-Rendering changes also need actual desktop/narrow-browser checks: one canvas, selection, orbit/zoom, travel/return, interiors and console. Math tests do not prove a shader rendered or an interaction feels smooth.
+Run [the browser suite](docs/BROWSER_TESTING.md) for interaction changes. Rendering changes also need actual desktop/narrow-browser checks: one canvas, selection, orbit/zoom, travel/return, interiors and console. Math tests do not prove a shader rendered or an interaction feels smooth.
 
 ## Boundaries
 
@@ -37,6 +38,6 @@ Dependabot proposes npm and GitHub Actions updates. It does not merge them autom
 
 Update React, React DOM and `react-server-dom-webpack` as a compatible set, and check Vinext/plugin peer requirements. Do not upgrade one member independently or use `--force`/`--legacy-peer-deps` to conceal a conflict. Update the lockfile, run a clean `npm ci`, execute the full verification workflow and inspect the browser before merging framework changes. Type definitions must remain compatible too.
 
-Passing CI establishes only the configured checks. The Verify workflow runs secret scans and functional/build checks, not an enforcing dependency-vulnerability audit or browser-based visual test. Review `npm audit` separately, explain unresolved findings and provide browser evidence when rendering or framework behavior can change. Do not merge solely because a proposal has a green badge.
+Passing CI establishes only the configured checks. The Verify workflow runs secret scans, functional/build checks and `npm audit --audit-level=high`, which fails on high/critical findings but can pass with moderate findings. Its browser job runs the scenarios described in [Browser testing](docs/BROWSER_TESTING.md). Review all audit findings separately and provide visual evidence when rendering or framework behavior can change. Do not merge solely because a proposal has a green badge.
 
 Explain what changed, why, what you tested and what remains untested. Include captures for visuals and measured before/after evidence for performance claims. Keep unrelated upgrades out of feature work. Contributions must be yours to contribute under MIT; identify third-party material and its terms separately.

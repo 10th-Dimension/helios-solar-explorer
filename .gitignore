@@ -47,3 +47,7 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# browser verification
+/playwright-report/
+/test-results/

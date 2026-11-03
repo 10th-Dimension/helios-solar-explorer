@@ -30,7 +30,9 @@
     "test:science": "node --experimental-strip-types scripts/verify-science.mjs",
     "test:education": "node --experimental-strip-types scripts/verify-education.mjs",
     "test:interior": "node --experimental-strip-types scripts/verify-interior-leader.mjs",
-    "test:interaction": "node --experimental-strip-types scripts/verify-interaction-state.mjs"
+    "test:interaction": "node --experimental-strip-types scripts/verify-interaction-state.mjs",
+    "test:browser": "playwright test",
+    "format:check": "prettier --check app/page.tsx app/EducationPanel.tsx app/SolarSystemScene.tsx app/layout.tsx playwright.config.ts tests/browser/*.ts"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -39,6 +41,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
@@ -48,6 +51,7 @@
     "@vitejs/plugin-rsc": "0.5.38",
     "eslint": "9.39.4",
     "eslint-config-next": "16.4.3",
+    "prettier": "3.9.10",
     "react-server-dom-webpack": "19.3.1",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",

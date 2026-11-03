@@ -222,8 +222,17 @@ function failRenderer(context) {
   const cleanup = expression(initialization.arguments[0], scene, sceneContext)();
   return { sceneContext, cleanup, flush: () => { for (const callback of timers.values()) callback(); timers.clear(); } };
 }
-const dock = findAll(page, node => ts.isBinaryExpression(node) && ts.isJsxElement(node.right)
-  && node.right.openingElement.attributes.properties.some(prop => prop.name?.getText(page) === 'className' && prop.initializer?.getText(page) === '"object-dock"'))[0];
+function unwrapExpression(node) {
+  while (ts.isParenthesizedExpression(node)) node = node.expression;
+  return node;
+}
+const dock = findAll(page, node => {
+  if (!ts.isBinaryExpression(node)) return false;
+  const right = unwrapExpression(node.right);
+  return ts.isJsxElement(right) && right.openingElement.attributes.properties.some(prop =>
+    prop.name?.getText(page) === 'className' && prop.initializer?.getText(page) === '"object-dock"');
+})[0];
+assert.ok(dock, 'Find the actual world-controls visibility condition, including formatted parentheses');
 const dockVisible = context => Boolean(expression(dock.left, page, context));
 await test('Failed renderer recovers world information without fabricating a scene arrival', async t => {
   for (const pending of [false, true]) await t.test(pending ? 'failure after travel request' : 'failure before travel request', () => {
