@@ -22,12 +22,16 @@ The application and its tests use the included snapshots; running Helios does no
 
 - Stellar scientific distance is consistently derived from SIMBAD parallax. NASA's composite GJ 273 host distance disagreed; it was not mixed into the stellar coordinate model.
 - Epsilon Eridani b and GJ 876 archive mass fields have `Mass` provenance, not `Msini`. Added archive-calculated radii are inferred, not transit measurements.
-- The fixed stellar display epoch is Julian 2026.81. Linear space motion uses tangent proper motion (mu-alpha*cos(delta)) and radial velocity when supplied. Missing motion is held; no acceleration, binary solution or uncertainty propagation is inferred.
+- The default stellar display epoch is Julian 2026.81, controlled from 1900–2100 in Science. Linear space motion uses tangent proper motion (mu-alpha*cos(delta)) and radial velocity when supplied. Each missing component is disclosed separately. No full covariance or general acceleration solution is inferred; Sirius has a separately cited relative visual fit.
 - Some white-dwarf spectroscopic velocities include gravitational-redshift contributions. This approximation is not precision barycentric astrometry.
-- Body poles use J2000 NAIF-derived orientation, while stellar positions have a fixed propagated epoch. Surface prime-meridian phases and planetary orbital phases are illustrative.
+- Body poles use J2000 NAIF-derived orientation, while stellar positions use the selected propagated epoch. Surface prime-meridian phases and planetary orbital phases are illustrative.
 - 1080× visual spin preserves relative signed periods; this is not live attitude tracking.
 - Interior regions are pedagogical, not literal measured concentric shells. Giants have no asserted solid landing surface; the Sun is plasma, not a rocky globe.
-- Atmospheres, ring shadows, storm placement, aurora folds/emission and solar events are approximations. No live event feed is included. Earth intentionally has no external blue halo or artificial selection outline in the current presentation.
+- Atmospheres, ring opacity, storm placement, aurora folds/emission and solar events are approximations. Host-directed illumination and Saturn ring intersections are calculated from displayed geometry, not new observations. No live event feed is included. Earth intentionally has no external blue halo or artificial selection outline in the current presentation.
+
+## Additional fitted and observed products
+
+The [implementation record](ROADMAP_IMPLEMENTATION.md) documents four rounded major-moon agency records, additional reference-only archive hosts, Sirius's published relative B–A J2000 sky-plane fit and epoch convention, scalar-versus-covariance limitations, and the four timestamped historical SDO/AIA 304 Å visualization images. Original SIMBAD/planet snapshots are unchanged. Source data, fitted models and illustrative appearance remain separate.
 
 ### Home photosphere rendering
 
@@ -35,7 +39,7 @@ The two former persistent bright patches have been removed. Every surface locati
 
 Home uses one ultraviolet false-color presentation throughout the scene; the former visible-light mode and toggle have been removed following visual feedback. Animated three-dimensional domain warping makes the orange plasma network visibly churn. Flow along strands is accelerated, and a deterministic pseudorandom schedule selects one small, three-strand eruption group every seven seconds, with quiet gaps and a rise, release and fade. This is accelerated educational activity, not observed event timing. Other catalog stars retain their materials. Interior viewing hides the external loops.
 
-References inspected for the visual treatment: NASA SVS [Hinode granulation stills and movie](https://svs.gsfc.nasa.gov/3412/) and [SDO 304 Å eruption and loop stills/movie, 18 June 2015](https://svs.gsfc.nasa.gov/4323/). References guide morphology and motion; no imagery is wrapped onto a globe and no NASA media is redistributed. Geometry, cell scale, exposure, color mapping and time are illustrative, not measured solar observations or live space weather. Granulation is derivative-filtered at distance; reduced-motion freezes the new material animations. A warm display filter is not a claim about the Sun's naked-eye color. The loop geometry is an illustration, not a magnetic-field solution or exact AIA passband synthesis.
+References inspected for the visual treatment: NASA SVS [Hinode granulation stills and movie](https://svs.gsfc.nasa.gov/3412/) and [SDO 304 Å eruption and loop stills/movie, 18 June 2015](https://svs.gsfc.nasa.gov/4323/). These two references guide illustrative morphology and motion; their imagery is not wrapped onto a globe or bundled. The separate observed-weather workbench redistributes the credited historical frames documented above. Geometry, cell scale, exposure, color mapping and time are illustrative, not measured solar observations or live space weather. Granulation is derivative-filtered at distance; reduced-motion freezes the new material animations. A warm display filter is not a claim about the Sun's naked-eye color. The loop geometry is an illustration, not a magnetic-field solution or exact AIA passband synthesis.
 
 NASA distinguishes the visible photosphere and sunspots from the hotter structures seen in [false-color ultraviolet images](https://stereo-ssc.nascom.nasa.gov/classroom/EUVsun.shtml); its [Sun overview](https://science.nasa.gov/sun/facts/) describes prominences, spicules and the much fainter corona. The atlas's existing event/corona illustration remains an approximation, not a spectral simulation.
 

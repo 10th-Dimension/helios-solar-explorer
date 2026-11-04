@@ -25,3 +25,7 @@ Credit: NASA Earth Observatory images by Joshua Stevens, using Suomi NPP VIIRS d
 [Original JPEG](https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57747/cloud_combined_2048.jpg) · [source record](https://visibleearth.nasa.gov/images/57747/blue-marble-clouds/77558l)
 
 Credit: NASA Goddard Space Flight Center; Reto Stöckli (land surface, shallow water, clouds), Robert Simmon (enhancements). Terra MODIS composite: two days of visible-light data and a third day of thermal IR near the poles. Published February 11, 2002. Grayscale luminance supplies coverage, not JPEG alpha.
+
+## Historical SDO/AIA observation frames
+
+Four 512×512 false-color AIA 304 Å visualization frames are bundled under `observations/aia-304-20240510/`. Credit: NASA/SDO and the AIA science team; Helioviewer visualization. The complete manifest in [`data/observed-weather.json`](../data/observed-weather.json) preserves each observation/request time, source/image ID, metadata/header/render URL, quality field and SHA-256. Observation times are 10 May 2024 at 18:00:05, 18:30:05, 19:00:05 and 19:30:05 UTC. Sampling every 30 minutes does not imply continuous coverage or instrument cadence. Retained raw quality values are not interpreted as calibrated quality certification. These visualization images are not new MIT application artwork; preserve credits and source-specific usage terms.

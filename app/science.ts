@@ -136,7 +136,7 @@ for (const star of stellarObjects) {
   add({ id: 'stellar.' + star.id + '.astrometry', title: star.name + ': source position', value: 'RA ' + a.rightAscensionDeg + '°, Dec ' + a.declinationDeg + '°; parallax ' + a.parallaxMas + ' mas',
     confidence: 'measured', sourceIds: [id, ...(expansionRow ? ['snapshot.simbad'] : [])], verification: expansionRow ? 'snapshot-matched' : 'review-needed',
     verifiedOn: null, context: { kind: 'stellar', id: star.id },
-    limitations: ['Source frame is ' + a.frame + ' at ' + a.coordinateEpoch + '. The displayed epoch ' + STELLAR_EPOCH_POLICY.displayEpoch + ' uses a linear approximation, not a live ephemeris.',
+    limitations: ['Source frame is ' + a.frame + ' at ' + a.coordinateEpoch + '. The default display epoch is ' + STELLAR_EPOCH_POLICY.displayEpoch + '; SCIENCE allows controlled epochs with a linear approximation, not a live ephemeris.',
       'Original baseline rows predate the expansion response and are retained separately; not every baseline coordinate is duplicated in that response.'] });
   add({ id: 'stellar.' + star.id + '.distance', title: star.name + ': derived distance', value: distanceLightYears(star), unit: 'light-year', confidence: 'inferred',
     sourceIds: [id, 'nasa.cosmic-distances'], verification: expansionRow ? 'snapshot-matched' : 'review-needed', verifiedOn: null, context: { kind: 'stellar', id: star.id },

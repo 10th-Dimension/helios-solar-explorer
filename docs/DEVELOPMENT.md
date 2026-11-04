@@ -16,7 +16,7 @@ npm run build
 git diff --check
 ```
 
-`npm test` runs the stellar/data, aurora, wheel, solar, science, education, interior-leader and interaction-state checks. They test deterministic contracts, geometry and controller behavior. Actual browser checks are separate: see [Browser testing](BROWSER_TESTING.md).
+`npm test` runs 13 suites: stellar/data, aurora, wheel, solar, science, education, interior-leader, interaction-state, roadmap, catalog-navigation, approach-controls, UI widgets and no-3D UI. These test deterministic contracts, geometry, source data and production controller/component behavior. Controlled JSX/handler checks are not live 3D interactions. Actual browser checks are separate: see [Browser testing](BROWSER_TESTING.md).
 
 `audit:public` scans tracked files for forbidden packaging and common disclosure patterns. It does not inspect untracked files or prove the absence of every secret. CI additionally scans reachable Git history with Gitleaks.
 

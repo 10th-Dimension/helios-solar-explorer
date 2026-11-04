@@ -24,6 +24,7 @@ export type EducationPanelProps = {
   onClose: () => void;
   onNavigate: (target: EducationTarget) => void;
   observed?: EducationObserved;
+  sceneUnavailable?: boolean;
   onResize: (width: number) => void;
 };
 
@@ -32,11 +33,13 @@ export function EducationPanel({
   onNavigate,
   observed,
   onResize,
+  sceneUnavailable = false,
 }: EducationPanelProps) {
   const [session, setSession] = useState<EducationSession>(
     initialEducationSession,
   );
   const [sceneView, setSceneView] = useState(false);
+  const sceneActive = sceneView && !sceneUnavailable;
   const sceneToggleRef = useRef<HTMLButtonElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [storageAvailable, setStorageAvailable] = useState(true);
@@ -154,11 +157,17 @@ export function EducationPanel({
   ]);
 
   useEffect(() => {
-    if (loaded && !sceneView) {
+    if (loaded && !sceneActive) {
       headingRef.current?.focus({ preventScroll: true });
       readingRef.current?.scrollTo({ top: 0 });
     }
-  }, [loaded, sceneView, session.lessonId, session.stageIndex, session.status]);
+  }, [
+    loaded,
+    sceneActive,
+    session.lessonId,
+    session.stageIndex,
+    session.status,
+  ]);
   useEffect(() => {
     if (confirmClear) deleteButtonRef.current?.focus();
   }, [confirmClear]);
@@ -167,8 +176,8 @@ export function EducationPanel({
   }, [pendingLessonId]);
 
   useEffect(() => {
-    if (sceneView) sceneToggleRef.current?.focus();
-  }, [sceneView]);
+    if (sceneActive) sceneToggleRef.current?.focus();
+  }, [sceneActive]);
 
   const closeAndSave = useCallback(() => {
     const paused = educationReducer(session, { type: 'pause' });
@@ -207,7 +216,7 @@ export function EducationPanel({
     <aside
       className="education-panel"
       aria-label="Education Mode"
-      data-view={showLibrary ? 'library' : sceneView ? 'scene' : 'lesson'}
+      data-view={showLibrary ? 'library' : sceneActive ? 'scene' : 'lesson'}
       data-education-panel="true"
       onKeyDown={(event) => {
         event.stopPropagation();
@@ -219,12 +228,12 @@ export function EducationPanel({
           } else if (confirmClear) {
             setConfirmClear(false);
             headingRef.current?.focus();
-          } else if (sceneView) setSceneView(false);
+          } else if (sceneActive) setSceneView(false);
           else closeAndSave();
         }
       }}
     >
-      {!showLibrary && !sceneView && (
+      {!showLibrary && !sceneActive && (
         <EducationResizeHandle onResize={onResize} />
       )}
       <header className="education-header">
@@ -246,15 +255,15 @@ export function EducationPanel({
           </h2>
         </div>
         <div className="education-header-actions">
-          {!showLibrary && session.status === 'active' && (
+          {!sceneUnavailable && !showLibrary && session.status === 'active' && (
             <button
               type="button"
               ref={sceneToggleRef}
-              aria-expanded={!sceneView}
+              aria-expanded={!sceneActive}
               aria-controls="education-reading"
               onClick={() => setSceneView((value) => !value)}
             >
-              {sceneView ? 'Read lesson' : 'View scene'}
+              {sceneActive ? 'Read lesson' : 'View scene'}
             </button>
           )}
           <button
@@ -271,8 +280,8 @@ export function EducationPanel({
         id="education-reading"
         className="education-reading"
         ref={readingRef}
-        hidden={sceneView}
-        inert={sceneView}
+        hidden={sceneActive}
+        inert={sceneActive}
       >
         {!loaded ? (
           <p role="status">Loading local lesson progress…</p>
@@ -524,20 +533,29 @@ export function EducationPanel({
               {stage.title}
             </h3>
             <p className="education-instruction">{stage.instruction}</p>
-            <button
-              type="button"
-              className="education-travel"
-              onClick={() => {
-                onNavigate(stage.target);
-                if (
-                  window.matchMedia('(max-width: 900px)').matches &&
-                  !(stage.target.kind === 'world' && stage.target.compare)
-                )
-                  setSceneView(true);
-              }}
-            >
-              {educationTargetLabel(stage.target)} ↗
-            </button>
+            {sceneUnavailable && stage.target.kind !== 'home' ? (
+              <p role="status">
+                3D rendering is unavailable. Read the written alternative below,
+                then choose “Use this alternative for this stage.” No visual
+                visit will be recorded.
+              </p>
+            ) : (
+              <button
+                type="button"
+                className="education-travel"
+                onClick={() => {
+                  onNavigate(stage.target);
+                  if (
+                    !sceneUnavailable &&
+                    window.matchMedia('(max-width: 900px)').matches &&
+                    !(stage.target.kind === 'world' && stage.target.compare)
+                  )
+                    setSceneView(true);
+                }}
+              >
+                {educationTargetLabel(stage.target)} ↗
+              </button>
+            )}
             <p>{stage.explanation}</p>
             <SourceInspector
               claimIds={stage.claimIds}
@@ -550,7 +568,11 @@ export function EducationPanel({
                   : 'Scene interaction reached.'
                 : 'Visit the scene target, or use the written alternative, before continuing.'}
             </p>
-            <details key={stage.id} className="education-alternative">
+            <details
+              key={`${stage.id}-${sceneUnavailable ? 'text' : 'scene'}`}
+              open={sceneUnavailable || undefined}
+              className="education-alternative"
+            >
               <summary>Read a nonvisual alternative</summary>
               <p>{stage.accessibleAlternative}</p>
               <button
@@ -648,7 +670,7 @@ export function EducationPanel({
           </details>
         )}
       </div>
-      {!sceneView &&
+      {!sceneActive &&
         !showLibrary &&
         session.status === 'active' &&
         stage &&

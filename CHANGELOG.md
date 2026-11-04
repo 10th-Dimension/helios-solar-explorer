@@ -1,6 +1,35 @@
 # Changelog
 
-## Unreleased — Project overview and browser verification
+## Unreleased — Sourced exploration and interaction reliability
+
+Package version remains 1.1.2; existing release tags retain their original snapshots.
+
+### Roadmap implementation
+
+- Add four agency-sourced major-moon reference records, radius comparisons and parent navigation; captured TRAPPIST-1/GJ 1132 archive rows remain reference-only.
+- Add 24-result Catalog pages and spatial-bin label overlap lookup. This is not full virtualization or a measured FPS improvement.
+- Add a controlled Julian epoch, component-wise missing-motion disclosures and a temporary predict/inspect/explain workbench.
+- Replace Sirius's fixed companion layout with a published relative B–A fit and epoch-aware J2000 sky-plane projection, retaining uncertainty and missing covariance/depth/barycenter limits.
+- Add host-directed planet illumination and calculated Saturn ring-to-globe shadows. Appearance and opacity remain illustrative.
+- Bundle four hashed historical SDO/AIA 304 Å visualization frames with actual observation timestamps and provenance, manual stepping and explicit playback.
+- Add bounded local resource recording and optional nonblocking GPU timing. Full bottleneck profiling, RTX 4050 measurements, streaming and extended leak qualification remain unfinished.
+
+### Interaction fixes
+
+- Repair Catalog's collapsed results and scroll trap, native keyboard scrolling and misleading one-page pagination.
+- Close Catalog with Escape from its controls, restore focus and isolate its keys from scene movement; make hidden HUD/overlay controls inert.
+- Add accessible Close/Info controls after approaching planets or stellar members, preserving the approached view. Keep Back to System/Home distinct and short-screen actions reachable.
+- Filter planets by host-star spectrum and include missing companion spectral groups; label the filter truthfully.
+- Cancel unavailable stellar/approach requests from Education, Catalog, Science and central navigation after WebGL failure. Ignore late callbacks rather than inventing an arrival or freezing the initial distance/countdown.
+- Expose full written alternatives and a visible reading/footer route in no-3D mode, retaining explicit participation and question gates.
+- Preserve the already merged dismissal/modal/blur/stale-focus fixes from #29/#30; those are not newly attributed to this update.
+
+### Verification
+
+- Expand deterministic coverage to 13 suites, plus typecheck, lint and production build. Saved review evidence includes 64 real system arrivals, 24 planet approach cycles, nine Solar-world workflows and 32 layer selections.
+- Other variants use isolated components/controlled handlers. A cloud VM retested the no-3D repair; real-3D/device, reset, screen-reader and long-session coverage remain limited. Do not describe this as every button tested live. See [the verification record](docs/ROADMAP_IMPLEMENTATION.md).
+
+### Project overview and browser verification
 
 - Lead the README with exploration, interiors, guided lessons and an actual application capture; move maintenance details into linked development documentation.
 - Align page/share descriptions with the Solar System, nearby stars, curated exoplanets and lessons. Clarify first-release wording and CI audit thresholds.

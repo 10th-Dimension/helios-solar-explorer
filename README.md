@@ -18,6 +18,7 @@ HELIOS is an interactive 3D astronomy explorer by **10th-Dimension**. Travel fro
 - **Learn in the same scene.** Four guided journeys connect exploration with explanations, questions and written alternatives. Pause and resume your lesson in the same browser.
 - **See how we know.** Inspect sources and distinguish measured properties, inferred models, uncertain claims, unknowns and illustrative visuals.
 - **Choose your view.** Adjust graphics quality, hide the HUD, inspect Earth's historical day/night imagery, or try an illustrative aurora preview.
+- **Use the Science workbench.** Change the catalog epoch, compare sourced moon records, inspect the fitted Sirius relative orbit, play archived SDO observations or record local resource samples.
 
 Information appears when you ask for it. You can explore freely, open a world's details, or follow a lesson without replacing the 3D scene.
 
@@ -30,6 +31,8 @@ Information appears when you ask for it. You can explore freely, open a world's 
 The 3D scene needs a modern WebGL-capable browser. Desktop offers the most room for the scene and information panels. On phones, graphics start on **AUTO**, which selects a lower tier for narrow viewports. Written lesson alternatives also support learning without using the canvas.
 
 ## Guided learning
+
+If 3D initialization fails, **WORLDS** still opens world information, **CATALOG** retains its evidence, and **EDUCATION** exposes each stage's written alternative. Impossible stellar travel is disabled instead of leaving a frozen countdown. Written completion stays separate from a visual visit.
 
 | Journey | What you investigate |
 | --- | --- |
@@ -104,7 +107,25 @@ Body sizes, spacing, travel times, cutaway boundaries and rendered appearances i
 
 HELIOS is educational software. Interiors are simplified, some multiple-star layouts are schematic, and lighting is approximate. The scene preloads resources; large bundles, dense labels and higher graphics tiers can affect slower devices. Keyboard and accessibility coverage still has gaps; written alternatives are available for the guided lessons.
 
-Next work includes measured performance improvements, better system detail and illumination, and broader interaction coverage. See the [roadmap](docs/ROADMAP.md) and [known limitations](docs/education/KNOWN_LIMITATIONS.md).
+Next work includes complete target-hardware bottleneck profiling, streaming only if measurements justify it, broader device/accessibility tests and richer sourced system detail. This update does not establish that every individual control or 3D configuration passed. See the [completed roadmap scope](docs/ROADMAP.md), [verification details](docs/ROADMAP_IMPLEMENTATION.md) and [known limitations](docs/education/KNOWN_LIMITATIONS.md).
+
+## Sourced exploration update
+
+Open **SCIENCE** to use the seven-tab workbench:
+
+| Tool | Included now | Boundary |
+| --- | --- | --- |
+| Epoch & evidence | Julian epochs 1900–2100; missing-motion disclosures | Linear propagation, not a precision ephemeris/covariance solution |
+| Major moons | Moon, Europa, Titan and Enceladus facts, radius comparisons and parent navigation | Reference records, not live moon positions or four new globes |
+| Nearby systems | Catalog-family navigation and captured TRAPPIST-1/GJ 1132 reference rows | Additional rows are not silently added as spatial destinations |
+| Sirius orbit | Published epoch-aware relative B–A sky-plane projection | No invented depth, barycentric motion or uncertainty envelope |
+| Observed weather | Four cached SDO/AIA 304 Å images from 10 May 2024, with observation times | Historical false-color imagery, not a live feed or observed 3D aurora |
+| Try a prediction | Editable prediction and explanation | Temporary note, not a saved grade/account record |
+| Performance | Bounded local resource recording; GPU timing where supported | Diagnostics, not a complete benchmark or streaming implementation |
+
+Planet illumination follows its host; Saturn's displayed ring geometry casts calculated shadows onto its globe. Albedo, ring opacity and display scale remain illustrative.
+
+This update also repairs Catalog scrolling and host-spectrum filtering, hidden-control keyboard focus, and information dismissal after approach. **Close ×** hides destination information while retaining the approached object; **Info** reopens it. **Back to System** and **Home** remain separate. See [the changelog](CHANGELOG.md) for fixes and [the implementation record](docs/ROADMAP_IMPLEMENTATION.md) for scientific sources and test limits.
 
 ## Build with us
 
