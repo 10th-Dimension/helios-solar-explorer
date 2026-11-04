@@ -16,13 +16,15 @@ export type CatalogObject = {
   provenance: string;
 };
 
+const catalogSpectralGroup = (type: string) => type.replace(/^[a-z]+/, '').slice(0, 1);
+
 const stellarCatalog: CatalogObject[] = localStellarObjects.map((object) => ({
   id: object.id,
   name: object.name,
   category: object.objectClass === 'WHITE_DWARF' ? 'STELLAR REMNANT' : object.objectClass === 'BROWN_DWARF' ? 'BROWN DWARF' : 'STAR',
   architecture: getStellarSystem(object.systemId)?.architecture,
   hasPlanets: exoplanets.some(planet=>planet.hostStarId === object.id),
-  spectralGroup: object.spectralType.replace(/^[a-z]+/,'').slice(0,1),
+  spectralGroup: catalogSpectralGroup(object.spectralType),
   type: `${object.stellarType} · ${object.spectralType}`,
   designation: object.designation,
   distanceLightYears: distanceLightYears(object),
@@ -37,6 +39,8 @@ const exoplanetCatalog: CatalogObject[] = exoplanets.map((planet) => {
     id: planet.id,
     name: planet.name,
     category: 'PLANET',
+    // This is the host star's sourced class, not a measured planetary spectrum.
+    spectralGroup: catalogSpectralGroup(host.spectralType),
     type: `${planet.likelyClass} · ${planet.status.toLowerCase()}`,
     designation: `Orbits ${host.name} · ${planet.semiMajorAxisAU} AU`,
     distanceLightYears: distanceLightYears(host),
@@ -50,6 +54,6 @@ const companions: CatalogObject[] = stellarObjects.filter(object=>!object.render
   const system = getStellarSystem(object.systemId);
   const anchor = system?.primaryId;
   if (!anchor) return [];
-  return [{id:object.id,name:object.name,category:object.objectClass==='WHITE_DWARF'?'STELLAR REMNANT':object.objectClass==='BROWN_DWARF'?'BROWN DWARF':'STAR',type:object.stellarType+' · '+object.spectralType,designation:object.designation,distanceLightYears:distanceLightYears(object),travelAnchorId:anchor,arrivalSelection:{kind:'SYSTEM_OBJECT',id:object.id},provenance:object.astrometry?.sourceLabel??'SIMBAD',architecture:system.architecture}];
+  return [{id:object.id,name:object.name,category:object.objectClass==='WHITE_DWARF'?'STELLAR REMNANT':object.objectClass==='BROWN_DWARF'?'BROWN DWARF':'STAR',type:object.stellarType+' · '+object.spectralType,designation:object.designation,distanceLightYears:distanceLightYears(object),travelAnchorId:anchor,arrivalSelection:{kind:'SYSTEM_OBJECT',id:object.id},provenance:object.astrometry?.sourceLabel??'SIMBAD',architecture:system.architecture,spectralGroup:catalogSpectralGroup(object.spectralType)}];
 });
 export const catalogObjects: CatalogObject[] = [...stellarCatalog,...companions,...exoplanetCatalog].sort((a,b)=>a.distanceLightYears-b.distanceLightYears||a.name.localeCompare(b.name));

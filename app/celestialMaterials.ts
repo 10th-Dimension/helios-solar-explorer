@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { SATURN_DISPLAY_BANDS } from './lightingGeometry';
 
 /**
  * Lighting and appearance approximations for the atlas, not a radiative-transfer
@@ -84,6 +85,47 @@ function makeMaterial(
   });
   material.userData.celestialMaterial = true;
   return material;
+}
+
+/** Host-relative Lambert appearance. Direction is geometric; spectrum/albedo are illustrative. */
+export function createHostPlanetMaterial(color:string,hostColor:string) {
+  return makeMaterial('Helios host-aware planet', /* glsl */ `
+    uniform vec3 uSurfaceColor; uniform vec3 uHostColor;
+    void main() {
+      float day=max(dot(normalize(vWorldNormal),normalize(uSunPosition-vWorldPosition)),0.0);
+      vec3 color=uSurfaceColor*(vec3(0.035)+uHostColor*day);
+      gl_FragColor=vec4(color,1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }
+  `,{uSurfaceColor:{value:new THREE.Color(color)},uHostColor:{value:new THREE.Color(hostColor)}});
+}
+
+/** Geometric ring shadow onto Saturn. Artistic opacity is not a radiative-transfer/observed τ fit. */
+export function createSaturnShadowMaterial(map:THREE.Texture) {
+  const bandCode=SATURN_DISPLAY_BANDS.map(([a,b,opacity])=>`if(rho>=${a.toFixed(2)}&&rho<=${b.toFixed(2)}) transmission=${(1-opacity).toFixed(2)};`).join('\n');
+  return makeMaterial('Helios Saturn globe ring shadow', /* glsl */ `
+    uniform sampler2D uSurfaceMap;
+    uniform vec3 uRingCenter; uniform vec3 uRingNormal; uniform float uGlobeRadius;
+    void main() {
+      vec3 ray=uSunPosition-vWorldPosition;
+      vec3 lightDirection=normalize(ray);
+      float denominator=dot(ray,uRingNormal);
+      float transmission=1.0;
+      if(abs(denominator)>0.000000001) {
+        float t=dot(uRingCenter-vWorldPosition,uRingNormal)/denominator;
+        if(t>0.0&&t<1.0) {
+          float rho=length(vWorldPosition+t*ray-uRingCenter)/uGlobeRadius;
+          ${bandCode}
+        }
+      }
+      float day=max(dot(normalize(vWorldNormal),lightDirection),0.0);
+      vec3 color=texture2D(uSurfaceMap,vUv).rgb*(0.045+0.95*day*transmission);
+      gl_FragColor=vec4(color,1.0);
+      #include <tonemapping_fragment>
+      #include <colorspace_fragment>
+    }
+  `,{uSurfaceMap:{value:map},uRingCenter:{value:new THREE.Vector3()},uRingNormal:{value:new THREE.Vector3(0,1,0)},uGlobeRadius:{value:1}});
 }
 
 /** Real day/night maps share one body orientation. Night light is not procedural. */

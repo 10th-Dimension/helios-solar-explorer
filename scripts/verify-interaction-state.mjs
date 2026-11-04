@@ -6,7 +6,9 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import * as THREE from 'three';
 import { worlds } from '../app/worlds.ts';
-import { localStellarObjects, distanceLightYears } from '../app/stellar.ts';
+import { localStellarObjects, distanceLightYears, getStellarObject, getStellarSystem, separationLightYears } from '../app/stellar.ts';
+import { getExoplanet } from '../app/exoplanets.ts';
+import { catalogObjects } from '../app/catalog.ts';
 import { getDestinationSystemByAnchor } from '../app/destinationSystems.ts';
 import { shouldRebaseRenderOrigin } from '../app/cosmicCoordinates.ts';
 
@@ -40,21 +42,26 @@ const effect = findAll(page, node => ts.isCallExpression(node) && node.expressio
 assert.ok(effect, 'Find the pending Education arrival effect');
 function pageController() {
   const microtasks = [];
-  const context = vm.createContext({ worlds, queueMicrotask: callback => microtasks.push(callback) });
+  const context = vm.createContext({ worlds, getStellarObject, getStellarSystem, separationLightYears, getExoplanet, queueMicrotask: callback => microtasks.push(callback) });
   for (const setter of findAll(page, node => ts.isIdentifier(node) && /^set[A-Z]/.test(node.text))) {
     const key = setter.text[3].toLowerCase() + setter.text.slice(4);
     context[setter.text] = value => { context[key] = typeof value === 'function' ? value(context[key]) : value; };
   }
   Object.assign(context, {
-    focusedId: null, arrivedStellarId: null, selectedExoplanetId: null,
+    focusedId: null, arrivedStellarId: null, selectedExoplanetId: null, selectedStellarId: null,
+    selectedSystemObjectId: null, focusedSystemObjectId: null, destinationInfoOpen: true,
+    destinationInfoToggleRef: {current:null},
     educationOpen: true, educationTarget: null, interiorMode: false,
     activeLayer: 0, compareOpen: false, minimalUi: false, quickTravelOpen: false,
-    sceneUnavailable: false, travelTo: null, detailOpen: false, spatialScale: 'SYSTEM',
+    sceneUnavailable: false, travelTo: null, stellarTravel: null, stellarEpoch: 2026.81, detailOpen: false, spatialScale: 'SYSTEM',
     experienceMode: 'EXPLORE', arrivalSelectionRef: { current: null },
     stellarTravelRequest: { sequence: 0 }, exoplanetFocusRequest: { sequence: 0 },
     systemObjectFocusRequest: { sequence: 0 }, focusRequest: { sequence: 0 },
   });
-  for (const name of ['closeEducation', 'travelToWorld', 'handleArrival', 'navigateEducation', 'toggleMinimalUi', 'handleSceneUnavailable', 'returnToSystem']) {
+  Object.defineProperty(context, 'selectedStellarObject', { get: () => getStellarObject(context.selectedStellarId) ?? null });
+  Object.defineProperty(context, 'selectedExoplanet', { get: () => getExoplanet(context.selectedExoplanetId) ?? null });
+  Object.defineProperty(context, 'selectedSystemObject', { get: () => getStellarObject(context.selectedSystemObjectId) ?? null });
+  for (const name of ['closeDestinationInformation', 'closeEducation', 'travelToWorld', 'handleArrival', 'navigateEducation', 'toggleMinimalUi', 'handleSceneUnavailable', 'returnToSystem', 'applyArrivalSelection', 'travelToStellarObject', 'beginStellarTravel', 'handleCatalogTravel', 'handleStellarTravelProgress', 'handleStellarArrival', 'approachExoplanet', 'approachSystemObject', 'handleExoplanetArrival', 'handleSystemObjectArrival', 'returnToDestinationSystem']) {
     const declaration = variable(page, name);
     if (declaration) context[name] = expression(declaration.initializer.arguments[0], page, context);
   }
@@ -67,7 +74,7 @@ function pageController() {
     cleanup?.();
     previousDependencies = dependencies;
     // Capture each render's values, as a React effect closure does.
-    const names = ['educationOpen', 'educationTarget', 'focusedId', 'arrivedStellarId', 'selectedExoplanetId'];
+    const names = ['sceneUnavailable', 'educationOpen', 'educationTarget', 'focusedId', 'arrivedStellarId', 'selectedExoplanetId'];
     const callback = vm.runInContext(compile(`((${names.join(',')}) => (${effect.arguments[0].getText(page)}))(${names.join(',')})`), context);
     cleanup = callback();
   };
@@ -222,17 +229,11 @@ function failRenderer(context) {
   const cleanup = expression(initialization.arguments[0], scene, sceneContext)();
   return { sceneContext, cleanup, flush: () => { for (const callback of timers.values()) callback(); timers.clear(); } };
 }
-function unwrapExpression(node) {
-  while (ts.isParenthesizedExpression(node)) node = node.expression;
-  return node;
-}
-const dock = findAll(page, node => {
-  if (!ts.isBinaryExpression(node)) return false;
-  const right = unwrapExpression(node.right);
-  return ts.isJsxElement(right) && right.openingElement.attributes.properties.some(prop =>
-    prop.name?.getText(page) === 'className' && prop.initializer?.getText(page) === '"object-dock"');
-})[0];
-assert.ok(dock, 'Find the actual world-controls visibility condition, including formatted parentheses');
+// Formatter-inserted parentheses must not change which production JSX is tested.
+function unparenthesized(node) { while (ts.isParenthesizedExpression(node)) node=node.expression; return node; }
+const dock = findAll(page, node => ts.isBinaryExpression(node) && ts.isJsxElement(unparenthesized(node.right))
+  && unparenthesized(node.right).openingElement.attributes.properties.some(prop => prop.name?.getText(page) === 'className' && prop.initializer?.getText(page) === '"object-dock"'))[0];
+assert.ok(dock,'Find the actual world control visibility expression, independent of formatting');
 const dockVisible = context => Boolean(expression(dock.left, page, context));
 await test('Failed renderer recovers world information without fabricating a scene arrival', async t => {
   for (const pending of [false, true]) await t.test(pending ? 'failure after travel request' : 'failure before travel request', () => {
@@ -258,7 +259,9 @@ await test('Failed renderer recovers world information without fabricating a sce
     // Reading information must not satisfy a lesson's scene-interaction gate.
     renderEffect(); flush();
     assert.equal(context.interiorMode, false);
-    assert.equal(context.educationTarget.id, 'earth');
+    assert.equal(context.educationTarget, null, 'No renderer means no queued scene target; use the explicit written route');
+    context.travelToWorld('earth'); // The separate WORLDS information route remains readable and focusable.
+    assert.equal(context.detailOpen,true);
     let focused = false;
     const focusNode = findAll(page, node => ts.isJsxOpeningElement(node)
       && node.attributes.properties.some(prop => prop.name?.getText(page) === 'ref' && prop.initializer?.getText(page) === '{informationHeadingRef}'))[0];
@@ -294,6 +297,44 @@ await test('Failure notification respects Home and cancellation; ordinary travel
   assert.equal(context.detailOpen, false, 'Home must not open the last selected world');
   assert.equal(dockVisible(context), false);
   nextFailure.cleanup();
+});
+
+await test('No renderer: Education, Catalog and stellar actions cannot queue an impossible journey', async t => {
+  const entries = [
+    ['Education star', c => c.navigateEducation({kind:'stellar',id:'proxima-centauri'})],
+    ['Education planet', c => c.navigateEducation({kind:'exoplanet',id:'proxima-centauri-b'})],
+    ['Catalog Sirius', c => c.handleCatalogTravel(catalogObjects.find(o=>o.id==='sirius-a'))],
+    ['Catalog planet', c => c.handleCatalogTravel(catalogObjects.find(o=>o.id==='proxima-centauri-b'))],
+    ['Science system', c => c.travelToStellarObject('proxima-centauri')],
+    ['Selected star', c => {c.selectedStellarId='sirius-a';c.beginStellarTravel();}],
+  ];
+  for(const [name,invoke] of entries)for(const pending of [false,true])await t.test(name+(pending?' failure during travel':' failure before travel'),()=>{
+    const {context,renderEffect,flush}=pageController();
+    if(pending){invoke(context);assert.equal(context.stellarTravel.status,'traveling');}
+    const failure=failRenderer(context);failure.flush();
+    if(!pending)invoke(context);
+    renderEffect();flush();
+    assert.equal(context.stellarTravel,null,'There must be no frozen progress overlay');
+    assert.equal(context.stellarTravelRequest.targetId,null);
+    assert.equal(context.arrivalSelectionRef.current,null);
+    assert.equal(context.educationTarget,null);
+    assert.equal(context.arrivedStellarId,null,'Fallback is not a visual arrival');
+    context.selectedExoplanetId='proxima-centauri-b';context.approachExoplanet();
+    context.selectedSystemObjectId='sirius-b';context.approachSystemObject();
+    assert.equal(context.exoplanetFocusRequest.targetId,null);
+    assert.equal(context.systemObjectFocusRequest.targetId,null);
+    context.handleStellarTravelProgress('sirius-a',1,0);
+    context.handleStellarArrival('sirius-a');context.handleExoplanetArrival('proxima-centauri-b');
+    context.handleSystemObjectArrival('sirius-b');context.handleArrival('earth');
+    assert.equal(context.arrivedStellarId,null);assert.equal(context.focusedExoplanetId,null);
+    assert.equal(context.focusedSystemObjectId,null);assert.equal(context.focusedId,null);
+    assert.equal(context.stellarTravel,null,'Late callbacks cannot invent completion');
+    context.navigateEducation({kind:'home'});assert.equal(context.educationTarget,null);
+    assert.equal(context.selectedExoplanetId,null);assert.equal(context.selectedStellarId,null);
+    context.travelToWorld('saturn');assert.equal(context.detailOpen,true);assert.equal(context.travelTo,null);
+    assert.equal(context.selectedId,'saturn','Quick Travel still opens real world information');
+    failure.cleanup();
+  });
 });
 
 await test('Stellar departure clears local focus through travel and arrival', () => {

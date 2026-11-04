@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { catalogObjects, type CatalogObject } from './catalog';
+import { catalogPage } from './catalogWindow';
+import { ScienceTools } from './ScienceTools';
+import { checkedStellarEpoch } from './epochPolicy';
 import { getDestinationSystemByAnchor } from './destinationSystems';
 import { exoplanetsForHost, getExoplanet } from './exoplanets';
 import {
@@ -445,21 +448,38 @@ function ComparePanel({
 
 function CatalogPanel({
   open,
+  epoch,
   selectedId,
   onSelect,
   onTravel,
   onClose,
+  sceneUnavailable = false,
 }: {
   open: boolean;
+  epoch: number;
   selectedId: string;
   onSelect: (id: string) => void;
   onTravel: (object: CatalogObject) => void;
   onClose: () => void;
+  sceneUnavailable?: boolean;
 }) {
+  const panelRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    panelRef.current?.focus();
+    return () => {
+      if (previous?.isConnected) previous.focus();
+    };
+  }, [open]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<string>('ALL');
   const [distanceLimit, setDistanceLimit] = useState(100);
   const [spectral, setSpectral] = useState('ALL');
+  const [catalogPageIndex, setCatalogPageIndex] = useState(0);
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return catalogObjects.filter(
@@ -478,15 +498,26 @@ function CatalogPanel({
             .includes(normalized)),
     );
   }, [category, query, distanceLimit, spectral]);
+  const page = catalogPage(filtered, catalogPageIndex);
   const selected =
-    filtered.find((object) => object.id === selectedId) ?? filtered[0];
+    page.items.find((object) => object.id === selectedId) ?? page.items[0];
 
   return (
     <aside
+      ref={panelRef}
       className={`catalog-panel ${open ? 'open' : ''}`}
       aria-hidden={!open}
       inert={!open}
       aria-label="Helios object catalog"
+      tabIndex={open ? 0 : -1}
+      onKeyDown={(event) => {
+        // Keep native scrolling/editing, but never pass catalog keys to the scene.
+        event.stopPropagation();
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          onClose();
+        }
+      }}
     >
       <div className="catalog-heading">
         <span>CATALOG MODE</span>
@@ -497,15 +528,18 @@ function CatalogPanel({
           One universe.
         </strong>
         <p>
-          Search the bounded scientific catalog, inspect an object, then
-          continue through the same live spatial scene.
+          Scroll to browse the catalog. Select an object to inspect it, then
+          choose Take me there below to travel through the same 3D scene.
         </p>
       </div>
       <label className="catalog-search">
         <span>SEARCH OBJECTS</span>
         <input
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setCatalogPageIndex(0);
+          }}
           placeholder="Proxima, Sirius, planet…"
           autoComplete="off"
         />
@@ -525,7 +559,10 @@ function CatalogPanel({
           <button
             key={item}
             className={category === item ? 'active' : ''}
-            onClick={() => setCategory(item)}
+            onClick={() => {
+              setCategory(item);
+              setCatalogPageIndex(0);
+            }}
           >
             {item}
           </button>
@@ -537,7 +574,10 @@ function CatalogPanel({
           <select
             aria-label="Catalog distance"
             value={distanceLimit}
-            onChange={(event) => setDistanceLimit(Number(event.target.value))}
+            onChange={(event) => {
+              setDistanceLimit(Number(event.target.value));
+              setCatalogPageIndex(0);
+            }}
           >
             <option value={10}>WITHIN 10 LY</option>
             <option value={20}>WITHIN 20 LY</option>
@@ -545,11 +585,15 @@ function CatalogPanel({
           </select>
         </label>
         <label>
-          SPECTRUM{' '}
+          STAR / HOST SPECTRUM{' '}
           <select
-            aria-label="Spectral group"
+            aria-label="Star or host spectral group"
+            title="For planets, filter by the host star's catalog spectral type."
             value={spectral}
-            onChange={(event) => setSpectral(event.target.value)}
+            onChange={(event) => {
+              setSpectral(event.target.value);
+              setCatalogPageIndex(0);
+            }}
           >
             {['ALL', 'A', 'F', 'G', 'K', 'M', 'D', 'L', 'T', 'Y'].map(
               (group) => (
@@ -561,7 +605,7 @@ function CatalogPanel({
         <span>{filtered.length} OBJECTS</span>
       </div>
       <div className="catalog-results" aria-label="Scientific objects">
-        {filtered.map((object) => (
+        {page.items.map((object) => (
           <button
             key={object.id}
             aria-pressed={selected?.id === object.id}
@@ -580,6 +624,29 @@ function CatalogPanel({
         ))}
         {!filtered.length && <p>No objects match this search.</p>}
       </div>
+      {page.pages > 1 ? (
+        <nav className="catalog-pagination" aria-label="Catalog result pages">
+          <button
+            disabled={page.page === 0}
+            onClick={() => setCatalogPageIndex(page.page - 1)}
+          >
+            Previous
+          </button>
+          <span role="status">
+            Page {page.page + 1} of {page.pages} · {page.total} objects
+          </span>
+          <button
+            disabled={page.page + 1 >= page.pages}
+            onClick={() => setCatalogPageIndex(page.page + 1)}
+          >
+            Next
+          </button>
+        </nav>
+      ) : (
+        <p className="catalog-page-summary" role="status">
+          All {page.total} objects are on this page.
+        </p>
+      )}
       {selected && (
         <section
           className="catalog-detail"
@@ -591,7 +658,7 @@ function CatalogPanel({
           <p>{selected.designation}</p>
           <dl>
             <div>
-              <dt>DISTANCE FROM OUR SUN</dt>
+              <dt>REFERENCE DISTANCE (CATALOG PARALLAX)</dt>
               <dd>{selected.distanceLightYears.toFixed(2)} light-years</dd>
             </div>
             <div>
@@ -599,7 +666,7 @@ function CatalogPanel({
               <dd>
                 {selected.id === 'sol'
                   ? 'Heliocentric origin'
-                  : 'ICRS · epoch 2026.81 linear motion'}
+                  : `ICRS · Julian epoch ${epoch} linear motion`}
               </dd>
             </div>
             <div>
@@ -647,8 +714,25 @@ function CatalogPanel({
             }
             label="Catalog evidence and dates"
           />
-          <button className="catalog-travel" onClick={() => onTravel(selected)}>
-            {selected.id === 'sol' ? 'RETURN HOME' : 'TAKE ME THERE'}{' '}
+          {sceneUnavailable && selected.id !== 'sol' && (
+            <p role="status">
+              3D travel is unavailable. You can still inspect this catalog
+              record and its evidence, or use EDUCATION’s written alternatives.
+            </p>
+          )}
+          <button
+            className="catalog-travel"
+            disabled={sceneUnavailable && selected.id !== 'sol'}
+            onClick={() => {
+              if (!sceneUnavailable || selected.id === 'sol')
+                onTravel(selected);
+            }}
+          >
+            {selected.id === 'sol'
+              ? 'RETURN HOME'
+              : sceneUnavailable
+                ? '3D TRAVEL UNAVAILABLE'
+                : 'TAKE ME THERE'}{' '}
             <span>→</span>
           </button>
         </section>
@@ -662,6 +746,7 @@ export default function Home() {
     GraphicsQuality | 'AUTO'
   >('AUTO');
   const [eventPreview, setEventPreview] = useState(0);
+  const [stellarEpoch, setStellarEpoch] = useState<number>(2026.81);
   const [pauseAnimations, setPauseAnimations] = useState(false);
   const [auroraPreview, setAuroraPreview] = useState(false);
   const [experienceMode, setExperienceMode] =
@@ -699,12 +784,22 @@ export default function Home() {
   const [focusedSystemObjectId, setFocusedSystemObjectId] = useState<
     string | null
   >(null);
+  const [destinationInfoOpen, setDestinationInfoOpen] = useState(true);
+  const destinationInfoToggleRef = useRef<HTMLButtonElement>(null);
+  const closeDestinationInformation = useCallback(() => {
+    setDestinationInfoOpen(false);
+    destinationInfoToggleRef.current?.focus();
+  }, []);
   const [stellarTravel, setStellarTravel] = useState<StellarTravelState | null>(
     null,
   );
   const [interiorMode, setInteriorMode] = useState(false);
   const [activeLayer, setActiveLayer] = useState(0);
   const [minimalUi, setMinimalUi] = useState(false);
+  const restoreUiRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (minimalUi) restoreUiRef.current?.focus();
+  }, [minimalUi]);
   const [following, setFollowing] = useState(true);
   const [quickTravelOpen, setQuickTravelOpen] = useState(false);
   const [spatialScale, setSpatialScale] = useState<CosmicScale>('SYSTEM');
@@ -862,14 +957,40 @@ export default function Home() {
     setExperienceMode('EXPLORE');
   }, []);
 
-  const handleArrival = useCallback((id: string | null) => {
-    setTravelTo(null);
-    setFocusedId(id);
-  }, []);
+  const handleArrival = useCallback(
+    (id: string | null) => {
+      if (sceneUnavailable) return;
+      setTravelTo(null);
+      setFocusedId(id);
+    },
+    [sceneUnavailable],
+  );
 
   const handleSceneUnavailable = useCallback(() => {
     setSceneUnavailable(true);
     setTravelTo(null);
+    setStellarTravel(null);
+    arrivalSelectionRef.current = null;
+    setStellarTravelRequest((current) => ({
+      targetId: null,
+      sourceId: null,
+      distanceLightYears: 0,
+      sequence: current.sequence + 1,
+    }));
+    setExoplanetFocusRequest((current) => ({
+      targetId: null,
+      sequence: current.sequence + 1,
+    }));
+    setSystemObjectFocusRequest((current) => ({
+      targetId: null,
+      sequence: current.sequence + 1,
+    }));
+    setArrivedStellarId(null);
+    setFocusedId(null);
+    setFocusedExoplanetId(null);
+    setFocusedSystemObjectId(null);
+    setInteriorMode(false);
+    setEducationTarget(null);
     if (focusRequest.targetId) setDetailOpen(true);
   }, [focusRequest.targetId]);
 
@@ -886,6 +1007,7 @@ export default function Home() {
   }, []);
 
   const applyArrivalSelection = useCallback((selection: ArrivalSelection) => {
+    setDestinationInfoOpen(true);
     setSelectedStellarId(selection.kind === 'STELLAR' ? selection.id : null);
     setSelectedExoplanetId(
       selection.kind === 'EXOPLANET' ? selection.id : null,
@@ -907,13 +1029,18 @@ export default function Home() {
         returnToSystem();
         return;
       }
+      if (sceneUnavailable) return;
       if (arrivedStellarId === targetId) {
         applyArrivalSelection(selection);
         setExperienceMode('EXPLORE');
         return;
       }
       const sourceId = arrivedStellarId ?? 'sol';
-      const catalogDistance = separationLightYears(sourceId, targetId);
+      const catalogDistance = separationLightYears(
+        sourceId,
+        targetId,
+        stellarEpoch,
+      );
       arrivalSelectionRef.current = selection;
       setSelectedStellarId(targetId);
       setArrivedStellarId(null);
@@ -939,7 +1066,13 @@ export default function Home() {
       setExperienceMode('EXPLORE');
       setQuickTravelOpen(false);
     },
-    [applyArrivalSelection, arrivedStellarId, returnToSystem],
+    [
+      applyArrivalSelection,
+      arrivedStellarId,
+      returnToSystem,
+      stellarEpoch,
+      sceneUnavailable,
+    ],
   );
 
   const beginStellarTravel = useCallback(() => {
@@ -961,17 +1094,19 @@ export default function Home() {
 
   const handleStellarTravelProgress = useCallback(
     (targetId: string, progress: number, remainingLightYears: number) => {
+      if (sceneUnavailable) return;
       setStellarTravel((current) =>
         current?.targetId === targetId
           ? { ...current, progress, remainingLightYears }
           : current,
       );
     },
-    [],
+    [sceneUnavailable],
   );
 
   const handleStellarArrival = useCallback(
     (targetId: string) => {
+      if (sceneUnavailable) return;
       setArrivedStellarId(targetId);
       setStellarTravel((current) =>
         current?.targetId === targetId
@@ -990,10 +1125,11 @@ export default function Home() {
       arrivalSelectionRef.current = null;
       applyArrivalSelection(intendedSelection);
     },
-    [applyArrivalSelection],
+    [applyArrivalSelection, sceneUnavailable],
   );
 
   const selectExoplanet = useCallback((id: string) => {
+    setDestinationInfoOpen(true);
     setSelectedExoplanetId(id);
     setFocusedExoplanetId(null);
     setSelectedSystemObjectId(null);
@@ -1001,6 +1137,7 @@ export default function Home() {
   }, []);
 
   const selectSystemObject = useCallback((id: string) => {
+    setDestinationInfoOpen(true);
     setSelectedSystemObjectId(id);
     setFocusedSystemObjectId(null);
     setSelectedExoplanetId(null);
@@ -1008,12 +1145,12 @@ export default function Home() {
   }, []);
 
   const approachExoplanet = useCallback(() => {
-    if (!selectedExoplanet) return;
+    if (!selectedExoplanet || sceneUnavailable) return;
     setExoplanetFocusRequest((current) => ({
       targetId: selectedExoplanet.id,
       sequence: current.sequence + 1,
     }));
-  }, [selectedExoplanet]);
+  }, [selectedExoplanet, sceneUnavailable]);
 
   const returnToDestinationSystem = useCallback(() => {
     setSelectedStellarId(arrivedStellarId);
@@ -1031,21 +1168,44 @@ export default function Home() {
     }));
   }, [arrivedStellarId]);
 
-  const handleExoplanetArrival = useCallback((targetId: string) => {
-    setFocusedExoplanetId(targetId);
-  }, []);
+  const handleDestinationKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (destinationInfoOpen) closeDestinationInformation();
+      else returnToDestinationSystem();
+    },
+    [
+      destinationInfoOpen,
+      closeDestinationInformation,
+      returnToDestinationSystem,
+    ],
+  );
+
+  const handleExoplanetArrival = useCallback(
+    (targetId: string) => {
+      if (sceneUnavailable) return;
+      setFocusedExoplanetId(targetId);
+    },
+    [sceneUnavailable],
+  );
 
   const approachSystemObject = useCallback(() => {
-    if (!selectedSystemObject) return;
+    if (!selectedSystemObject || sceneUnavailable) return;
     setSystemObjectFocusRequest((current) => ({
       targetId: selectedSystemObject.id,
       sequence: current.sequence + 1,
     }));
-  }, [selectedSystemObject]);
+  }, [selectedSystemObject, sceneUnavailable]);
 
-  const handleSystemObjectArrival = useCallback((targetId: string) => {
-    setFocusedSystemObjectId(targetId);
-  }, []);
+  const handleSystemObjectArrival = useCallback(
+    (targetId: string) => {
+      if (sceneUnavailable) return;
+      setFocusedSystemObjectId(targetId);
+    },
+    [sceneUnavailable],
+  );
 
   const leaveDestinationSystem = useCallback(() => {
     setArrivedStellarId(null);
@@ -1094,6 +1254,10 @@ export default function Home() {
       setDetailOpen(false);
       setDataOpen(false);
       setCompareOpen(false);
+      if (sceneUnavailable && target.kind !== 'home') {
+        setEducationTarget(null);
+        return;
+      }
       setEducationTarget(target);
       if (target.kind === 'home') {
         returnToSystem();
@@ -1127,10 +1291,11 @@ export default function Home() {
       travelToStellarObject,
       focusedId,
       arrivedStellarId,
+      sceneUnavailable,
     ],
   );
   useEffect(() => {
-    if (!educationOpen || !educationTarget) return;
+    if (sceneUnavailable || !educationOpen || !educationTarget) return;
     let cancelled = false;
     queueMicrotask(() => {
       if (cancelled) return;
@@ -1163,6 +1328,7 @@ export default function Home() {
       cancelled = true;
     };
   }, [
+    sceneUnavailable,
     educationOpen,
     educationTarget,
     focusedId,
@@ -1174,6 +1340,19 @@ export default function Home() {
     const handleKey = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
       const target = event.target;
+      if (
+        event.key === 'Escape' &&
+        destinationInfoOpen &&
+        (selectedExoplanetId || selectedSystemObjectId) &&
+        !(
+          target instanceof HTMLElement &&
+          target.closest('.education-panel,dialog')
+        )
+      ) {
+        event.preventDefault();
+        closeDestinationInformation();
+        return;
+      }
       if (
         target instanceof HTMLElement &&
         target.closest(
@@ -1262,6 +1441,8 @@ export default function Home() {
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
   }, [
+    destinationInfoOpen,
+    closeDestinationInformation,
     arrivedStellarId,
     canReadWorld,
     compareOpen,
@@ -1301,16 +1482,22 @@ export default function Home() {
         } as React.CSSProperties
       }
     >
-      <header className="explore-hud">
+      <header
+        className="explore-hud"
+        aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+        inert={minimalUi || experienceMode === 'CATALOG'}
+      >
         <button className="brand" onClick={returnToSystem}>
           <i />
           HELIOS <span>LIVE COSMIC ATLAS</span>
         </button>
         <div className="explore-location">
           <span>
-            {arrivedStellarObject
-              ? 'DESTINATION FRAME'
-              : spatialScale.replace('_', ' ')}
+            {sceneUnavailable
+              ? 'INFORMATION ONLY · 3D UNAVAILABLE'
+              : arrivedStellarObject
+                ? 'DESTINATION FRAME'
+                : spatialScale.replace('_', ' ')}
           </span>
           <strong>
             {selectedSystemObject?.name ??
@@ -1389,7 +1576,11 @@ export default function Home() {
 
       {minimalUi && (
         <>
-          <button className="restore-ui" onClick={toggleMinimalUi}>
+          <button
+            ref={restoreUiRef}
+            className="restore-ui"
+            onClick={toggleMinimalUi}
+          >
             HELIOS · RESTORE HUD
           </button>
           <div className="minimal-context">
@@ -1412,6 +1603,7 @@ export default function Home() {
 
       <section className={`space-stage ${detailOpen ? 'detail-active' : ''}`}>
         <SolarSystemScene
+          stellarEpoch={stellarEpoch}
           pauseAnimations={pauseAnimations}
           graphicsQuality={graphicsQuality}
           eventPreview={eventPreview}
@@ -1483,7 +1675,8 @@ export default function Home() {
           </section>
         )}
 
-        {(spatialScale === 'LOCAL_STELLAR' ||
+        {(sceneUnavailable ||
+          spatialScale === 'LOCAL_STELLAR' ||
           spatialScale === 'STELLAR_SYSTEM') &&
           selectedStellarObject &&
           !selectedExoplanet &&
@@ -1491,6 +1684,8 @@ export default function Home() {
             <section
               className="stellar-object-dock"
               aria-label={`${selectedStellarObject.name} stellar selection`}
+              aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+              inert={minimalUi || experienceMode === 'CATALOG'}
             >
               <div>
                 <span>
@@ -1503,11 +1698,12 @@ export default function Home() {
                 <strong>{selectedStellarObject.name}</strong>
                 <em>
                   {distanceLightYears(selectedStellarObject).toFixed(2)}{' '}
-                  LIGHT-YEARS FROM OUR SUN
+                  REFERENCE LIGHT-YEARS FROM OUR SUN
                 </em>
               </div>
               <div className="stellar-object-actions">
-                {selectedStellarObject.id !== 'sol' &&
+                {!sceneUnavailable &&
+                  selectedStellarObject.id !== 'sol' &&
                   arrivedStellarId !== selectedStellarObject.id &&
                   stellarTravel?.status !== 'traveling' && (
                     <button
@@ -1517,21 +1713,23 @@ export default function Home() {
                       TAKE ME THERE
                     </button>
                   )}
-                {arrivedStellarId === selectedStellarObject.id && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setSelectedSystemObjectId(selectedStellarObject.id);
-                        setSelectedStellarId(null);
-                      }}
-                    >
-                      INSPECT STAR
-                    </button>
-                    <button onClick={leaveDestinationSystem}>
-                      LEAVE SYSTEM
-                    </button>
-                  </>
-                )}
+                {!sceneUnavailable &&
+                  arrivedStellarId === selectedStellarObject.id && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setDestinationInfoOpen(true);
+                          setSelectedSystemObjectId(selectedStellarObject.id);
+                          setSelectedStellarId(null);
+                        }}
+                      >
+                        INSPECT STAR
+                      </button>
+                      <button onClick={leaveDestinationSystem}>
+                        LEAVE SYSTEM
+                      </button>
+                    </>
+                  )}
                 <button onClick={() => setSelectedStellarId(null)}>
                   RELEASE
                 </button>
@@ -1541,9 +1739,8 @@ export default function Home() {
                 {selectedStellarObject.stellarType} ·{' '}
                 {selectedStellarObject.designation} · POSITION MEASURED ·{' '}
                 {STELLAR_EPOCH_POLICY.frame}{' '}
-                {STELLAR_EPOCH_POLICY.referenceEpoch} →{' '}
-                {STELLAR_EPOCH_POLICY.displayEpoch} LINEAR MOTION · APPEARANCE
-                ILLUSTRATIVE
+                {STELLAR_EPOCH_POLICY.referenceEpoch} → {stellarEpoch} LINEAR
+                MOTION · APPEARANCE ILLUSTRATIVE
                 {destinationPlanets.length
                   ? ` · ${destinationPlanets.length} CONFIRMED PLANETS`
                   : ''}
@@ -1567,8 +1764,11 @@ export default function Home() {
 
         {selectedExoplanet && (
           <section
-            className="stellar-object-dock exoplanet-object-dock"
+            className="stellar-object-dock exoplanet-object-dock destination-object-dock"
             aria-label={`${selectedExoplanet.name} exoplanet selection`}
+            aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+            inert={minimalUi || experienceMode === 'CATALOG'}
+            onKeyDown={handleDestinationKeyDown}
           >
             <div className="exoplanet-heading">
               <span>
@@ -1580,89 +1780,116 @@ export default function Home() {
               <em>{selectedExoplanet.likelyClass}</em>
             </div>
             <div className="stellar-object-actions">
-              {focusedExoplanetId !== selectedExoplanet.id && (
-                <button className="travel-star" onClick={approachExoplanet}>
-                  APPROACH
-                </button>
-              )}
+              <button
+                ref={destinationInfoToggleRef}
+                className="destination-info-toggle"
+                aria-label={`${destinationInfoOpen ? 'Close' : 'Open'} ${selectedExoplanet.name} information`}
+                aria-expanded={destinationInfoOpen}
+                aria-controls="destination-object-information"
+                onClick={() =>
+                  destinationInfoOpen
+                    ? closeDestinationInformation()
+                    : setDestinationInfoOpen(true)
+                }
+              >
+                {destinationInfoOpen ? 'CLOSE ×' : 'INFO'}
+              </button>
+              {!sceneUnavailable &&
+                focusedExoplanetId !== selectedExoplanet.id && (
+                  <button className="travel-star" onClick={approachExoplanet}>
+                    APPROACH
+                  </button>
+                )}
               <button onClick={returnToDestinationSystem}>
                 BACK TO SYSTEM
               </button>
               <button onClick={returnToSystem}>HOME</button>
             </div>
-            <dl className="exoplanet-metrics">
-              <div>
-                <dt>ORBIT</dt>
-                <dd>
-                  {selectedExoplanet.semiMajorAxisAU} AU{' '}
-                  <ConfidenceMark level="measured" compact />
-                </dd>
-              </div>
-              <div>
-                <dt>PERIOD</dt>
-                <dd>
-                  {selectedExoplanet.orbitalPeriodDays} DAYS{' '}
-                  <ConfidenceMark level="measured" compact />
-                </dd>
-              </div>
-              <div>
-                <dt>
-                  {selectedExoplanet.massProvenance === 'MASS'
-                    ? 'DYNAMICAL MASS'
-                    : 'MINIMUM MASS'}
-                </dt>
-                <dd>
-                  {selectedExoplanet.massEarth ??
-                    selectedExoplanet.minimumMassEarth}{' '}
-                  M⊕ <ConfidenceMark level="inferred" compact />
-                </dd>
-              </div>
-              <div>
-                <dt>MODELED RADIUS</dt>
-                <dd>
-                  {selectedExoplanet.radiusEarth} R⊕{' '}
+            {destinationInfoOpen && (
+              <div
+                id="destination-object-information"
+                className="destination-information"
+                role="region"
+                aria-label={`${selectedExoplanet.name} information`}
+              >
+                <dl className="exoplanet-metrics">
+                  <div>
+                    <dt>ORBIT</dt>
+                    <dd>
+                      {selectedExoplanet.semiMajorAxisAU} AU{' '}
+                      <ConfidenceMark level="measured" compact />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>PERIOD</dt>
+                    <dd>
+                      {selectedExoplanet.orbitalPeriodDays} DAYS{' '}
+                      <ConfidenceMark level="measured" compact />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      {selectedExoplanet.massProvenance === 'MASS'
+                        ? 'DYNAMICAL MASS'
+                        : 'MINIMUM MASS'}
+                    </dt>
+                    <dd>
+                      {selectedExoplanet.massEarth ??
+                        selectedExoplanet.minimumMassEarth}{' '}
+                      M⊕ <ConfidenceMark level="inferred" compact />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>MODELED RADIUS</dt>
+                    <dd>
+                      {selectedExoplanet.radiusEarth} R⊕{' '}
+                      <ConfidenceMark
+                        level={selectedExoplanet.radiusConfidence}
+                        compact
+                      />
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>EQUILIBRIUM TEMP.</dt>
+                    <dd>
+                      {selectedExoplanet.equilibriumTemperatureK === null
+                        ? 'UNKNOWN'
+                        : `${selectedExoplanet.equilibriumTemperatureK} K`}{' '}
+                      <ConfidenceMark
+                        level={
+                          selectedExoplanet.equilibriumTemperatureK === null
+                            ? 'unknown'
+                            : selectedExoplanet.temperatureConfidence
+                        }
+                        compact
+                      />
+                    </dd>
+                  </div>
+                </dl>
+                <SourceInspector
+                  context={{ kind: 'exoplanet', id: selectedExoplanet.id }}
+                  label="Evidence for planet properties"
+                />
+                <p>
+                  {selectedExoplanet.visualNote} · APPEARANCE{' '}
                   <ConfidenceMark
-                    level={selectedExoplanet.radiusConfidence}
+                    level={selectedExoplanet.appearanceConfidence}
                     compact
-                  />
-                </dd>
+                  />{' '}
+                  · NASA EXOPLANET ARCHIVE PSCOMPPARS
+                </p>
               </div>
-              <div>
-                <dt>EQUILIBRIUM TEMP.</dt>
-                <dd>
-                  {selectedExoplanet.equilibriumTemperatureK === null
-                    ? 'UNKNOWN'
-                    : `${selectedExoplanet.equilibriumTemperatureK} K`}{' '}
-                  <ConfidenceMark
-                    level={
-                      selectedExoplanet.equilibriumTemperatureK === null
-                        ? 'unknown'
-                        : selectedExoplanet.temperatureConfidence
-                    }
-                    compact
-                  />
-                </dd>
-              </div>
-            </dl>
-            <SourceInspector
-              context={{ kind: 'exoplanet', id: selectedExoplanet.id }}
-              label="Evidence for planet properties"
-            />
-            <p>
-              {selectedExoplanet.visualNote} · APPEARANCE{' '}
-              <ConfidenceMark
-                level={selectedExoplanet.appearanceConfidence}
-                compact
-              />{' '}
-              · NASA EXOPLANET ARCHIVE PSCOMPPARS
-            </p>
+            )}
           </section>
         )}
 
         {selectedSystemObject && (
           <section
-            className="stellar-object-dock system-member-dock"
+            className="stellar-object-dock system-member-dock destination-object-dock"
             aria-label={`${selectedSystemObject.name} system-member selection`}
+            aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+            inert={minimalUi || experienceMode === 'CATALOG'}
+            onKeyDown={handleDestinationKeyDown}
           >
             <div>
               <span>
@@ -1673,49 +1900,76 @@ export default function Home() {
               <em>{selectedSystemObject.designation}</em>
             </div>
             <div className="stellar-object-actions">
-              {focusedSystemObjectId !== selectedSystemObject.id && (
-                <button className="travel-star" onClick={approachSystemObject}>
-                  APPROACH
-                </button>
-              )}
+              <button
+                ref={destinationInfoToggleRef}
+                className="destination-info-toggle"
+                aria-label={`${destinationInfoOpen ? 'Close' : 'Open'} ${selectedSystemObject.name} information`}
+                aria-expanded={destinationInfoOpen}
+                aria-controls="destination-object-information"
+                onClick={() =>
+                  destinationInfoOpen
+                    ? closeDestinationInformation()
+                    : setDestinationInfoOpen(true)
+                }
+              >
+                {destinationInfoOpen ? 'CLOSE ×' : 'INFO'}
+              </button>
+              {!sceneUnavailable &&
+                focusedSystemObjectId !== selectedSystemObject.id && (
+                  <button
+                    className="travel-star"
+                    onClick={approachSystemObject}
+                  >
+                    APPROACH
+                  </button>
+                )}
               <button onClick={returnToDestinationSystem}>
                 BACK TO SYSTEM
               </button>
               <button onClick={returnToSystem}>HOME</button>
             </div>
-            <dl className="system-member-metrics">
-              <div>
-                <dt>OBJECT CLASS</dt>
-                <dd>{selectedSystemObject.stellarType}</dd>
+            {destinationInfoOpen && (
+              <div
+                id="destination-object-information"
+                className="destination-information"
+                role="region"
+                aria-label={`${selectedSystemObject.name} information`}
+              >
+                <dl className="system-member-metrics">
+                  <div>
+                    <dt>OBJECT CLASS</dt>
+                    <dd>{selectedSystemObject.stellarType}</dd>
+                  </div>
+                  <div>
+                    <dt>SYSTEM</dt>
+                    <dd>{destinationSystem?.name}</dd>
+                  </div>
+                  {selectedDestinationOrbit && (
+                    <div>
+                      <dt>RELATIVE ORBIT</dt>
+                      <dd>
+                        {selectedDestinationOrbit.scientific.semiMajorAxis}{' '}
+                        {selectedDestinationOrbit.scientific.unit} · ~
+                        {selectedDestinationOrbit.scientific.period}{' '}
+                        {selectedDestinationOrbit.scientific.periodUnit.toUpperCase()}
+                        {selectedDestinationOrbit.scientific.period === 1
+                          ? ''
+                          : 'S'}{' '}
+                        <ConfidenceMark level="measured" compact />
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+                <SourceInspector
+                  context={{ kind: 'stellar', id: selectedSystemObject.id }}
+                  label="Stellar evidence and dates"
+                />
+                <p>
+                  SIMBAD CATALOG OBJECT · SYSTEM GEOMETRY ILLUSTRATIVE UNLESS AN
+                  ORBIT IS CITED · APPEARANCE ILLUSTRATIVE
+                </p>
               </div>
-              <div>
-                <dt>SYSTEM</dt>
-                <dd>{destinationSystem?.name}</dd>
-              </div>
-              {selectedDestinationOrbit && (
-                <div>
-                  <dt>RELATIVE ORBIT</dt>
-                  <dd>
-                    {selectedDestinationOrbit.scientific.semiMajorAxis}{' '}
-                    {selectedDestinationOrbit.scientific.unit} · ~
-                    {selectedDestinationOrbit.scientific.period}{' '}
-                    {selectedDestinationOrbit.scientific.periodUnit.toUpperCase()}
-                    {selectedDestinationOrbit.scientific.period === 1
-                      ? ''
-                      : 'S'}{' '}
-                    <ConfidenceMark level="measured" compact />
-                  </dd>
-                </div>
-              )}
-            </dl>
-            <SourceInspector
-              context={{ kind: 'stellar', id: selectedSystemObject.id }}
-              label="Stellar evidence and dates"
-            />
-            <p>
-              SIMBAD CATALOG OBJECT · SYSTEM GEOMETRY ILLUSTRATIVE UNLESS AN
-              ORBIT IS CITED · APPEARANCE ILLUSTRATIVE
-            </p>
+            )}
           </section>
         )}
 
@@ -1723,6 +1977,8 @@ export default function Home() {
           <section
             className="object-dock"
             aria-label={`${world.name} exploration controls`}
+            aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+            inert={minimalUi || experienceMode === 'CATALOG'}
           >
             <div>
               <span>
@@ -1812,6 +2068,8 @@ export default function Home() {
           <aside
             className="interior-inspector"
             aria-label={`${world.name} 3D interior layers`}
+            aria-hidden={minimalUi || experienceMode === 'CATALOG'}
+            inert={minimalUi || experienceMode === 'CATALOG'}
           >
             <div>
               <span>
@@ -1875,8 +2133,8 @@ export default function Home() {
 
         <aside
           className={`knowledge-drawer ${detailOpen ? 'open' : ''}`}
-          aria-hidden={!detailOpen || minimalUi}
-          inert={!detailOpen || minimalUi}
+          aria-hidden={!detailOpen || minimalUi || experienceMode === 'CATALOG'}
+          inert={!detailOpen || minimalUi || experienceMode === 'CATALOG'}
           aria-label={`${world.name} information`}
         >
           <button className="drawer-back" onClick={() => setDetailOpen(false)}>
@@ -1933,7 +2191,7 @@ export default function Home() {
 
       <footer
         className={`world-rail quick-rail ${quickTravelOpen ? 'open' : ''}`}
-        inert={!quickTravelOpen || minimalUi}
+        inert={!quickTravelOpen || minimalUi || experienceMode === 'CATALOG'}
         aria-label="Accessible quick travel"
       >
         <button
@@ -2009,20 +2267,27 @@ export default function Home() {
       )}
       {educationOpen && (
         <EducationPanel
+          sceneUnavailable={sceneUnavailable}
           onResize={setEducationPanelWidth}
           onClose={closeEducation}
           onNavigate={navigateEducation}
-          observed={{
-            worldId: focusedId,
-            layerIndex: interiorMode ? activeLayer : null,
-            stellarId: arrivedStellarId,
-            exoplanetId: focusedExoplanetId,
-            compareOpen,
-            interiorMode,
-          }}
+          observed={
+            sceneUnavailable
+              ? undefined
+              : {
+                  worldId: focusedId,
+                  layerIndex: interiorMode ? activeLayer : null,
+                  stellarId: arrivedStellarId,
+                  exoplanetId: focusedExoplanetId,
+                  compareOpen,
+                  interiorMode,
+                }
+          }
         />
       )}
       <CatalogPanel
+        sceneUnavailable={sceneUnavailable}
+        epoch={stellarEpoch}
         open={experienceMode === 'CATALOG'}
         selectedId={selectedCatalogId}
         onSelect={setSelectedCatalogId}
@@ -2080,6 +2345,38 @@ export default function Home() {
               ? 'SHOW STRONG EARTH AURORA'
               : 'PREVIEW ILLUSTRATIVE SOLAR ACTIVITY'}
           </button>
+          {focusedId === 'saturn' && (
+            <p className="science-lead">
+              Ring-to-globe intersections use the displayed ring geometry. Ring
+              opacity and color are appearance approximations, not a fit to
+              measured visible-light optical depth. This is calculated shading,
+              not an observed image.{' '}
+              <a
+                href="https://pds-rings.seti.org/cassini/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Cassini ring observations
+              </a>
+            </p>
+          )}
+          <ScienceTools
+            sceneUnavailable={sceneUnavailable}
+            epoch={stellarEpoch}
+            busy={stellarTravel?.status === 'traveling'}
+            onEpoch={(value) => {
+              returnToSystem();
+              setStellarEpoch(checkedStellarEpoch(value));
+            }}
+            onWorld={(id) => {
+              setDataOpen(false);
+              travelToWorld(id);
+            }}
+            onStar={(id) => {
+              setDataOpen(false);
+              travelToStellarObject(id);
+            }}
+          />
           <h2>What do we actually know?</h2>
           <p className="science-lead">
             The interface separates observation from model, open questions, and
@@ -2164,12 +2461,12 @@ export default function Home() {
             </a>
             <p>
               Stellar directions propagate ICRS J2000.0 catalog coordinates to
-              fixed Julian epoch 2026.81 with linear tangent proper motion.
-              Radial velocity is applied when cataloged; missing velocities are
-              held at zero. Binary orbit acceleration is omitted. Scientific
-              coordinates remain separate from compressed, floating-origin
-              render coordinates. Values are rounded for comprehension, and
-              time-sensitive catalogs may change.
+              the selected Julian epoch {stellarEpoch} with linear tangent
+              proper motion. Radial velocity is applied when cataloged; missing
+              velocities are held at zero. Binary orbit acceleration is omitted.
+              Scientific coordinates remain separate from compressed,
+              floating-origin render coordinates. Values are rounded for
+              comprehension, and time-sensitive catalogs may change.
             </p>
           </div>
         </AccessibleDialog>

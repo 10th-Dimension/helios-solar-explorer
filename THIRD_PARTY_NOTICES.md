@@ -10,6 +10,10 @@ NASA's [media guidelines](https://www.nasa.gov/nasa-brand-center/images-and-medi
 
 The earlier legacy Earth PNG is not redistributed because its precise original download record was not retained; the legacy CSS preview uses the credited July 2004 JPEG instead. The existing Helios share card and favicon are project assets. Application captures depict the original interface and credited imagery; the same third-party caveats apply.
 
+## Historical SDO/AIA visualization images
+
+Four cached false-color AIA 304 Å frames credit **NASA/SDO and the AIA science team**, via Helioviewer. Observation times, image IDs, original render/metadata/header URLs, raw QUALITY fields and SHA-256 hashes are retained in `data/observed-weather.json`; files are under `public/observations/aia-304-20240510/`. These are historical visualization products, not calibrated intensity data or a live feed. Existing credit/watermark is retained. NASA's linked media guidance and any source-specific rights apply; the images are not relicensed as original MIT application code.
+
 ## CDS/SIMBAD
 
 This project uses the SIMBAD astronomical database, operated at CDS, Strasbourg, France. Credit **CDS/SIMBAD** when reusing catalog-derived records. Source identifiers, astrometry, bibliography, query metadata and the response snapshot are retained in `app/stellar.ts`, `app/nearbyCatalog.ts` and `data/simbad-snapshot.json`.

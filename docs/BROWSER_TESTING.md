@@ -27,6 +27,8 @@ npm run test:browser -- --project=chromium
 - Science-dialog keyboard focus containment and restoration with Escape.
 - Manual pause and system reduced motion, retaining deliberate world navigation.
 - Controlled WebGL initialization failure, world information and lesson access.
+- No-3D Proxima lesson stages and Sirius Catalog access without frozen stellar travel; explicit written completion remains distinct from a scene visit.
+- Closing/reopening approached exoplanet information while retaining the selected planet, and short-screen Catalog wheel/keyboard scrolling without scrolling the scene.
 - A 390×844 layout: AUTO remains selected, lesson/scene switching works, and the page has no horizontal overflow.
 
 Chromium and WebKit run the full suite. The Firefox project runs the lesson, keyboard, narrow-layout and controlled-fallback cases; it excludes the four `@webgl` rendering cases because headless Firefox in this environment does not provide WebGL. This is an explicit coverage boundary, not a rendering pass for Firefox. Browser emulation does not reproduce physical phones or every GPU. Chromium uses SwiftShader in this configuration to make rendering available on headless CI; its frame timings are software-renderer diagnostics, not hardware performance claims.
@@ -39,3 +41,5 @@ npx playwright show-trace test-results/<failed-case>/trace.zip
 ```
 
 These tasks supplement the deterministic `npm test` checks. They do not exhaust every camera path, establish complete accessibility conformance, validate every scientific statement or prove long-session resource stability. Rendering changes still deserve a visual review of actual captures, and performance changes need before/after measurements on the intended hardware.
+
+The test inventory is not a run receipt. A cloud VM's no-WebGL pass does not establish a 3D-rendering pass. Record the exact commit, projects/scenarios executed and failures or skipped cases; keep reset/device/renderer limits explicit. See [the roadmap verification record](ROADMAP_IMPLEMENTATION.md).

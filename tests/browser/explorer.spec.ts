@@ -117,9 +117,10 @@ for (const lesson of lessons) {
       await expect(
         panel.getByRole('heading', { name: stage.title, exact: true }),
       ).toBeFocused();
-      await panel
-        .getByText('Read a nonvisual alternative', { exact: true })
-        .click();
+      await expect(panel.locator('.education-alternative')).toHaveAttribute(
+        'open',
+        '',
+      );
       await panel
         .getByRole('button', {
           name: 'Use this alternative for this stage',
@@ -166,9 +167,10 @@ test('persists a retry and resumes it without requiring a correct answer', async
       exact: true,
     })
     .click();
-  await panel
-    .getByText('Read a nonvisual alternative', { exact: true })
-    .click();
+  await expect(panel.locator('.education-alternative')).toHaveAttribute(
+    'open',
+    '',
+  );
   await panel
     .getByRole('button', { name: 'Use this alternative for this stage' })
     .click();
@@ -325,11 +327,27 @@ test('narrow layout starts on AUTO and keeps lesson switching within the viewpor
   await panel
     .getByRole('button', { name: 'Start lesson: Inside the Sun', exact: true })
     .click();
-  await panel.locator('.education-travel').click();
-  await expect(
-    panel.getByRole('button', { name: 'Read lesson', exact: true }),
-  ).toBeVisible();
-  await panel.getByRole('button', { name: 'Read lesson', exact: true }).click();
+  if (await page.locator('.solar-scene canvas').count()) {
+    await panel.locator('.education-travel').click();
+    await expect(
+      panel.getByRole('button', { name: 'Read lesson', exact: true }),
+    ).toBeVisible();
+    await panel
+      .getByRole('button', { name: 'Read lesson', exact: true })
+      .click();
+  } else {
+    await expect(
+      page.getByText('3D rendering is unavailable.', { exact: true }),
+    ).toBeVisible();
+    await expect(panel.locator('.education-travel')).toHaveCount(0);
+    await expect(panel.locator('.education-alternative')).toHaveAttribute(
+      'open',
+      '',
+    );
+    await expect(
+      panel.getByRole('button', { name: /^Next stage/ }),
+    ).toBeVisible();
+  }
   await expect(
     panel.getByRole('heading', {
       name: 'Energy begins in the core',
@@ -367,6 +385,30 @@ test('@webgl travels from the catalog to an exoplanet and returns Home', async (
   });
   await expect(planet).toBeVisible();
   await expect(planet).toContainText('CONFIRMED');
+  await planet.getByRole('button', { name: 'APPROACH', exact: true }).click();
+  await expect(
+    planet.getByRole('button', { name: 'APPROACH', exact: true }),
+  ).toHaveCount(0);
+  await planet
+    .getByRole('button', {
+      name: 'Close Proxima Centauri b information',
+      exact: true,
+    })
+    .click();
+  await expect(planet.locator('.destination-information')).toHaveCount(0);
+  await expect(page.locator('.explore-location strong')).toHaveText(
+    'Proxima Centauri b',
+  );
+  await expect(
+    planet.getByRole('button', { name: 'APPROACH', exact: true }),
+  ).toHaveCount(0);
+  await planet
+    .getByRole('button', {
+      name: 'Open Proxima Centauri b information',
+      exact: true,
+    })
+    .click();
+  await expect(planet.locator('.destination-information')).toBeVisible();
   await planet
     .getByRole('button', { name: 'BACK TO SYSTEM', exact: true })
     .click();
@@ -376,4 +418,124 @@ test('@webgl travels from the catalog to an exoplanet and returns Home', async (
   await page.locator('.brand').click();
   await expect(page.locator('.system-intro')).toBeVisible();
   await expect(page.locator('.solar-scene canvas')).toHaveCount(1);
+});
+
+test('no-3D Education and Catalog never start frozen interstellar travel', async ({
+  page,
+}) => {
+  await disableWebGL(page);
+  const errors = await openExplorer(page);
+  await expect(
+    page.getByText('3D rendering is unavailable.', { exact: true }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'EDUCATION', exact: true }).click();
+  const panel = page.getByRole('complementary', { name: 'Education Mode' });
+  await panel
+    .getByRole('button', {
+      name: 'Start lesson: Beyond Our Solar System',
+      exact: true,
+    })
+    .click();
+  const lesson = lessons.find((item) => item.id === 'beyond-our-solar-system')!;
+  for (const stage of lesson.stages.slice(0, 2)) {
+    await expect(
+      panel.getByRole('heading', { name: stage.title, exact: true }),
+    ).toBeVisible();
+    await expect(panel.locator('.education-travel')).toHaveCount(0);
+    await expect(panel.locator('.education-alternative')).toHaveAttribute(
+      'open',
+      '',
+    );
+    await expect(panel.locator('.education-alternative')).toContainText(
+      stage.accessibleAlternative,
+    );
+    await expect(page.locator('.travel-telemetry')).toHaveCount(0);
+    await expect(
+      panel.getByText('Scene interaction reached.', { exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      panel.getByRole('button', { name: /^Next stage/ }),
+    ).toBeDisabled();
+    await panel
+      .getByRole('button', {
+        name: 'Use this alternative for this stage',
+        exact: true,
+      })
+      .click();
+    const answer = stage.question!.options.find(
+      (item) => item.id === stage.question!.correctOptionId,
+    )!;
+    await panel.getByRole('radio', { name: answer.label, exact: true }).check();
+    await panel.getByRole('button', { name: /^Next stage/ }).click();
+  }
+  await page.getByRole('button', { name: 'CATALOG', exact: true }).click();
+  const catalog = page.getByRole('complementary', {
+    name: 'Helios object catalog',
+  });
+  await catalog
+    .getByRole('textbox', { name: 'SEARCH OBJECTS' })
+    .fill('Sirius A');
+  await expect(
+    catalog.getByRole('region', {
+      name: 'Sirius A catalog detail',
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    catalog.getByRole('button', { name: /3D TRAVEL UNAVAILABLE/ }),
+  ).toBeDisabled();
+  await expect(page.locator('.travel-telemetry')).toHaveCount(0);
+  await catalog.getByRole('textbox', { name: 'SEARCH OBJECTS' }).fill('Home');
+  await catalog.getByRole('button', { name: /RETURN HOME/ }).click();
+  await expect(page.locator('.explore-location strong')).toHaveText(
+    'Home [Our Sun]',
+  );
+  await expect(page.locator('.travel-telemetry')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('short Catalog scrolls all nine hosts without moving the scene', async ({
+  page,
+}) => {
+  await disableWebGL(page);
+  await page.setViewportSize({ width: 390, height: 500 });
+  await openExplorer(page);
+  await page.getByRole('button', { name: 'CATALOG', exact: true }).click();
+  const catalog = page.getByRole('complementary', {
+    name: 'Helios object catalog',
+  });
+  await catalog
+    .getByRole('button', { name: 'PLANETARY SYSTEM', exact: true })
+    .click();
+  await expect(catalog.locator('.catalog-results button')).toHaveCount(9);
+  await expect(catalog.locator('.catalog-page-summary')).toContainText(
+    'All 9 objects',
+  );
+  await expect(
+    catalog.getByRole('button', { name: 'Next', exact: true }),
+  ).toHaveCount(0);
+  await catalog.hover();
+  await page.mouse.wheel(0, 1600);
+  await expect
+    .poll(() => catalog.evaluate((element) => element.scrollTop))
+    .toBeGreaterThan(0);
+  await catalog.focus();
+  await page.keyboard.press('End');
+  await expect
+    .poll(() =>
+      catalog.evaluate((element) =>
+        Math.abs(
+          element.scrollHeight - element.clientHeight - element.scrollTop,
+        ),
+      ),
+    )
+    .toBeLessThan(3);
+  expect(
+    await page.locator('.space-stage').evaluate((element) => element.scrollTop),
+  ).toBe(0);
+  await page.keyboard.press('Escape');
+  await expect(catalog).toHaveAttribute('aria-hidden', 'true');
+  await expect(
+    page.getByRole('button', { name: 'CATALOG', exact: true }),
+  ).toBeFocused();
 });

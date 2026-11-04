@@ -212,8 +212,9 @@ for(const planet of exoplanets){
 const sirius=getDestinationSystemByAnchor('sirius-a');
 assert.equal(sirius.kind,'BINARY_STELLAR_SYSTEM');
 assert(sirius.bodies.some(body=>body.objectId==='sirius-b'&&body.kind==='WHITE_DWARF'&&body.selectable));
-assert.equal(sirius.orbits[0].scientific.semiMajorAxis,19.7);
-assert.equal(sirius.orbits[0].scientific.period,50);
+assert.equal(sirius.orbits[0].scientific.semiMajorAxis,7.4957/.3789,'Physical relative axis calculated from Bond Table 4 angular axis and Table 5 parallax');
+assert.equal(sirius.orbits[0].scientific.period,50.1284,'Published fitted period replaces the former rounded reference');
+assert.equal(sirius.coordinatePolicy.phasePolicy,'FITTED_PROJECTED_ORBIT');
 assert.equal(sirius.orbits[0].render.radius,34);
 
 const {catalogObjects}=catalog;

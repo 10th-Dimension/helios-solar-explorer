@@ -6,9 +6,11 @@
 
 `page.tsx` owns selection, arrival, travel requests, Catalog, information and interior state. Object selection does not automatically open a large information drawer. The scene communicates compact state, not per-frame React renders.
 
+Renderer initialization failure is an explicit capability state. It invalidates pending stellar/approach/lesson requests and guards late callbacks. Catalog evidence and world information remain readable; unsupported travel is disabled. Education offers its written route without manufacturing observed arrival. Closing destination information only changes information visibility, not camera/selection state.
+
 ## Scientific versus render space
 
-`spatial.ts` separates actual AU values from render radii/orbits. `stellar.ts` preserves ICRS J2000 catalog astrometry, derives fixed-epoch linear-motion Cartesian positions, then applies a separate Y-up compressed render transform. `cosmicCoordinates.ts` shifts only disposable render coordinates, camera and target during floating-origin rebasing. Scientific records never move with the origin.
+`spatial.ts` separates actual AU values from render radii/orbits. `stellar.ts` preserves ICRS J2000 catalog astrometry, derives linear-motion Cartesian positions at the selected epoch, then applies a separate Y-up compressed render transform. `cosmicCoordinates.ts` shifts only disposable render coordinates, camera and target during floating-origin rebasing. Scientific records never move with the origin.
 
 Solar bodies use J2000 ecliptic pole frames. The Solar parent rotates by the J2000 obliquity to meet the shared stellar ICRS frame. Do not apply obliquity twice. Hierarchy: orbit position → pole frame → spinning surface. Rings/clouds/auroras inherit the pole; pedagogical interiors and selection annotations are separate.
 
@@ -33,6 +35,12 @@ No ChatGPT account, Sites project, original deployment manifest, database bindin
 `education.ts` holds four lesson definitions and a pure reducer with versioned, validated persistence. `EducationPanel` owns the accessible UI, local-only storage and observed-target gates. Its navigation adapter in page.tsx reuses ordinary travel/interior/comparison requests, applies layers after actual arrival and never creates a renderer. Explicit written alternatives support learning without the canvas.
 
 `AccessibleDialog` uses native focus containment, inert background and focus restoration. Hidden drawers are inert; form/panel keys do not trigger scene shortcuts. An animation clock honors system reduced motion and PAUSE MOTION while retaining manual navigation. Low-frequency DOM diagnostics report render resources and bounded frame samples; they are not remote analytics or a GPU benchmark.
+
+## Science workbench modules
+
+`ScienceTools.tsx` composes reference-only major-moon/nearby-archive records, controlled epochs, the Sirius relative fit, observed-weather playback, a temporary prediction note and local performance recording. `siriusOrbit.ts` supplies a disclosed J2000 sky projection; `lightingGeometry.ts` keeps illumination/ring math independent of render-origin translation. `gpuTiming.ts` bounds asynchronous queries and disposes them. `catalogWindow.ts` handles page-local selection without removing underlying records; `stellarLabels.ts` uses spatial bins for overlap lookup.
+
+`observedWeather.ts` validates the bundled frame manifest. `WeatherPlayback` plays only actual saved frames, with explicit observation timestamps and missing-frame behavior; it does not drive procedural aurora or pretend that gaps are observations. See [the scientific boundaries](ROADMAP_IMPLEMENTATION.md).
 
 ## Verification boundaries
 

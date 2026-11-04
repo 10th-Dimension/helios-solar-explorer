@@ -24,7 +24,7 @@
     "test:aurora": "node --experimental-strip-types scripts/verify-aurora.mjs",
     "test:wheel": "node --experimental-strip-types scripts/verify-smooth-wheel.mjs",
     "test:solar": "node --experimental-strip-types scripts/verify-solar.mjs",
-    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel && npm run test:solar && npm run test:science && npm run test:education && npm run test:interior && npm run test:interaction",
+    "test": "npm run test:stellar && npm run test:aurora && npm run test:wheel && npm run test:solar && npm run test:science && npm run test:education && npm run test:interior && npm run test:interaction && npm run test:roadmap && npm run test:catalog && npm run test:approach && npm run test:widgets && npm run test:no3d",
     "typecheck": "tsc --noEmit --incremental false",
     "audit:public": "node scripts/audit-public-release.mjs",
     "test:science": "node --experimental-strip-types scripts/verify-science.mjs",
@@ -32,7 +32,12 @@
     "test:interior": "node --experimental-strip-types scripts/verify-interior-leader.mjs",
     "test:interaction": "node --experimental-strip-types scripts/verify-interaction-state.mjs",
     "test:browser": "playwright test",
-    "format:check": "prettier --check app/page.tsx app/EducationPanel.tsx app/SolarSystemScene.tsx app/layout.tsx playwright.config.ts tests/browser/*.ts"
+    "format:check": "prettier --check app/page.tsx app/EducationPanel.tsx app/SolarSystemScene.tsx app/layout.tsx playwright.config.ts tests/browser/*.ts",
+    "test:roadmap": "node --experimental-strip-types scripts/verify-roadmap.mjs",
+    "test:catalog": "node --experimental-strip-types scripts/verify-catalog-navigation.mjs",
+    "test:approach": "node --experimental-strip-types scripts/verify-approach-controls.mjs",
+    "test:widgets": "node --experimental-strip-types scripts/verify-ui-widgets.mjs",
+    "test:no3d": "node --experimental-strip-types scripts/verify-no3d-ui.mjs"
   },
   "dependencies": {
     "next": "16.4.3",

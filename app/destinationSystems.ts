@@ -1,6 +1,7 @@
 import { exoplanets } from './exoplanets.ts';
 import { getStellarObject, getStellarSystem, localStellarObjects, stellarObjects } from './stellar.ts';
 import type { Confidence } from './worlds';
+import { siriusRenderPosition } from './siriusOrbit.ts';
 
 export type DestinationSystemKind = 'PLANETARY_SYSTEM' | 'BINARY_STELLAR_SYSTEM' | 'SINGLE_OBJECT' | 'MULTIPLE_STELLAR_SYSTEM';
 export type DestinationBodyKind = 'CATALOG_STAR' | 'EXOPLANET' | 'WHITE_DWARF' | 'BROWN_DWARF';
@@ -27,7 +28,7 @@ export type DestinationOrbitRecord = {
     unit: 'AU';
     period: number;
     periodUnit: 'day' | 'year';
-    confidence: Extract<Confidence, 'measured'>;
+    confidence: Extract<Confidence, 'measured' | 'inferred'>;
   };
   render: {
     radius: number;
@@ -50,7 +51,7 @@ export type DestinationSystemRecord = {
     scientificFrame: 'ANCHOR_RELATIVE';
     scientificDistanceUnit: 'AU';
     renderTransform: 'DESTINATION_COMPRESSED';
-    phasePolicy: 'ILLUSTRATIVE_FIXED_PHASE';
+    phasePolicy: 'ILLUSTRATIVE_FIXED_PHASE' | 'FITTED_PROJECTED_ORBIT';
   };
   bodies: DestinationBodyRecord[];
   orbits: DestinationOrbitRecord[];
@@ -97,20 +98,21 @@ export const destinationSystems: DestinationSystemRecord[] = [
     name: 'Sirius',
     kind: 'BINARY_STELLAR_SYSTEM',
     headline: 'A star and its stellar remnant.',
-    guidance: 'Inspect Sirius B, the white-dwarf companion. The displayed orbital phase is illustrative; the measured scale and period remain labeled separately.',
-    orientation: [-.16, .32, .08],
+    guidance: 'Inspect Sirius B at the controlled catalog epoch. Its projected relative orbit uses Bond et al. (2017), not an arbitrary phase. No line-of-sight depth, full covariance or barycentric orbit is asserted.',
+    orientation: [0, 0, 0],
     arrivalStandOff: 116,
-    coordinatePolicy: { scientificFrame: 'ANCHOR_RELATIVE', scientificDistanceUnit: 'AU', renderTransform: 'DESTINATION_COMPRESSED', phasePolicy: 'ILLUSTRATIVE_FIXED_PHASE' },
+    coordinatePolicy: { scientificFrame: 'ANCHOR_RELATIVE', scientificDistanceUnit: 'AU', renderTransform: 'DESTINATION_COMPRESSED', phasePolicy: 'FITTED_PROJECTED_ORBIT' },
     bodies: [
       { id: 'sirius-a-host', kind: 'CATALOG_STAR', objectId: 'sirius-a', role: 'ANCHOR', selectable: true, render: { position: [0, 0, 0], radius: 6.2, color: '#c9dcff', accent: '#edf5ff' } },
-      { id: 'sirius-b-companion', kind: 'WHITE_DWARF', objectId: 'sirius-b', role: 'COMPANION', selectable: true, render: { position: [25.5, 5.2, 22.1], radius: 1.05, color: '#e6f0ff', accent: '#ffffff' } },
+      { id: 'sirius-b-companion', kind: 'WHITE_DWARF', objectId: 'sirius-b', role: 'COMPANION', selectable: true, render: { position: siriusRenderPosition(2026.81), radius: 1.05, color: '#e6f0ff', accent: '#ffffff' } },
     ],
     orbits: [{
       id: 'sirius-relative-orbit', bodyId: 'sirius-b-companion',
-      scientific: { semiMajorAxis: 19.7, unit: 'AU', period: 50, periodUnit: 'year', confidence: 'measured' },
+      scientific: { semiMajorAxis: 7.4957/.3789, unit: 'AU', period: 50.1284, periodUnit: 'year', confidence: 'inferred' },
       render: { radius: 34, inclinationDeg: 49, phaseRad: .72 },
     }],
     provenance: [
+      { label: 'Bond et al. 2017 — Tables 2, 4 and 5', url: 'https://arxiv.org/html/1703.10625v1', supports: 'Seven-element relative visual fit, scalar errors and adopted parallax; physical semimajor axis is calculated from angular axis/parallax', queriedOn: '2026-11-03' },
       { label: 'NASA Hubble · The Dog Star, Sirius, and its Tiny Companion', url: 'https://science.nasa.gov/asset/hubble/the-dog-star-sirius-and-its-tiny-companion/', supports: 'Sirius B classification, approximately 50-year period, and 19.7 AU relative semimajor axis', queriedOn: '2026-08-24' },
       { label: 'USNO · Sixth Catalog of Orbits of Visual Binary Stars', url: 'https://crf.usno.navy.mil/data_products/WDS/orb6/orb6.html', supports: 'Authoritative visual-binary orbit catalog and orbital-element conventions', queriedOn: '2026-08-24' },
     ],

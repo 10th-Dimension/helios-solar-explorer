@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "title": "SDO/AIA 304 \u00c5 \u2014 10 May 2024",
+  "observatory": "SDO",
+  "instrument": "AIA",
+  "wavelengthAngstrom": 304,
+  "sourceId": 13,
+  "retrievedAt": "2026-11-03T23:25:01.925897+00:00",
+  "registry": {
+    "sourceId": 13,
+    "nickname": "AIA 304",
+    "layeringOrder": 1,
+    "start": "2010-06-02 00:05:39",
+    "end": "2026-11-03 22:54:41",
+    "uiLabels": [
+      {
+        "label": "Observatory",
+        "name": "SDO"
+      },
+      {
+        "label": "Instrument",
+        "name": "AIA"
+      },
+      {
+        "label": "Measurement",
+        "name": "304"
+      }
+    ]
+  },
+  "cadenceSeconds": 1800,
+  "samplePolicy": "Four nearest archived images at 30-minute targets; not the instrument cadence or a continuous record. Maximum accepted offset 60 seconds.",
+  "credit": "NASA/SDO and the AIA science team; Helioviewer science-image visualization",
+  "coordinateFrame": "Helioprojective image plane, 4.8 arcsec/display pixel, false color",
+  "frames": [
+    {
+      "requestedAt": "2024-05-10T18:00:00Z",
+      "observedAt": "2024-05-10T18:00:05Z",
+      "imageId": "156618908",
+      "offsetSeconds": 5.0,
+      "metadataUrl": "https://api.helioviewer.org/v2/getClosestImage/?date=2024-05-10T18%3A00%3A00Z&sourceId=13",
+      "image": "/observations/aia-304-20240510/frame-0.png",
+      "status": "observed",
+      "quality": "1073741824",
+      "headerUrl": "https://api.helioviewer.org/v2/getJP2Header/?id=156618908",
+      "sha256": "9920554e22c4e5c1d1e6af64fcafa91229ce62130101f7a4c16e6c5ec3490eeb",
+      "renderUrl": "https://api.helioviewer.org/v2/takeScreenshot/?date=2024-05-10T18%3A00%3A05Z&imageScale=4.8&layers=%5B13%2C1%2C100%5D&events=&eventLabels=false&x0=0&y0=0&width=512&height=512&display=true&watermark=true"
+    },
+    {
+      "requestedAt": "2024-05-10T18:30:00Z",
+      "observedAt": "2024-05-10T18:30:05Z",
+      "imageId": "156619471",
+      "offsetSeconds": 5.0,
+      "metadataUrl": "https://api.helioviewer.org/v2/getClosestImage/?date=2024-05-10T18%3A30%3A00Z&sourceId=13",
+      "image": "/observations/aia-304-20240510/frame-1.png",
+      "status": "observed",
+      "quality": "1073741824",
+      "headerUrl": "https://api.helioviewer.org/v2/getJP2Header/?id=156619471",
+      "sha256": "861899a61c8975cb95c961bf6a8432d1479219caa966f171915e76799a2a862c",
+      "renderUrl": "https://api.helioviewer.org/v2/takeScreenshot/?date=2024-05-10T18%3A30%3A05Z&imageScale=4.8&layers=%5B13%2C1%2C100%5D&events=&eventLabels=false&x0=0&y0=0&width=512&height=512&display=true&watermark=true"
+    },
+    {
+      "requestedAt": "2024-05-10T19:00:00Z",
+      "observedAt": "2024-05-10T19:00:05Z",
+      "imageId": "156620019",
+      "offsetSeconds": 5.0,
+      "metadataUrl": "https://api.helioviewer.org/v2/getClosestImage/?date=2024-05-10T19%3A00%3A00Z&sourceId=13",
+      "image": "/observations/aia-304-20240510/frame-2.png",
+      "status": "observed",
+      "quality": "1073741824",
+      "headerUrl": "https://api.helioviewer.org/v2/getJP2Header/?id=156620019",
+      "sha256": "981e40082645fb8f3822df869a0c78e4d566e08755a7a0b8079fb8f4bc4c5ab5",
+      "renderUrl": "https://api.helioviewer.org/v2/takeScreenshot/?date=2024-05-10T19%3A00%3A05Z&imageScale=4.8&layers=%5B13%2C1%2C100%5D&events=&eventLabels=false&x0=0&y0=0&width=512&height=512&display=true&watermark=true"
+    },
+    {
+      "requestedAt": "2024-05-10T19:30:00Z",
+      "observedAt": "2024-05-10T19:30:05Z",
+      "imageId": "156620612",
+      "offsetSeconds": 5.0,
+      "metadataUrl": "https://api.helioviewer.org/v2/getClosestImage/?date=2024-05-10T19%3A30%3A00Z&sourceId=13",
+      "image": "/observations/aia-304-20240510/frame-3.png",
+      "status": "observed",
+      "quality": "1073741824",
+      "headerUrl": "https://api.helioviewer.org/v2/getJP2Header/?id=156620612",
+      "sha256": "6269bfdb352856dc49970221e7be5120e8cb47bec928e5b9813fd7e091cf12c4",
+      "renderUrl": "https://api.helioviewer.org/v2/takeScreenshot/?date=2024-05-10T19%3A30%3A05Z&imageScale=4.8&layers=%5B13%2C1%2C100%5D&events=&eventLabels=false&x0=0&y0=0&width=512&height=512&display=true&watermark=true"
+    }
+  ]
+}

@@ -14,6 +14,8 @@ import { createGiantTexture } from './giantTexture';
 import { createDeepSky } from './deepSky';
 import { getBodyOrientation, J2000_OBLIQUITY_DEG } from './bodyOrientation';
 import {
+  createHostPlanetMaterial,
+  createSaturnShadowMaterial,
   createEarthMaterial,
   createCloudMaterial,
   createAtmosphereMaterial,
@@ -35,6 +37,8 @@ import {
 } from './destinationSystems';
 import { getExoplanet, type ExoplanetRecord } from './exoplanets';
 import { solarSystem, type SpatialEntity } from './spatial';
+import { GpuTiming } from './gpuTiming';
+import { siriusRenderPosition } from './siriusOrbit';
 import {
   distanceLightYears,
   getStellarObject,
@@ -66,6 +70,7 @@ export type SystemObjectFocusRequest = {
 };
 
 type SceneProps = {
+  stellarEpoch?: number;
   graphicsQuality: GraphicsQuality | 'AUTO';
   eventPreview: number;
   auroraPreview: boolean;
@@ -341,6 +346,7 @@ function smoothstep(minimum: number, maximum: number, value: number) {
 }
 
 export default function SolarSystemScene({
+  stellarEpoch = 2026.81,
   graphicsQuality,
   eventPreview,
   auroraPreview,
@@ -372,6 +378,19 @@ export default function SolarSystemScene({
 }: SceneProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<SceneRuntime | null>(null);
+  const epochRef = useRef(stellarEpoch);
+  useEffect(() => {
+    epochRef.current = stellarEpoch;
+    runtimeRef.current?.stellarGroups.forEach((group, id) => {
+      const record = getStellarObject(id);
+      if (record) {
+        const p = toStellarRenderPosition(record, stellarEpoch);
+        group.position.set(p.x, p.y, p.z);
+      }
+    });
+    const companion = runtimeRef.current?.systemObjectGroups.get('sirius-b');
+    companion?.position.set(...siriusRenderPosition(stellarEpoch));
+  }, [stellarEpoch]);
   const layerLeaderRef = useRef<SVGSVGElement>(null);
   const layerLeaderPathRef = useRef<SVGPathElement>(null);
   const layerLeaderDotRef = useRef<SVGCircleElement>(null);
@@ -827,6 +846,14 @@ export default function SolarSystemScene({
       return () => window.clearTimeout(errorTimer);
     }
 
+    const gl = renderer.getContext() as WebGL2RenderingContext;
+    const gpuTiming = new GpuTiming(gl);
+    const rendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
+    host.dataset.renderer = String(
+      gl.getParameter(rendererInfo?.UNMASKED_RENDERER_WEBGL ?? gl.RENDERER),
+    );
+    host.dataset.gpuTiming = 'unavailable';
+    let gpuFrame = 0;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.035, 65000);
     camera.position.copy(systemCamera);
@@ -1103,7 +1130,7 @@ export default function SolarSystemScene({
     disposables.push(stellarGlowTexture);
 
     localStellarObjects.forEach((object) => {
-      const renderPosition = toStellarRenderPosition(object);
+      const renderPosition = toStellarRenderPosition(object, epochRef.current);
       const group = new THREE.Group();
       group.name = `catalog-star-${object.id}`;
       group.position.set(renderPosition.x, renderPosition.y, renderPosition.z);
@@ -1266,6 +1293,14 @@ export default function SolarSystemScene({
         const incline = THREE.MathUtils.degToRad(orbit.render.inclinationDeg);
         for (let pointIndex = 0; pointIndex <= 160; pointIndex++) {
           const angle = (pointIndex / 160) * Math.PI * 2;
+          if (destination.id === 'sirius-destination') {
+            orbitPoints.push(
+              new THREE.Vector3(
+                ...siriusRenderPosition(2000 + (pointIndex / 160) * 50.1284),
+              ),
+            );
+            continue;
+          }
           orbitPoints.push(
             new THREE.Vector3(
               Math.cos(angle) * orbit.render.radius,
@@ -1292,7 +1327,11 @@ export default function SolarSystemScene({
         .filter((body) => body.role !== 'ANCHOR')
         .forEach((body) => {
           const bodyGroup = new THREE.Group();
-          bodyGroup.position.set(...body.render.position);
+          bodyGroup.position.set(
+            ...(body.objectId === 'sirius-b'
+              ? siriusRenderPosition(epochRef.current)
+              : body.render.position),
+          );
           bodyGroup.userData.destinationBody = body;
           bodyGroup.userData.destinationAnchorId = destination.anchorObjectId;
           systemGroup.add(bodyGroup);
@@ -1307,13 +1346,12 @@ export default function SolarSystemScene({
               36,
               24,
             );
-            const planetMaterial = new THREE.MeshStandardMaterial({
-              color: body.render.color,
-              roughness: 0.88,
-              metalness: 0.02,
-              emissive: new THREE.Color(body.render.accent),
-              emissiveIntensity: 0.045,
-            });
+            const planetMaterial = createHostPlanetMaterial(
+              body.render.color,
+              anchor.visual.color,
+            );
+            planetMaterial.userData.hostId = anchor.id;
+            shaderMaterials.push(planetMaterial);
             const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
             planetMesh.userData.exoplanetId = planet.id;
             bodyGroup.add(planetMesh);
@@ -1530,14 +1568,16 @@ export default function SolarSystemScene({
           ? createEarthMaterial(earthTexture, earthNightTexture)
           : entity.id === 'sun'
             ? createHomeSurface()
-            : new THREE.MeshStandardMaterial({
-                color: '#ffffff',
-                roughness: index < 5 ? 0.88 : 0.7,
-                metalness: 0,
-                emissive: new THREE.Color(world.accent),
-                emissiveIntensity: 0.008,
-                map: bodyTexture,
-              });
+            : entity.id === 'saturn'
+              ? createSaturnShadowMaterial(bodyTexture!)
+              : new THREE.MeshStandardMaterial({
+                  color: '#ffffff',
+                  roughness: index < 5 ? 0.88 : 0.7,
+                  metalness: 0,
+                  emissive: new THREE.Color(world.accent),
+                  emissiveIntensity: 0.008,
+                  map: bodyTexture,
+                });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.userData.lod = {
         ULTRA: geometry,
@@ -2545,10 +2585,16 @@ export default function SolarSystemScene({
           : material.name.includes('auroral')
             ? auroralEvent.intensity
             : solarEvent.intensity;
+        const hostGroup = material.userData.hostId
+          ? stellarGroups.get(material.userData.hostId)
+          : null;
+        const lightingPosition = hostGroup
+          ? hostGroup.getWorldPosition(new THREE.Vector3())
+          : sunPosition;
         updateCelestialMaterial(
           material,
           elapsed,
-          sunPosition,
+          lightingPosition,
           activity,
           profile.atmosphereDetail,
         );
@@ -2576,6 +2622,22 @@ export default function SolarSystemScene({
             !group.userData.interiorGroup?.visible;
           group.userData.plasmaLoops.rotation.y =
             group.userData.bodyMesh.rotation.y;
+        }
+        const globeMaterial = (group.userData.bodyMesh as THREE.Mesh)
+          .material as THREE.ShaderMaterial;
+        if (globeMaterial.uniforms?.uRingCenter) {
+          group.getWorldPosition(globeMaterial.uniforms.uRingCenter.value);
+          globeMaterial.uniforms.uRingNormal.value
+            .set(0, 1, 0)
+            .applyQuaternion(
+              group.userData.axisFrame.getWorldQuaternion(
+                new THREE.Quaternion(),
+              ),
+            )
+            .normalize();
+          globeMaterial.uniforms.uGlobeRadius.value =
+            group.userData.entity.renderRadius *
+            group.getWorldScale(new THREE.Vector3()).x;
         }
         if (!rings) return;
         const center = new THREE.Vector3();
@@ -2618,7 +2680,16 @@ export default function SolarSystemScene({
           getBodyOrientation('uranus')!.visualRadiansPerSecond.toFixed(8);
         host.dataset.starCount = String(profile.starCount);
       }
-      if (!document.hidden) renderer.render(scene, camera);
+      if (!document.hidden) {
+        gpuTiming.poll();
+        const sampled = gpuFrame++ % 30 === 0 && gpuTiming.begin();
+        renderer.render(scene, camera);
+        if (sampled) gpuTiming.end();
+        host.dataset.gpuTiming =
+          gpuTiming.milliseconds === null
+            ? 'unavailable'
+            : gpuTiming.milliseconds.toFixed(3);
+      }
       const leader = layerLeaderRef.current;
       if (leader) {
         leader.dataset.visible = 'false';
@@ -2716,6 +2787,7 @@ export default function SolarSystemScene({
       renderer.domElement.removeEventListener('pointerdown', clearWheel, true);
       window.removeEventListener('blur', clearWheel);
       disposables.forEach((item) => item.dispose());
+      gpuTiming.dispose();
       renderer.dispose();
       renderer.domElement.remove();
       bodyGroups.clear();
@@ -2805,7 +2877,7 @@ export default function SolarSystemScene({
           {exoplanetInspection
             ? 'Measured and inferred properties remain labeled separately. No direct surface image exists.'
             : destinationDefinition?.kind === 'BINARY_STELLAR_SYSTEM'
-              ? 'Measured binary scale and period remain separate from the fixed illustrative phase and compressed destination rendering.'
+              ? 'Sirius B−A follows a published J2000 sky-plane fit at the selected epoch. This projected path supplies no 3D depth or barycentric motion; body sizes and spacing are compressed.'
               : destinationSystem
                 ? destinationDefinition?.kind === 'PLANETARY_SYSTEM'
                   ? 'Confirmed planets use archive orbital parameters; sizes and separations are transformed for navigation.'

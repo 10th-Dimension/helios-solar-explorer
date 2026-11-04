@@ -49,7 +49,7 @@ export const STELLAR_EPOCH_POLICY = {
   displayEpoch: 2026.81,
   properMotionMode: 'TANGENT_VECTOR_PROPAGATION',
   radialVelocityMode: 'USE_WHEN_AVAILABLE_OTHERWISE_ZERO',
-  explanation: 'ICRS J2000 catalog positions propagate to fixed Julian epoch 2026.81 using tangent proper motion and radial velocity when available. Missing radial velocity is held at zero, missing proper motion is held at reference direction. Binary orbital accelerations and uncertainties are not propagated; this is a local linear model, not an ephemeris.',
+  explanation: 'ICRS J2000 catalog positions propagate to a controlled Julian epoch (default 2026.81) using tangent proper motion and radial velocity when available. Missing radial velocity is held at zero, missing proper motion is held at reference direction. Binary orbital accelerations and uncertainties are not propagated; this is a local linear model, not an ephemeris.',
 } as const;
 
 export type StellarObjectRecord = {
@@ -207,7 +207,7 @@ export function toScientificStellarPosition(object: StellarObjectRecord): Scient
 }
 
 // A derived scientific position at a reproducible display epoch. Source coordinates are never overwritten.
-export function propagatedStellarPosition(object: StellarObjectRecord, epoch = STELLAR_EPOCH_POLICY.displayEpoch): ScientificStellarPosition {
+export function propagatedStellarPosition(object: StellarObjectRecord, epoch: number = STELLAR_EPOCH_POLICY.displayEpoch): ScientificStellarPosition {
   const p = toScientificStellarPosition(object);
   const a = object.astrometry;
   if (!a) return p;
@@ -226,22 +226,22 @@ export function propagatedStellarPosition(object: StellarObjectRecord, epoch = S
 }
 
 // Local atlas remains a right-handed ICRS frame. Body attitudes use their separately documented ecliptic frame.
-export function toStellarRenderPosition(object: StellarObjectRecord): StellarRenderPosition {
-  const scientific = propagatedStellarPosition(object);
+export function toStellarRenderPosition(object: StellarObjectRecord, epoch: number = STELLAR_EPOCH_POLICY.displayEpoch): StellarRenderPosition {
+  const scientific = propagatedStellarPosition(object, epoch);
   return { transform: 'local-stellar-compressed-v1', unit: 'helios-render-unit',
     x: scientific.x * STELLAR_RENDER_UNITS_PER_LIGHT_YEAR,
     y: scientific.z * STELLAR_RENDER_UNITS_PER_LIGHT_YEAR,
     z: -scientific.y * STELLAR_RENDER_UNITS_PER_LIGHT_YEAR };
 }
 
-export function separationLightYears(fromId: string | null, toId: string) {
+export function separationLightYears(fromId: string | null, toId: string, epoch: number = STELLAR_EPOCH_POLICY.displayEpoch) {
   const to = getStellarObject(toId);
   if (!to) return 0;
-  const destination = propagatedStellarPosition(to);
+  const destination = propagatedStellarPosition(to, epoch);
   if (!fromId || fromId === 'sol') return Math.hypot(destination.x, destination.y, destination.z);
   const from = getStellarObject(fromId);
   if (!from) return Math.hypot(destination.x, destination.y, destination.z);
-  const origin = propagatedStellarPosition(from);
+  const origin = propagatedStellarPosition(from, epoch);
   return Math.hypot(destination.x - origin.x, destination.y - origin.y, destination.z - origin.z);
 }
 
