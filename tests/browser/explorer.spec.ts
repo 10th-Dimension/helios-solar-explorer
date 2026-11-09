@@ -216,6 +216,7 @@ test('persists a retry and resumes it without requiring a correct answer', async
 test('@webgl closing a lesson cancels its pending interior action', async ({
   page,
 }) => {
+  await page.clock.install();
   await renderScene(page);
   await page.getByRole('button', { name: 'EDUCATION', exact: true }).click();
   const panel = page.getByRole('complementary', { name: 'Education Mode' });
@@ -225,12 +226,19 @@ test('@webgl closing a lesson cancels its pending interior action', async ({
       exact: true,
     })
     .click();
+  // Freeze before travel so slow GPUs cannot complete the approach before
+  // the dismissal click. Then deliver arrival after the lesson is closed.
+  await page.clock.pauseAt(
+    new Date(await page.evaluate(() => Date.now() + 1000)),
+  );
   await panel.locator('.education-travel').click();
+  await expect(page.locator('.spatial-travel')).toHaveCount(1);
   await page.getByRole('button', { name: 'CATALOG', exact: true }).click();
   await expect(panel).toHaveCount(0);
   await expect(
     page.getByRole('complementary', { name: 'Helios object catalog' }),
   ).toBeVisible();
+  await page.clock.fastForward(3000);
   await expect(page.locator('.spatial-travel')).toHaveCount(0);
   await expect(page.locator('.interior-inspector')).toHaveCount(0);
 });
@@ -534,8 +542,98 @@ test('short Catalog scrolls all nine hosts without moving the scene', async ({
     await page.locator('.space-stage').evaluate((element) => element.scrollTop),
   ).toBe(0);
   await page.keyboard.press('Escape');
-  await expect(catalog).toHaveAttribute('aria-hidden', 'true');
+  // Role queries exclude hidden regions unless explicitly requested.
+  await expect(
+    page.getByRole('complementary', {
+      name: 'Helios object catalog',
+      includeHidden: true,
+    }),
+  ).toHaveAttribute('aria-hidden', 'true');
   await expect(
     page.getByRole('button', { name: 'CATALOG', exact: true }),
   ).toBeFocused();
+});
+
+for (const reducedMotion of [false, true]) {
+  test(`@webgl Sun glow stays in the scene after repeated approaches and departures (${reducedMotion ? 'narrow, reduced motion' : 'desktop'})`, async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize(
+      reducedMotion
+        ? { width: 390, height: 844 }
+        : { width: 1000, height: 700 },
+    );
+    if (reducedMotion) {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+    }
+    const errors = await renderScene(page);
+    const shell = page.locator('main.app-shell');
+    const scene = page.locator('.solar-scene');
+    const canvas = scene.locator('canvas');
+    const scale = page.locator('.explore-location > span');
+    const controls = page.getByRole('region', {
+      name: 'The Sun exploration controls',
+    });
+    for (let visit = 0; visit < 2; visit++) {
+      await page.getByRole('button', { name: 'WORLDS', exact: true }).click();
+      await page
+        .getByRole('button', { name: 'Travel to The Sun', exact: true })
+        .click();
+      await expect(controls).toBeVisible();
+      await expect(scale).toHaveText('PLANETARY');
+      // Leave with the real wheel path while the Sun remains selected. A
+      // selection reset alone cannot fix the screen-fixed orange background.
+      await canvas.hover({ position: { x: 40, y: 100 } });
+      await page.mouse.wheel(0, 2400);
+      await expect(scale).toHaveText('SYSTEM');
+      await expect(shell).toHaveCSS('background-image', 'none');
+      await expect(canvas).toHaveCount(1);
+      await page.getByRole('button', { name: 'SYSTEM', exact: true }).click();
+      await expect(controls).toHaveCount(0);
+      await expect(scale).toHaveText('SYSTEM');
+      await expect(shell).toHaveCSS('background-image', 'none');
+    }
+    await testInfo.attach('departed-sun-system', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+    // Switching worlds must not replace the orange haze with another tint.
+    await travelToEarth(page);
+    await expect(shell).toHaveCSS('background-image', 'none');
+    await page.getByRole('button', { name: 'SYSTEM', exact: true }).click();
+    await expect(scale).toHaveText('SYSTEM');
+    await expect(shell).toHaveCSS('background-color', 'rgb(3, 5, 9)');
+    await testInfo.attach('departed-system', {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+    expect(errors).toEqual([]);
+  });
+}
+
+test('@webgl render diagnostics refresh after long frames', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1000, height: 700 });
+  await page.clock.install();
+  const errors = await renderScene(page);
+  await page.clock.pauseAt(
+    new Date(await page.evaluate(() => Date.now() + 1000)),
+  );
+  const scene = page.locator('.solar-scene');
+  // Resume between second boundaries after a suspended/slow frame. Metrics
+  // must refresh even when the clamped animation step never crosses a second.
+  for (let frame = 0; frame < 3; frame++) {
+    await scene.evaluate((element) => {
+      const node = element as HTMLElement;
+      node.dataset.drawCalls = 'stale';
+      node.dataset.scale = 'STALE';
+    });
+    const gap =
+      2500 - (await page.evaluate(() => Math.floor(performance.now()) % 1000));
+    await page.clock.fastForward(gap);
+    expect(await scene.getAttribute('data-draw-calls')).toMatch(/^[1-9]\d*$/);
+    expect(await scene.getAttribute('data-scale')).toBe('SYSTEM');
+  }
+  expect(errors).toEqual([]);
 });

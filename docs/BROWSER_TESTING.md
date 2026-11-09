@@ -22,8 +22,10 @@ npm run test:browser -- --project=chromium
 - A single rendered canvas, Earth selection, interior layers, evidence disclosure, zoom/rotation and a moving layer leader.
 - All four lessons completed through their written alternatives and questions in the controlled WebGL-fallback DOM, including completion persistence after reload. Rendered scene travel is covered by the separate interior/dismissal/exoplanet cases.
 - Optional retry, resume and progression after an incorrect answer.
-- Lesson dismissal while a pending target is traveling, without a stale interior opening later.
+- Lesson dismissal while a pending target is traveling, with the clock held until dismissal and arrival delivered afterward, without a stale interior opening later.
 - Catalog-to-exoplanet travel and return Home in the same scene.
+- Repeated Sun approaches, wheel departures and SYSTEM returns on desktop and a narrow reduced-motion viewport; the page stays neutral while the Sun remains selected, including after switching to Earth.
+- Render diagnostics refresh after repeated long frames using a controlled clock; resource counts and scale cannot remain stale between second boundaries.
 - Science-dialog keyboard focus containment and restoration with Escape.
 - Manual pause and system reduced motion, retaining deliberate world navigation.
 - Controlled WebGL initialization failure, world information and lesson access.
@@ -31,7 +33,7 @@ npm run test:browser -- --project=chromium
 - Closing/reopening approached exoplanet information while retaining the selected planet, and short-screen Catalog wheel/keyboard scrolling without scrolling the scene.
 - A 390×844 layout: AUTO remains selected, lesson/scene switching works, and the page has no horizontal overflow.
 
-Chromium and WebKit run the full suite. The Firefox project runs the lesson, keyboard, narrow-layout and controlled-fallback cases; it excludes the four `@webgl` rendering cases because headless Firefox in this environment does not provide WebGL. This is an explicit coverage boundary, not a rendering pass for Firefox. Browser emulation does not reproduce physical phones or every GPU. Chromium uses SwiftShader in this configuration to make rendering available on headless CI; its frame timings are software-renderer diagnostics, not hardware performance claims.
+Chromium and WebKit run the full suite. The Firefox project runs the lesson, keyboard, narrow-layout and controlled-fallback cases; it excludes the `@webgl` rendering cases because headless Firefox in this environment does not provide WebGL. This is an explicit coverage boundary, not a rendering pass for Firefox. Browser emulation does not reproduce physical phones or every GPU. Chromium uses SwiftShader in this configuration to make rendering available on headless CI; its frame timings are software-renderer diagnostics, not hardware performance claims.
 
 Failures produce local screenshots and traces under ignored `test-results/`; the HTML report is under ignored `playwright-report/`. Inspect them locally:
 

@@ -2652,7 +2652,9 @@ export default function SolarSystemScene({
             group.userData.entity.renderRadius * scale.x;
         });
       });
-      if (Math.floor(now / 1000) !== Math.floor((now - delta * 1000) / 1000)) {
+      // Sampling follows wall time, not the clamped animation step: a slow
+      // frame or a resumed tab can span second boundaries outside that step.
+      if (Math.floor(now / 1000) !== Math.floor((now - frameInterval) / 1000)) {
         host.dataset.solarActivity = solarEvent.intensity.toFixed(3);
         host.dataset.auroraActivity = auroralEvent.intensity.toFixed(3);
         host.dataset.auroraMode = auroraPreviewRef.current
