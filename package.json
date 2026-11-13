@@ -40,7 +40,7 @@
     "test:no3d": "node --experimental-strip-types scripts/verify-no3d-ui.mjs"
   },
   "dependencies": {
-    "next": "16.4.3",
+    "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "three": "^0.187.0"
